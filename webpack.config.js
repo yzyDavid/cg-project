@@ -66,6 +66,10 @@ module.exports = {
                 use: {
                     loader: 'url-loader?limit=10000&name=img/[name].[ext]'
                 }
+            },
+            {
+                test: /\.(vert|frag|geom)$/,
+                use: 'raw-loader'
             }
         ]
     },
