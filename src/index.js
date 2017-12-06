@@ -2,7 +2,7 @@
  * created by Zhenyun Yu.
  */
 
-let gl = null;
+let gl;
 
 function initWebGL(canvas) {
     let gl;
@@ -29,3 +29,5 @@ function start() {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     alert('init success');
 }
+
+document.getElementById('main-body').onload = start;
