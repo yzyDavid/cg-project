@@ -1,6 +1,7 @@
 /*
  * created by Zhenyun Yu.
  */
+import './index.css'
 
 let gl;
 
