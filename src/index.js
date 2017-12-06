@@ -1,7 +1,8 @@
 /*
  * created by Zhenyun Yu.
  */
-import './index.css'
+import './index.css';
+import * as config from './config';
 
 let gl;
 
@@ -20,6 +21,8 @@ function initWebGL(canvas) {
 
 function start() {
     const canvas = document.getElementById('root');
+    canvas.setAttribute('width', config.WIDTH);
+    canvas.setAttribute('height', config.HEIGHT);
     gl = initWebGL(canvas);
     if (!gl) {
         return;
