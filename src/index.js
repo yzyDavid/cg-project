@@ -3,6 +3,7 @@
  */
 import './index.css';
 import * as config from './config';
+import {initShaders} from "./shader";
 
 let gl;
 
@@ -31,6 +32,9 @@ function start() {
     gl.enable(gl.DEPTH_TEST);
     gl.depthFunc(gl.LEQUAL);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    initShaders(gl);
+
     alert('init success');
 }
 
