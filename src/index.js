@@ -4,7 +4,7 @@
 import './index.css';
 import * as config from './config';
 import {initShaders} from './shader';
-import KeyEventController from './keyevent';
+import KeyEventController from './engine/keyevent';
 
 let gl;
 
