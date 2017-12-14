@@ -22,5 +22,5 @@ export function initBuffers(gl) {
 }
 
 export function drawScene(gl) {
-    
+
 }
