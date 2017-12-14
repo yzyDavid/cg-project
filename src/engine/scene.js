@@ -7,4 +7,8 @@ export default class Scene {
         this.camera = null;
         this.gameObjects = [];
     }
+
+    draw() {
+        //TODO: maybe abandoned
+    }
 }
