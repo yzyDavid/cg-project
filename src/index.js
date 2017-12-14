@@ -3,7 +3,8 @@
  */
 import './index.css';
 import * as config from './config';
-import {initShaders} from "./shader";
+import {initShaders} from './shader';
+import KeyEventController from './keyevent';
 
 let gl;
 
@@ -34,6 +35,11 @@ function start() {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     initShaders(gl);
+
+    // testing.
+    KeyEventController.addListener('q', (event) => console.log('q pressed'));
+    KeyEventController.enable();
+    KeyEventController.addListener('s', () => KeyEventController.disable());
 
     alert('init success');
 }
