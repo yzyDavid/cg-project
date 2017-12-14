@@ -2,4 +2,4 @@
  * created by Zhenyun Yu.
  */
 
-export class Component {}
+export default class Component {}

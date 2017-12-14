@@ -5,7 +5,7 @@
 
 import {Component} from "./component";
 
-export class GameObject extends Component {
+export default class GameObject extends Component {
     constructor() {
         super();
     }

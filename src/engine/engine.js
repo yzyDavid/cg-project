@@ -2,5 +2,5 @@
  * created by Zhenyun Yu.
  */
 
-export class Engine {
+export default class Engine {
 }

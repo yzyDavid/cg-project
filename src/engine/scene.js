@@ -2,7 +2,7 @@
  * created by Zhenyun Yu.
  */
 
-export class Scene {
+export default class Scene {
     constructor() {
         this.camera = null;
         this.gameObjects = [];
