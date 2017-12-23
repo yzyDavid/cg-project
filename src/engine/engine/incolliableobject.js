@@ -10,4 +10,6 @@ export default class IncolliableObject extends Incolliable {
         super(pos);
         this._model = model;
     }
+
+    draw() {}
 }
