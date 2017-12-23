@@ -7,6 +7,7 @@ import {defaultEngineConfig} from './config';
 import KeyEventController from './keyevent';
 import ShaderManager from './shadermanager';
 import TimeEventController from './timeevent';
+import {mat4, glMatrix} from 'gl-matrix/src/gl-matrix';
 
 export default class Engine {
     constructor(scene, canvas, config) {
@@ -55,6 +56,8 @@ export default class Engine {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         this._shaderManager.useShader(this._config.shader);
+
+        const projMat = mat4.create();
 
         log.info("engine started");
         this._animationRequest = window.requestAnimationFrame(this._render.bind(this));
