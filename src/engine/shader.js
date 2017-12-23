@@ -6,8 +6,9 @@ import {log} from './engine'
 export default class Shader {
     constructor(gl, vert, frag, optional) {
         if (optional) {
-            log.error("optional shader not implemented");
+            log.error("optional shaders are not implemented");
         }
+        this._gl = gl;
         this._ok = false;
         const vertShader = gl.createShader(gl.VERTEX_SHADER);
         const fragShader = gl.createShader(gl.FRAGMENT_SHADER);
@@ -45,5 +46,13 @@ export default class Shader {
             return;
         }
         return this._program;
+    }
+
+    valid() {
+        return this._ok;
+    }
+
+    use() {
+        this._gl.useProgram(this._program);
     }
 }
