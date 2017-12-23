@@ -2,7 +2,7 @@
  * created by Zhenyun Yu.
  */
 
-class KeyEventController {
+export default class KeyEventController {
     constructor() {
         this.callbacks = {};
         this.listener = (event) => {
@@ -33,5 +33,3 @@ class KeyEventController {
     }
 }
 
-const controller = new KeyEventController();
-export default controller;
