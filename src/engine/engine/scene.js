@@ -4,8 +4,20 @@
 
 export default class Scene {
     constructor() {
-        this.camera = null;
-        this.gameObjects = [];
+        this._camera = null;
+        this._gameObjects = [];
+    }
+
+    addObject(obj) {
+    }
+
+    setCamera(camera) {
+    }
+
+    getCamera() {
+    }
+
+    forEach(func) {
     }
 
     draw() {

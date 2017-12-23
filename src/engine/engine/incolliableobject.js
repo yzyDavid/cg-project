@@ -3,9 +3,9 @@
  */
 
 
-import {Component} from "./component";
+import {Incolliable} from "./component";
 
-export default class GameObject extends Component {
+export default class IncolliableObject extends Incolliable {
     constructor(pos, model) {
         super(pos);
         this._model = model;

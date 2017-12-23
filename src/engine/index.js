@@ -3,5 +3,6 @@
  */
 
 import Engine from './engine/engine';
+import Scene from './engine/scene';
 
-export {Engine};
+export {Engine, Scene};

@@ -23,6 +23,9 @@ export default class Engine {
     getScene() {
         return this._scene;
     }
+
+    setOnUpdate(func) {
+    }
 }
 
 const log = getLogger('ENGINE', Logger.DEBUG);

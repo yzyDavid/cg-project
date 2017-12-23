@@ -2,7 +2,8 @@
  * created by Zhenyun Yu.
  */
 import './index.css';
-import {Engine} from './engine';
+import {Engine, Scene} from './engine';
 
 const canvas = document.getElementById('root');
-const engine = new Engine(null, canvas);
+const scene = new Scene();
+const engine = new Engine(scene, canvas);
