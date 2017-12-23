@@ -4,25 +4,29 @@
 
 export default class KeyEventController {
     constructor() {
-        this.callbacks = {};
+        this._callbacks = {};
         this._enabled = false;
-        this.listener = (event) => {
+        this._listener = (event) => {
             const keyName = event.key;
-            if (this.callbacks[keyName] !== undefined) {
-                this.callbacks[keyName](event);
+            if (this._callbacks[keyName] !== undefined) {
+                this._callbacks[keyName](event);
             }
         };
     }
 
     addListener(key, action) {
-        this.callbacks[key] = action;
+        this._callbacks[key] = action;
+    }
+
+    removeListener(key) {
+        this._callbacks[key] = undefined;
     }
 
     enable() {
         if (this._enabled) {
             return;
         }
-        document.addEventListener('keydown', this.listener);
+        document.addEventListener('keydown', this._listener);
         this._enabled = true;
     }
 
@@ -30,7 +34,8 @@ export default class KeyEventController {
         if (!this._enabled) {
             return;
         }
-        document.removeEventListener('keydown', this.listener);
+        document.removeEventListener('keydown', this._listener);
+        this._enabled = false;
     }
 
     isEnabled() {

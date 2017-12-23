@@ -5,6 +5,7 @@
 import getLogger, {Logger} from './logger'
 import KeyEventController from './keyevent';
 import ShaderManager from './shadermanager';
+import TimeEventController from './timeevent';
 
 export default class Engine {
     constructor(scene, canvas, config) {
@@ -23,6 +24,7 @@ export default class Engine {
         }
         this._gl = gl;
         this._keyEventController = new KeyEventController();
+        this._timeEventController = new TimeEventController();
         this._shaderManager = new ShaderManager(gl);
         log.info("engine constructed");
     }
@@ -39,6 +41,7 @@ export default class Engine {
         this._then = this._startTime * 0.001;
 
         gl.clearColor(0.4, 0.4, 0.4, 1.0);
+        gl.clearDepth(1.0);
         gl.enable(gl.DEPTH_TEST);
         gl.depthFunc(gl.LEQUAL);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -56,6 +59,9 @@ export default class Engine {
         const deltaTime = now - this._then;
         this._then = now;
         this._draw(deltaTime);
+        if(this._timeEventController.isEnabled()) {
+            this._timeEventController.getCallback()();
+        }
         this._animationRequest = window.requestAnimationFrame(this._render.bind(this));
     }
 
@@ -66,7 +72,7 @@ export default class Engine {
             if (obj.draw !== undefined) {
                 obj.draw();
             }
-        })
+        });
     }
 
     getStartTime() {
@@ -81,7 +87,8 @@ export default class Engine {
         return this._keyEventController;
     }
 
-    setOnUpdate(func) {
+    getTimeEventController() {
+        return this._timeEventController;
     }
 }
 
