@@ -10,8 +10,6 @@ export default class Engine {
     constructor(scene, canvas) {
         this._scene = scene;
         this._canvas = canvas;
-        this._keyEventController = new KeyEventController();
-        this._shaderManager = new ShaderManager();
         let gl;
         try {
             gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
@@ -24,6 +22,8 @@ export default class Engine {
             return this;
         }
         this._gl = gl;
+        this._keyEventController = new KeyEventController();
+        this._shaderManager = new ShaderManager(gl);
         log.info("engine constructed");
     }
 
@@ -61,6 +61,7 @@ export default class Engine {
 
     _draw(deltaTime) {
         const gl = this._gl;
+        const scene = this._scene;
     }
 
     getStartTime() {
