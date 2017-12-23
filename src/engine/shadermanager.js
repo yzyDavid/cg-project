@@ -2,7 +2,7 @@
  * created by Zhenyun Yu.
  */
 
-class ShaderManager {
+export default class ShaderManager {
     constructor() {
         this._shaders = {};
     }
@@ -11,5 +11,3 @@ class ShaderManager {
     getShader(name) {}
 }
 
-const shaderManager = new ShaderManager();
-export default shaderManager;
