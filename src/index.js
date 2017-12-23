@@ -11,5 +11,9 @@ canvas.setAttribute('height', config.HEIGHT);
 
 const scene = new Scene();
 const engine = new Engine(scene, canvas);
+const keyController = engine.getKeyEventController();
+
+keyController.addListener('q', () => engine.stop());
+keyController.enable();
 
 engine.start();

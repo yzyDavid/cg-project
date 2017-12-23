@@ -60,6 +60,7 @@ export default class Engine {
     }
 
     _draw(deltaTime) {
+        const gl = this._gl;
     }
 
     getStartTime() {
@@ -68,6 +69,10 @@ export default class Engine {
 
     getScene() {
         return this._scene;
+    }
+
+    getKeyEventController() {
+        return this._keyEventController;
     }
 
     setOnUpdate(func) {
