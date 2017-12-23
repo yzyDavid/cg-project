@@ -7,7 +7,7 @@ import KeyEventController from './keyevent';
 import ShaderManager from './shadermanager';
 
 export default class Engine {
-    constructor(scene, canvas) {
+    constructor(scene, canvas, config) {
         this._scene = scene;
         this._canvas = canvas;
         let gl;
@@ -62,6 +62,11 @@ export default class Engine {
     _draw(deltaTime) {
         const gl = this._gl;
         const scene = this._scene;
+        scene.forEach((obj) => {
+            if (obj.draw !== undefined) {
+                obj.draw();
+            }
+        })
     }
 
     getStartTime() {

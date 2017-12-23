@@ -4,10 +4,25 @@
 import {log} from './engine';
 import Shader from './shader';
 
+import primitiveVertexShaderText from '../shaders/primitive.vert';
+import primitiveFragmentShaderText from '../shaders/primitive.frag';
+
 export default class ShaderManager {
-    constructor(gl) {
+    constructor(gl, loadDefaults) {
         this._gl = gl;
         this._shaders = {};
+        if (loadDefaults || loadDefaults === undefined) {
+            this.loadDefaultShaders();
+        }
+    }
+
+    loadDefaultShaders() {
+        const gl = this._gl;
+        this.addShader('primitive', new Shader(
+            gl,
+            primitiveVertexShaderText,
+            primitiveFragmentShaderText
+        ));
     }
 
     addShader(name, shader) {

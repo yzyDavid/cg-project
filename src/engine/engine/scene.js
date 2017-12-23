@@ -18,6 +18,7 @@ export default class Scene {
     }
 
     forEach(func) {
+        this._gameObjects.forEach(func);
     }
 
     draw() {
