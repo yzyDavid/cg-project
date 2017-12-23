@@ -3,8 +3,8 @@
  */
 import './index.css';
 import * as config from './config';
-import KeyEventController from './engine/keyevent';
-import Engine from './engine/engine'
+import KeyEventController from './engine/engine/keyevent';
+import Engine from './engine/engine/engine'
 
 let gl;
 
