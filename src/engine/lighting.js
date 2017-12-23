@@ -5,7 +5,7 @@
 import {Component} from "./component";
 
 export class Lighting extends Component {
-    constructor() {
-        super()
+    constructor(pos) {
+        super(pos)
     }
 }

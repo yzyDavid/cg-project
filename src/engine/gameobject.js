@@ -6,7 +6,8 @@
 import {Component} from "./component";
 
 export default class GameObject extends Component {
-    constructor() {
-        super();
+    constructor(pos, model) {
+        super(pos);
+        this._model = model;
     }
 }

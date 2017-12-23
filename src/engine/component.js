@@ -8,4 +8,8 @@
  * @class
  *
  */
-export default class Component {}
+export default class Component {
+    constructor(position) {
+        this._position = position;
+    }
+}
