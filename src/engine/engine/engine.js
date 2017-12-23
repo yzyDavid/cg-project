@@ -3,12 +3,20 @@
  */
 
 import getLogger, {Logger} from './logger'
+import {defaultEngineConfig} from './config';
 import KeyEventController from './keyevent';
 import ShaderManager from './shadermanager';
 import TimeEventController from './timeevent';
 
 export default class Engine {
     constructor(scene, canvas, config) {
+        const _conf = defaultEngineConfig();
+        for (let conf in config) {
+            if (config.hasOwnProperty(conf)) {
+                _conf[conf] = config[conf];
+            }
+        }
+        this._config = _conf;
         this._scene = scene;
         this._canvas = canvas;
         let gl;
@@ -46,6 +54,8 @@ export default class Engine {
         gl.depthFunc(gl.LEQUAL);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
+        this._shaderManager.useShader(this._config.shader);
+
         log.info("engine started");
         this._animationRequest = window.requestAnimationFrame(this._render.bind(this));
     }
@@ -59,7 +69,7 @@ export default class Engine {
         const deltaTime = now - this._then;
         this._then = now;
         this._draw(deltaTime);
-        if(this._timeEventController.isEnabled()) {
+        if (this._timeEventController.isEnabled()) {
             this._timeEventController.getCallback()();
         }
         this._animationRequest = window.requestAnimationFrame(this._render.bind(this));
