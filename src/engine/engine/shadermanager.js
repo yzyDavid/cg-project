@@ -2,7 +2,7 @@
  * created by Zhenyun Yu.
  */
 import {log} from './engine';
-import Shader from "./shader";
+import Shader from './shader';
 
 export default class ShaderManager {
     constructor(gl) {

@@ -3,7 +3,7 @@
  */
 
 
-import {Incolliable} from "./component";
+import {Incolliable} from './component';
 
 export default class IncolliableObject extends Incolliable {
     constructor(pos, model) {
@@ -11,5 +11,6 @@ export default class IncolliableObject extends Incolliable {
         this._model = model;
     }
 
-    draw() {}
+    draw() {
+    }
 }
