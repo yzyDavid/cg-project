@@ -3,10 +3,6 @@
  */
 
 class Logger {
-    static ERROR = 0;
-    static INFO = 1;
-    static DEBUG = 2;
-
     static getStringByLevel(level) {
         const dict = {
             0: 'ERROR',
@@ -24,7 +20,7 @@ class Logger {
     }
 
     setPrintLevel(level) {
-        if (level instanceof 'number') {
+        if (level instanceof Number) {
             this._level = level
         }
     }
@@ -53,6 +49,11 @@ class Logger {
         this._putLog(msg, Logger.DEBUG);
     }
 }
+
+Logger.ERROR = 0;
+Logger.INFO = 1;
+Logger.DEBUG = 2;
+
 
 export {Logger};
 

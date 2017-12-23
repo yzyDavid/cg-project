@@ -9,14 +9,15 @@ export default class Engine {
         this._scene = scene;
         this._canvas = canvas;
         this._gl = null;
+        log.info("engine constructed");
     }
 
     init() {
-
+        log.info("engine initialized");
     }
 
     start() {
-
+        log.info("engine started");
     }
 }
 

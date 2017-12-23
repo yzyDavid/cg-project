@@ -5,6 +5,7 @@ import './index.css';
 import * as config from './config';
 import {initShaders} from './shader';
 import KeyEventController from './engine/keyevent';
+import Engine from './engine/engine'
 
 let gl;
 
@@ -45,3 +46,5 @@ function start() {
 }
 
 document.getElementById('main-body').onload = start;
+
+const engine = new Engine();
