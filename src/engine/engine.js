@@ -2,6 +2,8 @@
  * created by Zhenyun Yu.
  */
 
+import getLogger, {Logger} from './logger'
+
 export default class Engine {
     constructor(scene, canvas) {
         this._scene = scene;
@@ -17,3 +19,7 @@ export default class Engine {
 
     }
 }
+
+const log = getLogger('ENGINE', Logger.DEBUG);
+
+export {log};
