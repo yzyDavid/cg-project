@@ -19,6 +19,10 @@ export default class Engine {
     start() {
         log.info("engine started");
     }
+
+    getScene() {
+        return this._scene;
+    }
 }
 
 const log = getLogger('ENGINE', Logger.DEBUG);

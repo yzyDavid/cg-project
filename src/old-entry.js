@@ -3,7 +3,6 @@
  */
 import './index.css';
 import * as config from './config';
-import {initShaders} from './shader';
 import KeyEventController from './engine/keyevent';
 import Engine from './engine/engine'
 
@@ -34,8 +33,6 @@ function start() {
     gl.enable(gl.DEPTH_TEST);
     gl.depthFunc(gl.LEQUAL);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-    initShaders(gl);
 
     // testing.
     KeyEventController.addListener('q', (event) => console.log('q pressed'));
