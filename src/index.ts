@@ -2,15 +2,15 @@
  * created by Zhenyun Yu.
  */
 import './index.css';
-import {Engine, Scene} from './engine';
+import {Engine, Scene} from './engine/index';
 import * as config from './config';
 
 const canvas = document.getElementById('root');
-canvas.setAttribute('width', config.WIDTH);
-canvas.setAttribute('height', config.HEIGHT);
+canvas.setAttribute('width', String(config.WIDTH));
+canvas.setAttribute('height', String(config.HEIGHT));
 
 const scene = new Scene();
-const engine = new Engine(scene, canvas);
+const engine = new Engine(scene, canvas, undefined);
 const keyController = engine.getKeyEventController();
 const timeController = engine.getTimeEventController();
 

@@ -7,8 +7,20 @@ import {defaultEngineConfig} from './config';
 import KeyEventController from './keyevent';
 import ShaderManager from './shadermanager';
 import TimeEventController from './timeevent';
+import Scene from './scene';
 
 export default class Engine {
+    _config: any;
+    _scene: Scene;
+    _canvas: HTMLCanvasElement;
+    _keyEventController: KeyEventController;
+    _timeEventController: TimeEventController;
+    _shaderManager: ShaderManager;
+    _gl: WebGLRenderingContext;
+    _startTime: number;
+    _then : number;
+    _animationRequest: number;
+
     constructor(scene, canvas, config) {
         const _conf = defaultEngineConfig();
         for (let conf in config) {
@@ -32,8 +44,6 @@ export default class Engine {
         }
         this._gl = gl;
         this._keyEventController = new KeyEventController();
-        this._timeEventController = new TimeEventController();
-        this._shaderManager = new ShaderManager(gl);
         log.info("engine constructed");
     }
 
@@ -55,8 +65,6 @@ export default class Engine {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         this._shaderManager.useShader(this._config.shader);
-
-        const projMat = mat4.create();
 
         log.info("engine started");
         this._animationRequest = window.requestAnimationFrame(this._render.bind(this));

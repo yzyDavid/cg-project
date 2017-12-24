@@ -3,7 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
     devtool: "cheap-module-source-map",
-    entry: __dirname + '/src/index.js',
+    entry: __dirname + '/src/index.ts',
     output: {
         path: __dirname + '/build/',
         publicPath: '/',
