@@ -24,32 +24,16 @@ module.exports = {
                 exclude: /node_module/,
                 use: [
                     {
-                        loader: 'babel-loader?cacheDirectory',
-                        options:
-                            {
-                                "presets": [
-                                    "env"
-                                ],
-                            }
-
-                    },
-                    {
-                        loader: 'ts-loader',
-                    },
+                        loader: 'ts-loader'
+                    }
                 ],
             },
             {
                 test: /(\.jsx|\.js)$/,
                 exclude: /node_module/,
                 use: {
-                    loader: 'babel-loader',
-                    options:
-                        {
-                            "presets": [
-                                "env"
-                            ],
-                        }
-                },
+                    loader: 'ts-loader'
+                }
             },
             {
                 test: /\.css$/,

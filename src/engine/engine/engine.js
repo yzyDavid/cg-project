@@ -7,7 +7,6 @@ import {defaultEngineConfig} from './config';
 import KeyEventController from './keyevent';
 import ShaderManager from './shadermanager';
 import TimeEventController from './timeevent';
-import {mat4, glMatrix} from 'gl-matrix/src/gl-matrix';
 
 export default class Engine {
     constructor(scene, canvas, config) {
