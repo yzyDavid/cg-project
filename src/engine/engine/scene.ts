@@ -9,18 +9,20 @@ export default class Scene {
     private camera: Camera;
     private gameObjects: Component[];
 
-    constructor() {
-        this.camera = null;
+    constructor(camera?: Camera) {
+        this.camera = camera || null;
         this.gameObjects = [];
     }
 
     addObject(obj) {
     }
 
-    setCamera(camera) {
+    setCamera(camera: Camera) {
+        this.camera = camera;
     }
 
-    getCamera() {
+    getCamera(): Camera {
+        return this.camera;
     }
 
     forEach(func) {
