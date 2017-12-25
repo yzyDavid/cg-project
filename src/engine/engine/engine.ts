@@ -8,6 +8,7 @@ import KeyEventController from './keyevent';
 import ShaderManager from './shadermanager';
 import TimeEventController from './timeevent';
 import Scene from './scene';
+import {mat4} from '../matrix'
 
 export default class Engine {
     _config: any;
