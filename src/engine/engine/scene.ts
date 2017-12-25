@@ -16,6 +16,7 @@ export default class Scene {
     }
 
     addObject(obj: Component) {
+        this.gameObjects.push(obj);
     }
 
     setCamera(camera: Camera) {
