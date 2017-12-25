@@ -95,8 +95,8 @@ export default class Engine {
         const shader = this.shaderManager.currentShader();
 
         const perspective = scene.getPerspectiveMatrix();
-        const projectLoc = shader.getProjectionMatrixLocation();
-        gl.uniformMatrix4fv(projectLoc, false, new Float32Array(perspective));
+        const projectionLoc = shader.getProjectionMatrixLocation();
+        gl.uniformMatrix4fv(projectionLoc, false, new Float32Array(perspective));
 
         scene.forEach((obj) => {
             if ('draw' in obj) {

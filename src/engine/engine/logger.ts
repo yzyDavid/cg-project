@@ -37,22 +37,22 @@ class Logger {
         }
     }
 
-    _putLog(msg: string, level: Level, fn: (msg: string) => void) {
+    private putLog(msg: string, level: Level, fn: (msg: string) => void) {
         if (level <= this.level) {
             fn("[" + this.title + "] [" + Logger.getStringByLevel(level) + "] " + msg)
         }
     }
 
     error(msg: string) {
-        this._putLog(msg, Level.ERROR, console.error);
+        this.putLog(msg, Level.ERROR, console.error);
     }
 
     info(msg: string) {
-        this._putLog(msg, Level.INFO, console.log);
+        this.putLog(msg, Level.INFO, console.log);
     }
 
     debug(msg: string) {
-        this._putLog(msg, Level.DEBUG, console.debug);
+        this.putLog(msg, Level.DEBUG, console.debug);
     }
 }
 

@@ -4,8 +4,8 @@
 import {log} from './engine';
 import Shader from './shader';
 
-import primitiveVertexShaderText from '../shaders/primitive.vert';
-import primitiveFragmentShaderText from '../shaders/primitive.frag';
+import * as primitiveVertexShaderText from '../shaders/primitive.vert';
+import * as primitiveFragmentShaderText from '../shaders/primitive.frag';
 
 export default class ShaderManager {
     private gl: WebGLRenderingContext;
@@ -22,10 +22,15 @@ export default class ShaderManager {
 
     loadDefaultShaders() {
         const gl = this.gl;
+        const vert = <string>(primitiveVertexShaderText as any);
+        const frag = <string>(primitiveFragmentShaderText as any);
+        log.debug(frag);
+        log.debug(vert);
+        log.debug(String(gl));
         this.addShader('primitive', new Shader(
             gl,
-            primitiveVertexShaderText,
-            primitiveFragmentShaderText,
+            vert,
+            frag,
             'primitive'
         ));
     }

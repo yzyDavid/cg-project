@@ -17,7 +17,7 @@ const timeController = engine.getTimeEventController();
 keyController.addListener('q', () => engine.stop());
 keyController.enable();
 
-timeController.addListener('log', () => console.log(Date.now()));
-timeController.enable();
-
 engine.start();
+
+// try to draw a demo cube here:
+

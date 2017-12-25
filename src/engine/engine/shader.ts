@@ -63,8 +63,16 @@ export default class Shader {
         log.info("success in build shader");
         this.ok = true;
         this.program = shaderProgram;
+
+        log.debug(String(attributes));
+        log.debug(String(uniforms));
+
+        this.attribLocations = {};
+        this.uniformLocations = {};
+
         // TODO: make it flexible.
         if (attributes === undefined && uniforms === undefined) {
+            log.info("shader init: load default locations.");
             this.initAttribLocationsForPrimitive();
             this.attributes = ['aVertexLocation', 'aVertexColor'];
             this.uniforms = ['uModelViewMatrix', 'uProjectionMatrix'];

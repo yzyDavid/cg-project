@@ -1,6 +1,7 @@
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
+// noinspection JSUnresolvedVariable
 module.exports = {
     devtool: "cheap-module-source-map",
     entry: __dirname + '/src/index.ts',
@@ -65,4 +66,4 @@ module.exports = {
             template: 'public/index.html'
         }),
     ]
-}
+};
