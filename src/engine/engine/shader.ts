@@ -74,7 +74,7 @@ export default class Shader {
         if (attributes === undefined && uniforms === undefined) {
             log.info("shader init: load default locations.");
             this.initAttribLocationsForPrimitive();
-            this.attributes = ['aVertexLocation', 'aVertexColor'];
+            this.attributes = ['aVertexPosition', 'aVertexColor'];
             this.uniforms = ['uModelViewMatrix', 'uProjectionMatrix'];
         }
         return this;
@@ -84,7 +84,7 @@ export default class Shader {
     private initAttribLocationsForPrimitive() {
         const gl = this.gl;
 
-        this.attribLocations['aVertexLocation'] = gl.getAttribLocation(this.program, 'aVertexLocation');
+        this.attribLocations['aVertexPosition'] = gl.getAttribLocation(this.program, 'aVertexPosition');
         this.attribLocations['aVertexColor'] = gl.getAttribLocation(this.program, 'aVertexColor');
 
         this.uniformLocations['uModelViewMatrix'] = gl.getUniformLocation(this.program, 'uModelViewMatrix');
@@ -121,5 +121,7 @@ export default class Shader {
 
     use(): void {
         this.gl.useProgram(this.program);
+        const a = this.gl.getProgramParameter(this.program, this.gl.ACTIVE_ATTRIBUTES);
+        log.debug(a);
     }
 }

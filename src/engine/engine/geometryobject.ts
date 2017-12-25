@@ -8,12 +8,19 @@ import {Pos} from './public';
 import Shader from './shader';
 import {mat, mat4} from '../matrix';
 import {log} from './engine';
+import Scene from "./scene";
 
 // a demo object.
 export default class GeometryObject extends IncolliableObject implements Drawable {
     protected vertices: number[];
     protected indices: number[];
     protected colors: number[];
+
+    protected bufferCreated: boolean;
+
+    protected vertexBuffer: WebGLBuffer;
+    protected colorBuffer: WebGLBuffer;
+    protected indexBuffer: WebGLBuffer;
 
     constructor(pos: Pos,
                 vertices: number[],
@@ -23,33 +30,63 @@ export default class GeometryObject extends IncolliableObject implements Drawabl
         this.vertices = vertices;
         this.indices = indices;
         this.colors = colors;
+        this.bufferCreated = false;
     }
 
-    draw(gl: WebGLRenderingContext, shader: Shader, modelMatrix: mat) {
-        const mvLoc = shader.getModelViewMatrixLocation();
-        const mvMat = mat4.eyes();
-        gl.uniformMatrix4fv(mvLoc, false, new Float32Array(mvMat));
+    protected createBuffers(gl: WebGLRenderingContext) {
+        this.vertexBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW);
+
+        this.colorBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.colors), gl.STATIC_DRAW);
+
+        this.indexBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.indices), gl.STATIC_DRAW);
+
+        log.debug(new Float32Array(this.vertices).length);
+
+        log.debug(this.vertices.length);
+        log.debug(this.colors.length);
+        log.debug(this.indices.length);
+    }
+
+    protected deleteBuffers() {
+    }
+
+    draw(gl: WebGLRenderingContext, shader: Shader, scene: Scene, program: WebGLProgram, modelMatrix: mat) {
+
+        if (!this.bufferCreated) {
+            this.createBuffers(gl);
+            this.bufferCreated = true;
+        }
 
         const attribLocs = shader.getAttribLocations();
-        const loc = attribLocs['aVertexLocation'];
+        const loc = attribLocs['aVertexPosition'];
         const clr = attribLocs['aVertexColor'];
-        const vertexCount = this.indices.length;
+        const vertexCount = 4;
 
-        const vertexBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW);
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
         gl.vertexAttribPointer(loc, 3, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(loc);
 
-        const colorBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.colors), gl.STATIC_DRAW);
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
         gl.vertexAttribPointer(clr, 4, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(clr);
 
-        const indexBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.indices), gl.STATIC_DRAW);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+
+        gl.useProgram(program);
+
+        const perspective = scene.getPerspectiveMatrix();
+        const projectionLoc = shader.getProjectionMatrixLocation();
+        gl.uniformMatrix4fv(projectionLoc, false, new Float32Array(perspective));
+
+        const mvLoc = shader.getModelViewMatrixLocation();
+        const mvMat = mat4.eyes();
+        gl.uniformMatrix4fv(mvLoc, false, new Float32Array(mvMat));
 
         gl.drawElements(gl.TRIANGLES, vertexCount, gl.UNSIGNED_SHORT, 0);
     }
@@ -95,7 +132,7 @@ export function makeDemoCube() {
     ];
 
     const faceColors = [
-        [1.0, 1.0, 1.0, 1.0],    // Front face: white
+        [0.7, 0.7, 0.3, 1.0],    // Front face: white - modified
         [1.0, 0.0, 0.0, 1.0],    // Back face: red
         [0.0, 1.0, 0.0, 1.0],    // Top face: green
         [0.0, 0.0, 1.0, 1.0],    // Bottom face: blue
@@ -112,8 +149,10 @@ export function makeDemoCube() {
         20, 21, 22, 20, 22, 23,   // left
     ];
 
-    const colors: number[] = [];
-    faceColors.forEach(v => colors.push(v[0], v[1], v[2], v[3]));
+    let colors: number[] = [];
+    faceColors.forEach(v => {
+        colors = colors.concat(v, v, v, v);
+    });
 
     return new GeometryObject([0.0, 0.0, 0.0], positions, indices, colors);
 }
