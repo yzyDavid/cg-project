@@ -3,7 +3,7 @@
  */
 
 export default class TimeEventController {
-    _callbacks: object;
+    _callbacks: { [key: string]: () => void };
     _enabled: boolean;
 
     constructor() {
@@ -11,11 +11,11 @@ export default class TimeEventController {
         this._enabled = true;
     }
 
-    addListener(name, action) {
+    addListener(name: string, action: () => void) {
         this._callbacks[name] = action;
     }
 
-    removeListener(name) {
+    removeListener(name: string) {
         this._callbacks[name] = undefined;
     }
 
@@ -33,11 +33,11 @@ export default class TimeEventController {
         this._enabled = false;
     }
 
-    isEnabled() {
+    isEnabled(): boolean {
         return this._enabled;
     }
 
-    getCallback() {
+    getCallback(): () => void {
         return () => {
             for (let name in this._callbacks) {
                 if (this._callbacks.hasOwnProperty(name)) {
