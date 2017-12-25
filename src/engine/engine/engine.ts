@@ -101,7 +101,7 @@ export default class Engine {
         scene.forEach((obj) => {
             if ('draw' in obj) {
                 const d = <Drawable>(obj as any);
-                d.draw();
+                d.draw(gl, shader);
             }
         });
     }

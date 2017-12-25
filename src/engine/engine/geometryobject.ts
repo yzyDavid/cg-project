@@ -3,8 +3,10 @@
  */
 
 import IncolliableObject from './incolliableobject';
-import {Drawable} from "./component";
-import {Pos} from "./public";
+import {Drawable} from './component';
+import {Pos} from './public';
+import Shader from './shader';
+import {mat} from '../matrix';
 
 export default class GeometryObject extends IncolliableObject implements Drawable {
     protected vertices: number[];
@@ -21,6 +23,6 @@ export default class GeometryObject extends IncolliableObject implements Drawabl
         this.colors = colors;
     }
 
-    draw() {
+    draw(gl: WebGLRenderingContext, shader: Shader, modelMatrix: mat) {
     }
 }

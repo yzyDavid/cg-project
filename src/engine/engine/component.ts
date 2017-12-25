@@ -4,6 +4,7 @@
 
 import {Pos} from './public';
 import {mat} from '../matrix';
+import Shader from './shader';
 
 /**
  * Drawable or interactive with the scene Object
@@ -20,7 +21,7 @@ export class Component {
 }
 
 export interface Drawable {
-    draw(modelMatrix?: mat): void;
+    draw(gl: WebGLRenderingContext, shader: Shader, modelMatrix?: mat): void;
 }
 
 // TODO: maybe removed.
@@ -45,5 +46,5 @@ export class Barrier extends Colliable {
 
 // visible and colliable
 export abstract class BoxObject extends Colliable implements Drawable {
-    abstract draw(modelMatrix?: mat): void
+    abstract draw(gl: WebGLRenderingContext, shader: Shader, modelMatrix?: mat): void
 }
