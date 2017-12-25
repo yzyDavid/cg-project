@@ -10,3 +10,4 @@ declare module "*.geom" {
     const content: string;
     export default content;
 }
+

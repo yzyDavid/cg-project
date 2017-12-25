@@ -2,6 +2,8 @@
  * created by Zhenyun Yu.
  */
 
+import {Pos} from "./public";
+
 /**
  * Drawable or interactive with the scene Object
  *
@@ -9,9 +11,9 @@
  *
  */
 export class Component {
-    _position: [number, number, number];
+    _position: Pos;
 
-    constructor(position) {
+    constructor(position: Pos) {
         this._position = position;
     }
 }
@@ -39,5 +41,7 @@ export class Incolliable extends Component {
 export class Barrier extends Colliable {
 }
 
-export class BoxObject extends Colliable {
+export class BoxObject extends Colliable implements Drawable {
+    draw(): void {
+    }
 }

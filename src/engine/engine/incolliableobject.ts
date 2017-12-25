@@ -3,9 +3,9 @@
  */
 
 
-import {Incolliable, Model} from './component';
+import {Drawable, Incolliable, Model} from './component';
 
-export default class IncolliableObject extends Incolliable {
+export default class IncolliableObject extends Incolliable implements Drawable {
     _model: Model;
 
     constructor(pos, model) {

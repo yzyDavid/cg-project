@@ -2,7 +2,13 @@
  * created by Zhenyun Yu.
  */
 
-export default class Camera {
-    constructor() {}
-    attachTo(component) {}
+import {Component} from "./component";
+
+export default class Camera extends Component {
+    constructor(pos) {
+        super(pos)
+    }
+
+    attachTo(component: Component) {
+    }
 }
