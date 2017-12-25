@@ -28,13 +28,13 @@ export class Model {
 }
 
 export class Colliable extends Component {
-    constructor(position) {
+    constructor(position: Pos) {
         super(position);
     }
 }
 
 export class Incolliable extends Component {
-    constructor(position) {
+    constructor(position: Pos) {
         super(position);
     }
 }

@@ -12,18 +12,18 @@ class Logger {
     private title: string;
     private level: number;
 
-    static getStringByLevel(level) {
+    static getStringByLevel(level: Level) {
         return Level[level];
     }
 
-    constructor(title, level) {
+    constructor(title: string, level: Level) {
         this.title = "Logger";
         this.level = Level.INFO;
         this.setPrintLevel(level);
         this.setTitle(title);
     }
 
-    setPrintLevel(level) {
+    setPrintLevel(level: Level) {
         if (level >= 0 && level <= Level.DEBUG) {
             this.level = Number(level)
         } else {
@@ -31,34 +31,34 @@ class Logger {
         }
     }
 
-    setTitle(title) {
+    setTitle(title: string) {
         if (title) {
             this.title = title
         }
     }
 
-    _putLog(msg, level, fn) {
+    _putLog(msg: string, level: Level, fn: (msg: string) => void) {
         if (level <= this.level) {
             fn("[" + this.title + "] [" + Logger.getStringByLevel(level) + "] " + msg)
         }
     }
 
-    error(msg) {
+    error(msg: string) {
         this._putLog(msg, Level.ERROR, console.error);
     }
 
-    info(msg) {
+    info(msg: string) {
         this._putLog(msg, Level.INFO, console.log);
     }
 
-    debug(msg) {
+    debug(msg: string) {
         this._putLog(msg, Level.DEBUG, console.debug);
     }
 }
 
 export {Logger, Level};
 
-export default function getLogger(title, level) {
+export default function getLogger(title: string, level: Level) {
     if (!level) {
         level = Level.DEBUG;
     }

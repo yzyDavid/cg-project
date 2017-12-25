@@ -14,7 +14,7 @@ export default class Scene {
         this.gameObjects = [];
     }
 
-    addObject(obj) {
+    addObject(obj: Component) {
     }
 
     setCamera(camera: Camera) {
@@ -25,7 +25,7 @@ export default class Scene {
         return this.camera;
     }
 
-    forEach(func) {
+    forEach(func: (o: Component) => void) {
         this.gameObjects.forEach(func);
     }
 

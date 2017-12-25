@@ -2,7 +2,7 @@
  * created by Zhenyun Yu.
  */
 
-export const defaultEngineConfig = (): object => {
+export const defaultEngineConfig = (): {[entry: string]: any} => {
     return {
         shader: 'primitive',
         glFlags: []

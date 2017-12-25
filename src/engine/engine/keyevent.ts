@@ -3,9 +3,9 @@
  */
 
 export default class KeyEventController {
-    private callbacks: object;
+    private callbacks: {[keyName: string]: (e?: KeyboardEvent) => void};
     private enabled: boolean;
-    private listener: (Event) => void;
+    private listener: (e?: KeyboardEvent) => void;
 
     constructor() {
         this.callbacks = {};
@@ -18,11 +18,11 @@ export default class KeyEventController {
         };
     }
 
-    addListener(key, action) {
+    addListener(key: string, action: (e?: KeyboardEvent) => void) {
         this.callbacks[key] = action;
     }
 
-    removeListener(key) {
+    removeListener(key: string) {
         this.callbacks[key] = undefined;
     }
 

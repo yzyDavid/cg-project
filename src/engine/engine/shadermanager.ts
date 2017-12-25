@@ -9,7 +9,7 @@ import primitiveFragmentShaderText from '../shaders/primitive.frag';
 
 export default class ShaderManager {
     private gl: WebGLRenderingContext;
-    private shaders: object;
+    private shaders: { [key: string]: Shader };
 
     constructor(gl: WebGLRenderingContext, loadDefaults?: boolean) {
         this.gl = gl;
@@ -29,15 +29,11 @@ export default class ShaderManager {
         ));
     }
 
-    addShader(name, shader) {
-        if (shader instanceof Shader) {
-            if (!this.shaders[name]) {
-                this.shaders[name] = shader;
-            } else {
-                log.error("shader exists");
-            }
+    addShader(name: string, shader: Shader) {
+        if (!this.shaders[name]) {
+            this.shaders[name] = shader;
         } else {
-            log.error("not a instance of Shader class");
+            log.error("shader exists");
         }
     }
 
@@ -51,7 +47,7 @@ export default class ShaderManager {
         }
     }
 
-    getShader(name) {
+    getShader(name: string) {
         return this.shaders[name];
     }
 }

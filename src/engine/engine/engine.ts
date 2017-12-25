@@ -9,6 +9,7 @@ import ShaderManager from './shadermanager';
 import TimeEventController from './timeevent';
 import Scene from './scene';
 import {mat4} from '../matrix'
+import {Drawable} from "./component";
 
 export default class Engine {
     private config: any;
@@ -22,7 +23,7 @@ export default class Engine {
     private then: number;
     private animationRequest: number;
 
-    constructor(scene: Scene, canvas: HTMLCanvasElement, config: object) {
+    constructor(scene: Scene, canvas: HTMLCanvasElement, config: { [entry: string]: any }) {
         const _conf = defaultEngineConfig();
         for (let conf in config) {
             if (config.hasOwnProperty(conf)) {
@@ -70,30 +71,31 @@ export default class Engine {
         this.shaderManager.useShader(this.config.shader);
 
         log.info("engine started");
-        this.animationRequest = window.requestAnimationFrame(this._render.bind(this));
+        this.animationRequest = window.requestAnimationFrame(this.render.bind(this));
     }
 
     stop() {
         window.cancelAnimationFrame(this.animationRequest);
     }
 
-    _render(now: number) {
+    private render(now: number) {
         now *= 0.001;
         const deltaTime = now - this.then;
         this.then = now;
-        this._draw(deltaTime);
+        this.draw(deltaTime);
         if (this.timeEventController.isEnabled()) {
             this.timeEventController.getCallback()();
         }
-        this.animationRequest = window.requestAnimationFrame(this._render.bind(this));
+        this.animationRequest = window.requestAnimationFrame(this.render.bind(this));
     }
 
-    _draw(deltaTime: number) {
+    private draw(deltaTime: number) {
         const gl = this.gl;
         const scene = this.scene;
         scene.forEach((obj) => {
-            if (obj.draw !== undefined) {
-                obj.draw();
+            if ('draw' in obj) {
+                const d = <Drawable>(obj as any);
+                d.draw();
             }
         });
     }

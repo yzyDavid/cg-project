@@ -3,9 +3,10 @@
  */
 
 import {Component} from "./component";
+import {Pos} from './public';
 
 export class Lighting extends Component {
-    constructor(pos) {
+    constructor(pos: Pos) {
         super(pos)
     }
 }

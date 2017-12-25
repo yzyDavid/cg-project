@@ -11,7 +11,7 @@ export default class GeometryObject extends IncolliableObject implements Drawabl
     protected elements: number[];
     protected colors: number[];
 
-    constructor(pos, vertices) {
+    constructor(pos: Pos, vertices: number[]) {
         super(pos, undefined);
         this.vertices = vertices;
     }
