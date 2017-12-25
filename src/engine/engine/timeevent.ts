@@ -3,45 +3,45 @@
  */
 
 export default class TimeEventController {
-    _callbacks: { [key: string]: () => void };
-    _enabled: boolean;
+    private callbacks: { [key: string]: () => void };
+    private enabled: boolean;
 
     constructor() {
-        this._callbacks = {};
-        this._enabled = true;
+        this.callbacks = {};
+        this.enabled = true;
     }
 
     addListener(name: string, action: () => void) {
-        this._callbacks[name] = action;
+        this.callbacks[name] = action;
     }
 
     removeListener(name: string) {
-        this._callbacks[name] = undefined;
+        this.callbacks[name] = undefined;
     }
 
     enable() {
-        if (this._enabled) {
+        if (this.enabled) {
             return;
         }
-        this._enabled = true;
+        this.enabled = true;
     }
 
     disable() {
-        if (!this._enabled) {
+        if (!this.enabled) {
             return;
         }
-        this._enabled = false;
+        this.enabled = false;
     }
 
     isEnabled(): boolean {
-        return this._enabled;
+        return this.enabled;
     }
 
     getCallback(): () => void {
         return () => {
-            for (let name in this._callbacks) {
-                if (this._callbacks.hasOwnProperty(name)) {
-                    this._callbacks[name]();
+            for (let name in this.callbacks) {
+                if (this.callbacks.hasOwnProperty(name)) {
+                    this.callbacks[name]();
                 }
             }
         }

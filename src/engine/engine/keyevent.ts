@@ -3,47 +3,47 @@
  */
 
 export default class KeyEventController {
-    _callbacks: object;
-    _enabled: boolean;
-    _listener: (Event) => void;
+    private callbacks: object;
+    private enabled: boolean;
+    private listener: (Event) => void;
 
     constructor() {
-        this._callbacks = {};
-        this._enabled = false;
-        this._listener = (event) => {
+        this.callbacks = {};
+        this.enabled = false;
+        this.listener = (event) => {
             const keyName = event.key;
-            if (this._callbacks[keyName] !== undefined) {
-                this._callbacks[keyName](event);
+            if (this.callbacks[keyName] !== undefined) {
+                this.callbacks[keyName](event);
             }
         };
     }
 
     addListener(key, action) {
-        this._callbacks[key] = action;
+        this.callbacks[key] = action;
     }
 
     removeListener(key) {
-        this._callbacks[key] = undefined;
+        this.callbacks[key] = undefined;
     }
 
     enable() {
-        if (this._enabled) {
+        if (this.enabled) {
             return;
         }
-        document.addEventListener('keydown', this._listener);
-        this._enabled = true;
+        document.addEventListener('keydown', this.listener);
+        this.enabled = true;
     }
 
     disable() {
-        if (!this._enabled) {
+        if (!this.enabled) {
             return;
         }
-        document.removeEventListener('keydown', this._listener);
-        this._enabled = false;
+        document.removeEventListener('keydown', this.listener);
+        this.enabled = false;
     }
 
     isEnabled() {
-        return this._enabled;
+        return this.enabled;
     }
 }
 

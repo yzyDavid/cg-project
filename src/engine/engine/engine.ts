@@ -11,16 +11,16 @@ import Scene from './scene';
 import {mat4} from '../matrix'
 
 export default class Engine {
-    _config: any;
-    _scene: Scene;
-    _canvas: HTMLCanvasElement;
-    _keyEventController: KeyEventController;
-    _timeEventController: TimeEventController;
-    _shaderManager: ShaderManager;
-    _gl: WebGLRenderingContext;
-    _startTime: number;
-    _then: number;
-    _animationRequest: number;
+    private config: any;
+    private scene: Scene;
+    private canvas: HTMLCanvasElement;
+    private keyEventController: KeyEventController;
+    private timeEventController: TimeEventController;
+    private shaderManager: ShaderManager;
+    private gl: WebGLRenderingContext;
+    private startTime: number;
+    private then: number;
+    private animationRequest: number;
 
     constructor(scene: Scene, canvas: HTMLCanvasElement, config: object) {
         const _conf = defaultEngineConfig();
@@ -29,9 +29,9 @@ export default class Engine {
                 _conf[conf] = config[conf];
             }
         }
-        this._config = _conf;
-        this._scene = scene;
-        this._canvas = canvas;
+        this.config = _conf;
+        this.scene = scene;
+        this.canvas = canvas;
         let gl;
         try {
             gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
@@ -43,8 +43,8 @@ export default class Engine {
             log.error('init webGL failed!');
             return this;
         }
-        this._gl = gl;
-        this._keyEventController = new KeyEventController();
+        this.gl = gl;
+        this.keyEventController = new KeyEventController();
         log.info("engine constructed");
     }
 
@@ -54,10 +54,10 @@ export default class Engine {
     }
 
     start() {
-        const gl = this._gl;
+        const gl = this.gl;
 
-        this._startTime = Date.now();
-        this._then = this._startTime * 0.001;
+        this.startTime = Date.now();
+        this.then = this.startTime * 0.001;
 
         gl.clearColor(0.4, 0.4, 0.4, 1.0);
         gl.clearDepth(1.0);
@@ -65,30 +65,30 @@ export default class Engine {
         gl.depthFunc(gl.LEQUAL);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        this._shaderManager.useShader(this._config.shader);
+        this.shaderManager.useShader(this.config.shader);
 
         log.info("engine started");
-        this._animationRequest = window.requestAnimationFrame(this._render.bind(this));
+        this.animationRequest = window.requestAnimationFrame(this._render.bind(this));
     }
 
     stop() {
-        window.cancelAnimationFrame(this._animationRequest);
+        window.cancelAnimationFrame(this.animationRequest);
     }
 
     _render(now: number) {
         now *= 0.001;
-        const deltaTime = now - this._then;
-        this._then = now;
+        const deltaTime = now - this.then;
+        this.then = now;
         this._draw(deltaTime);
-        if (this._timeEventController.isEnabled()) {
-            this._timeEventController.getCallback()();
+        if (this.timeEventController.isEnabled()) {
+            this.timeEventController.getCallback()();
         }
-        this._animationRequest = window.requestAnimationFrame(this._render.bind(this));
+        this.animationRequest = window.requestAnimationFrame(this._render.bind(this));
     }
 
     _draw(deltaTime: number) {
-        const gl = this._gl;
-        const scene = this._scene;
+        const gl = this.gl;
+        const scene = this.scene;
         scene.forEach((obj) => {
             if (obj.draw !== undefined) {
                 obj.draw();
@@ -97,19 +97,19 @@ export default class Engine {
     }
 
     getStartTime() {
-        return this._startTime;
+        return this.startTime;
     }
 
     getScene() {
-        return this._scene;
+        return this.scene;
     }
 
     getKeyEventController() {
-        return this._keyEventController;
+        return this.keyEventController;
     }
 
     getTimeEventController() {
-        return this._timeEventController;
+        return this.timeEventController;
     }
 }
 

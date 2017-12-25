@@ -11,10 +11,10 @@ import {Pos} from "./public";
  *
  */
 export class Component {
-    _position: Pos;
+    protected position: Pos;
 
     constructor(position: Pos) {
-        this._position = position;
+        this.position = position;
     }
 }
 

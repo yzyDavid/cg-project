@@ -4,16 +4,29 @@
 import {log} from './engine'
 
 export default class Shader {
-    _gl: WebGLRenderingContext;
-    _ok: boolean;
-    _program: WebGLProgram;
+    protected gl: WebGLRenderingContext;
+    private ok: boolean;
+    private readonly program: WebGLProgram;
 
-    constructor(gl, vert, frag, optional) {
+    // TODO: init them
+    protected readonly attribLocations: { [key: string]: number };
+    protected readonly uniformLocations: { [key: string]: WebGLUniformLocation };
+    private readonly name: string;
+
+    protected readonly attributes: string[];
+    protected readonly uniforms: string[];
+
+    constructor(gl: WebGLRenderingContext, vert: string, frag: string, name?: string, attributes?: string[], uniforms?: string[], optional?: object) {
         if (optional) {
             log.error("optional shaders are not implemented");
         }
-        this._gl = gl;
-        this._ok = false;
+        if (name) {
+            this.name = name;
+        } else {
+            this.name = 'BaseShader';
+        }
+        this.gl = gl;
+        this.ok = false;
         const vertShader = gl.createShader(gl.VERTEX_SHADER);
         const fragShader = gl.createShader(gl.FRAGMENT_SHADER);
         gl.shaderSource(vertShader, vert);
@@ -39,24 +52,47 @@ export default class Shader {
         }
 
         log.info("success in build shader");
-        this._ok = true;
-        this._program = shaderProgram;
+        this.ok = true;
+        this.program = shaderProgram;
+        // TODO: make it flexible.
+        if (attributes === undefined && uniforms === undefined) {
+            this.initAttribLocationsForPrimitive();
+        }
         return this;
     }
 
+    // TODO: refactor here.
+    private initAttribLocationsForPrimitive() {
+        const gl = this.gl;
+
+        this.attribLocations['aVertexLocation'] = gl.getAttribLocation(this.program, 'aVertexLocation');
+        this.attribLocations['aVertexColor'] = gl.getAttribLocation(this.program, 'aVertexColor');
+
+        this.uniformLocations['uModelViewMatrix'] = gl.getUniformLocation(this.program, 'uModelViewMatrix');
+        this.uniformLocations['uProjectionMatrix'] = gl.getUniformLocation(this.program, 'uProjectionMatrix');
+    }
+
+    getAttribLocations() {
+        return this.attribLocations;
+    }
+
+    getUniformLocations() {
+        return this.uniformLocations;
+    }
+
     getShaderProgram(): WebGLProgram {
-        if (!this._ok) {
+        if (!this.ok) {
             log.error("getting invalid shader");
             return;
         }
-        return this._program;
+        return this.program;
     }
 
     valid(): boolean {
-        return this._ok;
+        return this.ok;
     }
 
     use(): void {
-        this._gl.useProgram(this._program);
+        this.gl.useProgram(this.program);
     }
 }

@@ -9,26 +9,23 @@ enum Level {
 }
 
 class Logger {
-    ERROR: number;
-    INFO: number = 1;
-    DEBUG: number;
-    _title: string;
-    _level: number;
+    private title: string;
+    private level: number;
 
     static getStringByLevel(level) {
         return Level[level];
     }
 
     constructor(title, level) {
-        this._title = "Logger";
-        this._level = Level.INFO;
+        this.title = "Logger";
+        this.level = Level.INFO;
         this.setPrintLevel(level);
         this.setTitle(title);
     }
 
     setPrintLevel(level) {
         if (level instanceof Number) {
-            this._level = Number(level)
+            this.level = Number(level)
         } else {
             throw new DOMException();
         }
@@ -36,13 +33,13 @@ class Logger {
 
     setTitle(title) {
         if (title) {
-            this._title = title
+            this.title = title
         }
     }
 
     _putLog(msg, level, fn) {
-        if (level <= this._level) {
-            fn("[" + this._title + "] [" + Logger.getStringByLevel(level) + "] " + msg)
+        if (level <= this.level) {
+            fn("[" + this.title + "] [" + Logger.getStringByLevel(level) + "] " + msg)
         }
     }
 

@@ -7,13 +7,13 @@ import {Drawable} from "./component";
 import {Pos} from "./public";
 
 export default class GeometryObject extends IncolliableObject implements Drawable {
-    _vertices: number[];
-    _elements: number[];
-    _colors: number[];
+    protected vertices: number[];
+    protected elements: number[];
+    protected colors: number[];
 
     constructor(pos, vertices) {
         super(pos, undefined);
-        this._vertices = vertices;
+        this.vertices = vertices;
     }
 
     draw() {

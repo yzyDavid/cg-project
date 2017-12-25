@@ -6,12 +6,12 @@ import Camera from "./camera";
 import {Component} from "./component";
 
 export default class Scene {
-    _camera: Camera;
-    _gameObjects: Component[];
+    private camera: Camera;
+    private gameObjects: Component[];
 
     constructor() {
-        this._camera = null;
-        this._gameObjects = [];
+        this.camera = null;
+        this.gameObjects = [];
     }
 
     addObject(obj) {
@@ -24,7 +24,7 @@ export default class Scene {
     }
 
     forEach(func) {
-        this._gameObjects.forEach(func);
+        this.gameObjects.forEach(func);
     }
 
     draw() {

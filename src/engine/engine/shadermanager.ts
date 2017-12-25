@@ -8,31 +8,31 @@ import primitiveVertexShaderText from '../shaders/primitive.vert';
 import primitiveFragmentShaderText from '../shaders/primitive.frag';
 
 export default class ShaderManager {
-    _gl: WebGLRenderingContext;
-    _shaders: object;
+    private gl: WebGLRenderingContext;
+    private shaders: object;
 
     constructor(gl, loadDefaults) {
-        this._gl = gl;
-        this._shaders = {};
+        this.gl = gl;
+        this.shaders = {};
         if (loadDefaults || loadDefaults === undefined) {
             this.loadDefaultShaders();
         }
     }
 
     loadDefaultShaders() {
-        const gl = this._gl;
+        const gl = this.gl;
         this.addShader('primitive', new Shader(
             gl,
             primitiveVertexShaderText,
             primitiveFragmentShaderText,
-            null
+            'primitive'
         ));
     }
 
     addShader(name, shader) {
         if (shader instanceof Shader) {
-            if (!this._shaders[name]) {
-                this._shaders[name] = shader;
+            if (!this.shaders[name]) {
+                this.shaders[name] = shader;
             } else {
                 log.error("shader exists");
             }
@@ -42,8 +42,8 @@ export default class ShaderManager {
     }
 
     useShader(name: string) {
-        const gl = this._gl;
-        const shader = this._shaders[name];
+        const gl = this.gl;
+        const shader = this.shaders[name];
         if (shader) {
             shader.use();
         } else {
@@ -52,6 +52,6 @@ export default class ShaderManager {
     }
 
     getShader(name) {
-        return this._shaders[name];
+        return this.shaders[name];
     }
 }
