@@ -23,8 +23,8 @@ export interface Drawable {
     draw(modelMatrix?: mat): void;
 }
 
+// TODO: maybe removed.
 export class Model {
-
 }
 
 export class Colliable extends Component {
@@ -39,9 +39,11 @@ export class Incolliable extends Component {
     }
 }
 
+// invisible but colliable
 export class Barrier extends Colliable {
 }
 
+// visible and colliable
 export abstract class BoxObject extends Colliable implements Drawable {
     abstract draw(modelMatrix?: mat): void
 }

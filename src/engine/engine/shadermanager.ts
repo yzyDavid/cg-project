@@ -10,6 +10,7 @@ import primitiveFragmentShaderText from '../shaders/primitive.frag';
 export default class ShaderManager {
     private gl: WebGLRenderingContext;
     private shaders: { [key: string]: Shader };
+    private currentName: string;
 
     constructor(gl: WebGLRenderingContext, loadDefaults?: boolean) {
         this.gl = gl;
@@ -42,9 +43,14 @@ export default class ShaderManager {
         const shader = this.shaders[name];
         if (shader) {
             shader.use();
+            this.currentName = name;
         } else {
             log.error("shader " + name + " not found");
         }
+    }
+
+    currentShader(): Shader {
+        return this.shaders[this.currentName];
     }
 
     getShader(name: string) {

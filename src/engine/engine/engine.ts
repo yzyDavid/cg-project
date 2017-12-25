@@ -92,6 +92,12 @@ export default class Engine {
     private draw(deltaTime: number) {
         const gl = this.gl;
         const scene = this.scene;
+        const shader = this.shaderManager.currentShader();
+
+        const perspective = scene.getPerspectiveMatrix();
+        const projectLoc = shader.getProjectionMatrixLocation();
+        gl.uniformMatrix4fv(projectLoc, false, new Float32Array(perspective));
+
         scene.forEach((obj) => {
             if ('draw' in obj) {
                 const d = <Drawable>(obj as any);

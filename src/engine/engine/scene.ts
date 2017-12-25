@@ -2,8 +2,9 @@
  * created by Zhenyun Yu.
  */
 
-import Camera from "./camera";
-import {Component} from "./component";
+import Camera from './camera';
+import {Component} from './component';
+import {mat, mat4} from '../matrix';
 
 export default class Scene {
     private camera: Camera;
@@ -23,6 +24,14 @@ export default class Scene {
 
     getCamera(): Camera {
         return this.camera;
+    }
+
+    getPerspectiveMatrix(): mat {
+        if(this.camera) {
+            return this.camera.getPerspectiveMatrix();
+        } else {
+            return mat4.eyes();
+        }
     }
 
     forEach(func: (o: Component) => void) {

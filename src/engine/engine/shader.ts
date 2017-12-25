@@ -3,6 +3,9 @@
  */
 import {log} from './engine'
 
+/*
+ * write new shaders with the convention here, or subclass this class.
+ */
 export default class Shader {
     protected gl: WebGLRenderingContext;
     private ok: boolean;
@@ -16,7 +19,13 @@ export default class Shader {
     protected readonly attributes: string[];
     protected readonly uniforms: string[];
 
-    constructor(gl: WebGLRenderingContext, vert: string, frag: string, name?: string, attributes?: string[], uniforms?: string[], optional?: object) {
+    constructor(gl: WebGLRenderingContext,
+                vert: string,
+                frag: string,
+                name?: string,
+                attributes?: string[],
+                uniforms?: string[],
+                optional?: object) {
         if (optional) {
             log.error("optional shaders are not implemented");
         }
@@ -57,6 +66,8 @@ export default class Shader {
         // TODO: make it flexible.
         if (attributes === undefined && uniforms === undefined) {
             this.initAttribLocationsForPrimitive();
+            this.attributes = ['aVertexLocation', 'aVertexColor'];
+            this.uniforms = ['uModelViewMatrix', 'uProjectionMatrix'];
         }
         return this;
     }
@@ -78,6 +89,14 @@ export default class Shader {
 
     getUniformLocations() {
         return this.uniformLocations;
+    }
+
+    getProjectionMatrixLocation() {
+        return this.getUniformLocations()['uProjectionMatrix'];
+    }
+
+    getModelViewMatrixLocation() {
+        return this.getUniformLocations()['uModelViewMatrix'];
     }
 
     getShaderProgram(): WebGLProgram {
