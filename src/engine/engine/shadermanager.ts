@@ -8,6 +8,9 @@ import primitiveVertexShaderText from '../shaders/primitive.vert';
 import primitiveFragmentShaderText from '../shaders/primitive.frag';
 
 export default class ShaderManager {
+    _gl: WebGLRenderingContext;
+    _shaders: object;
+
     constructor(gl, loadDefaults) {
         this._gl = gl;
         this._shaders = {};
@@ -21,7 +24,8 @@ export default class ShaderManager {
         this.addShader('primitive', new Shader(
             gl,
             primitiveVertexShaderText,
-            primitiveFragmentShaderText
+            primitiveFragmentShaderText,
+            null
         ));
     }
 

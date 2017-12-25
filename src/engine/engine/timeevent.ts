@@ -3,6 +3,9 @@
  */
 
 export default class TimeEventController {
+    _callbacks: object;
+    _enabled: boolean;
+
     constructor() {
         this._callbacks = {};
         this._enabled = true;
@@ -37,7 +40,9 @@ export default class TimeEventController {
     getCallback() {
         return () => {
             for (let name in this._callbacks) {
-                this._callbacks[name]();
+                if (this._callbacks.hasOwnProperty(name)) {
+                    this._callbacks[name]();
+                }
             }
         }
     }

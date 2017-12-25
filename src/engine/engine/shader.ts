@@ -4,6 +4,10 @@
 import {log} from './engine'
 
 export default class Shader {
+    _gl: WebGLRenderingContext;
+    _ok: boolean;
+    _program: WebGLProgram;
+
     constructor(gl, vert, frag, optional) {
         if (optional) {
             log.error("optional shaders are not implemented");

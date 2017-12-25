@@ -2,26 +2,35 @@
  * created by Zhenyun Yu.
  */
 
+enum Level {
+    ERROR,
+    INFO,
+    DEBUG
+}
+
 class Logger {
+    ERROR: number;
+    INFO: number = 1;
+    DEBUG: number;
+    _title: string;
+    _level: number;
+
     static getStringByLevel(level) {
-        const dict = {
-            0: 'ERROR',
-            1: 'INFO',
-            2: 'DEBUG'
-        };
-        return dict[level];
+        return Level[level];
     }
 
     constructor(title, level) {
         this._title = "Logger";
-        this._level = Logger.INFO;
+        this._level = Level.INFO;
         this.setPrintLevel(level);
         this.setTitle(title);
     }
 
     setPrintLevel(level) {
         if (level instanceof Number) {
-            this._level = level
+            this._level = Number(level)
+        } else {
+            throw new DOMException();
         }
     }
 
@@ -31,35 +40,30 @@ class Logger {
         }
     }
 
-    _putLog(msg, level) {
+    _putLog(msg, level, fn) {
         if (level <= this._level) {
-            console.log("[" + this._title + "] [" + Logger.getStringByLevel(level) + "] " + msg)
+            fn("[" + this._title + "] [" + Logger.getStringByLevel(level) + "] " + msg)
         }
     }
 
     error(msg) {
-        this._putLog(msg, Logger.ERROR);
+        this._putLog(msg, Level.ERROR, console.error);
     }
 
     info(msg) {
-        this._putLog(msg, Logger.INFO);
+        this._putLog(msg, Level.INFO, console.log);
     }
 
     debug(msg) {
-        this._putLog(msg, Logger.DEBUG);
+        this._putLog(msg, Level.DEBUG, console.debug);
     }
 }
 
-Logger.ERROR = 0;
-Logger.INFO = 1;
-Logger.DEBUG = 2;
-
-
-export {Logger};
+export {Logger, Level};
 
 export default function getLogger(title, level) {
     if (!level) {
-        level = Logger.DEBUG;
+        level = Level.DEBUG;
     }
     return new Logger(title, level)
 }

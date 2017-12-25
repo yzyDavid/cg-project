@@ -9,9 +9,19 @@
  *
  */
 export class Component {
+    _position: [number, number, number];
+
     constructor(position) {
         this._position = position;
     }
+}
+
+export interface Drawable {
+    draw(): void;
+}
+
+export class Model {
+
 }
 
 export class Colliable extends Component {

@@ -3,6 +3,10 @@
  */
 
 export default class KeyEventController {
+    _callbacks: object;
+    _enabled: boolean;
+    _listener: (Event) => void;
+
     constructor() {
         this._callbacks = {};
         this._enabled = false;

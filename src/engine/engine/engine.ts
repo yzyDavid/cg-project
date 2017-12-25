@@ -2,7 +2,7 @@
  * created by Zhenyun Yu.
  */
 
-import getLogger, {Logger} from './logger'
+import getLogger, {Level, Logger} from './logger'
 import {defaultEngineConfig} from './config';
 import KeyEventController from './keyevent';
 import ShaderManager from './shadermanager';
@@ -112,6 +112,6 @@ export default class Engine {
     }
 }
 
-const log = getLogger('ENGINE', Logger.DEBUG);
+const log = getLogger('ENGINE', Level.DEBUG);
 
 export {log};
