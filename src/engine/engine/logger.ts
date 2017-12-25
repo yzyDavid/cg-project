@@ -24,7 +24,7 @@ class Logger {
     }
 
     setPrintLevel(level) {
-        if (level instanceof Number) {
+        if (level >= 0 && level <= Level.DEBUG) {
             this.level = Number(level)
         } else {
             throw new DOMException();

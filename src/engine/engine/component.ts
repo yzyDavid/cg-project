@@ -2,7 +2,8 @@
  * created by Zhenyun Yu.
  */
 
-import {Pos} from "./public";
+import {Pos} from './public';
+import {mat} from '../matrix';
 
 /**
  * Drawable or interactive with the scene Object
@@ -19,7 +20,7 @@ export class Component {
 }
 
 export interface Drawable {
-    draw(): void;
+    draw(modelMatrix?: mat): void;
 }
 
 export class Model {
@@ -42,5 +43,5 @@ export class Barrier extends Colliable {
 }
 
 export abstract class BoxObject extends Colliable implements Drawable {
-    abstract draw(): void
+    abstract draw(modelMatrix?: mat): void
 }

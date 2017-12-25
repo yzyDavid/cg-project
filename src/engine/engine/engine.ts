@@ -45,6 +45,8 @@ export default class Engine {
         }
         this.gl = gl;
         this.keyEventController = new KeyEventController();
+        this.timeEventController = new TimeEventController();
+        this.shaderManager = new ShaderManager(gl);
         log.info("engine constructed");
     }
 

@@ -11,7 +11,7 @@ export default class ShaderManager {
     private gl: WebGLRenderingContext;
     private shaders: object;
 
-    constructor(gl, loadDefaults) {
+    constructor(gl: WebGLRenderingContext, loadDefaults?: boolean) {
         this.gl = gl;
         this.shaders = {};
         if (loadDefaults || loadDefaults === undefined) {
