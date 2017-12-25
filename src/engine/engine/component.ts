@@ -41,7 +41,6 @@ export class Incolliable extends Component {
 export class Barrier extends Colliable {
 }
 
-export class BoxObject extends Colliable implements Drawable {
-    draw(): void {
-    }
+export abstract class BoxObject extends Colliable implements Drawable {
+    abstract draw(): void
 }

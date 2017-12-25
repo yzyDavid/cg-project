@@ -5,7 +5,7 @@ import './index.css';
 import {Engine, Scene} from './engine/index';
 import * as config from './config';
 
-const canvas = document.getElementById('root');
+const canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById('root');
 canvas.setAttribute('width', String(config.WIDTH));
 canvas.setAttribute('height', String(config.HEIGHT));
 

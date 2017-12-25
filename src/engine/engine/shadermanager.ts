@@ -41,7 +41,7 @@ export default class ShaderManager {
         }
     }
 
-    useShader(name) {
+    useShader(name: string) {
         const gl = this._gl;
         const shader = this._shaders[name];
         if (shader) {

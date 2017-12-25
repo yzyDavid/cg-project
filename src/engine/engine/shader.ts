@@ -44,7 +44,7 @@ export default class Shader {
         return this;
     }
 
-    getShaderProgram() {
+    getShaderProgram(): WebGLProgram {
         if (!this._ok) {
             log.error("getting invalid shader");
             return;
@@ -52,11 +52,11 @@ export default class Shader {
         return this._program;
     }
 
-    valid() {
+    valid(): boolean {
         return this._ok;
     }
 
-    use() {
+    use(): void {
         this._gl.useProgram(this._program);
     }
 }

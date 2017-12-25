@@ -18,10 +18,10 @@ export default class Engine {
     _shaderManager: ShaderManager;
     _gl: WebGLRenderingContext;
     _startTime: number;
-    _then : number;
+    _then: number;
     _animationRequest: number;
 
-    constructor(scene, canvas, config) {
+    constructor(scene: Scene, canvas: HTMLCanvasElement, config: object) {
         const _conf = defaultEngineConfig();
         for (let conf in config) {
             if (config.hasOwnProperty(conf)) {
@@ -74,7 +74,7 @@ export default class Engine {
         window.cancelAnimationFrame(this._animationRequest);
     }
 
-    _render(now) {
+    _render(now: number) {
         now *= 0.001;
         const deltaTime = now - this._then;
         this._then = now;
@@ -85,7 +85,7 @@ export default class Engine {
         this._animationRequest = window.requestAnimationFrame(this._render.bind(this));
     }
 
-    _draw(deltaTime) {
+    _draw(deltaTime: number) {
         const gl = this._gl;
         const scene = this._scene;
         scene.forEach((obj) => {
