@@ -3,10 +3,10 @@
  */
 
 import Camera from './camera';
-import {Component} from './component';
+import {Component, EnumerableChildren} from './component';
 import {mat, mat4} from '../matrix';
 
-export default class Scene {
+export default class Scene implements EnumerableChildren<Component> {
     private camera: Camera;
     private gameObjects: Component[];
 
@@ -17,6 +17,10 @@ export default class Scene {
 
     addObject(obj: Component) {
         this.gameObjects.push(obj);
+    }
+
+    removeObject(obj: Component) {
+        throw new Error();
     }
 
     setCamera(camera: Camera) {
@@ -38,7 +42,7 @@ export default class Scene {
         }
     }
 
-    forEach(func: (o: Component) => void) {
+    forEach(func: (o: Component, index?: number, array?: Component[]) => void): void {
         this.gameObjects.forEach(func);
     }
 
