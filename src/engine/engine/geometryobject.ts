@@ -7,8 +7,8 @@ import {Drawable} from './component';
 import {Pos} from './public';
 import Shader from './shader';
 import {mat, mat4} from '../matrix';
-import {log} from './engine';
-import Scene from "./scene";
+import {default as Engine, log} from './engine';
+import Scene from './scene';
 
 // a demo object.
 export default class GeometryObject extends IncolliableObject implements Drawable {
@@ -56,17 +56,18 @@ export default class GeometryObject extends IncolliableObject implements Drawabl
     protected deleteBuffers() {
     }
 
-    draw(gl: WebGLRenderingContext, shader: Shader, scene: Scene, program: WebGLProgram, modelMatrix: mat) {
-
+    draw(gl: WebGLRenderingContext, engine?: Engine, modelMatrix?: mat): void {
         if (!this.bufferCreated) {
             this.createBuffers(gl);
             this.bufferCreated = true;
         }
 
+        const shader = engine.getCurrentShader();
+
         const attribLocs = shader.getAttribLocations();
         const loc = attribLocs['aVertexPosition'];
         const clr = attribLocs['aVertexColor'];
-        const vertexCount = 4;
+        const vertexCount = this.indices.length;
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
         gl.vertexAttribPointer(loc, 3, gl.FLOAT, false, 0, 0);
@@ -77,12 +78,6 @@ export default class GeometryObject extends IncolliableObject implements Drawabl
         gl.enableVertexAttribArray(clr);
 
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-
-        gl.useProgram(program);
-
-        const perspective = scene.getPerspectiveMatrix();
-        const projectionLoc = shader.getProjectionMatrixLocation();
-        gl.uniformMatrix4fv(projectionLoc, false, new Float32Array(perspective));
 
         const mvLoc = shader.getModelViewMatrixLocation();
         const mvMat = mat4.eyes();

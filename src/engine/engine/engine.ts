@@ -9,7 +9,7 @@ import ShaderManager from './shadermanager';
 import TimeEventController from './timeevent';
 import Scene from './scene';
 import {mat4} from '../matrix'
-import {Drawable} from "./component";
+import {Drawable} from './component';
 
 export default class Engine {
     private config: any;
@@ -94,10 +94,14 @@ export default class Engine {
         const scene = this.scene;
         const shader = this.shaderManager.currentShader();
 
+        const perspective = scene.getPerspectiveMatrix();
+        const projectionLoc = shader.getProjectionMatrixLocation();
+        gl.uniformMatrix4fv(projectionLoc, false, new Float32Array(perspective));
+
         scene.forEach((obj) => {
             if ('draw' in obj) {
                 const d = <Drawable>(obj as any);
-                d.draw(gl, shader, scene, shader.getShaderProgram());
+                d.draw(gl, this);
             }
         });
     }
@@ -108,6 +112,14 @@ export default class Engine {
 
     getScene() {
         return this.scene;
+    }
+
+    getShaderManager() {
+        return this.shaderManager;
+    }
+
+    getCurrentShader() {
+        return this.shaderManager.currentShader();
     }
 
     getKeyEventController() {
