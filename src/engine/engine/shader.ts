@@ -1,7 +1,6 @@
 /*
  * created by Zhenyun Yu.
  */
-import {log} from './engine'
 
 /*
  * write new shaders with the convention here, or subclass this class.
@@ -27,7 +26,7 @@ export default class Shader {
                 uniforms?: string[],
                 optional?: object) {
         if (optional) {
-            log.error("optional shaders are not implemented");
+            console.error("optional shaders are not implemented");
         }
         if (name) {
             this.name = name;
@@ -42,12 +41,12 @@ export default class Shader {
         gl.shaderSource(fragShader, frag);
         gl.compileShader(vertShader);
         if (!gl.getShaderParameter(vertShader, gl.COMPILE_STATUS)) {
-            log.error(gl.getShaderInfoLog(vertShader));
+            console.error(gl.getShaderInfoLog(vertShader));
             return this;
         }
         gl.compileShader(fragShader);
         if (!gl.getShaderParameter(fragShader, gl.COMPILE_STATUS)) {
-            log.error(gl.getShaderInfoLog(fragShader));
+            console.error(gl.getShaderInfoLog(fragShader));
             return this;
         }
 
@@ -56,23 +55,22 @@ export default class Shader {
         gl.attachShader(shaderProgram, fragShader);
         gl.linkProgram(shaderProgram);
         if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-            log.error(gl.getProgramInfoLog(shaderProgram));
+            console.error(gl.getProgramInfoLog(shaderProgram));
             return this;
         }
 
-        log.info("success in build shader");
+        console.info("success in build shader");
         this.ok = true;
         this.program = shaderProgram;
 
-        log.debug(String(attributes));
-        log.debug(String(uniforms));
-
+        console.debug(String(attributes));
+        console.debug(String(uniforms));
         this.attribLocations = {};
         this.uniformLocations = {};
 
         // TODO: make it flexible.
         if (attributes === undefined && uniforms === undefined) {
-            log.info("shader init: load default locations.");
+            console.info("shader init: load default locations.");
             this.initAttribLocationsForPrimitive();
             this.attributes = ['aVertexPosition', 'aVertexColor'];
             this.uniforms = ['uModelViewMatrix', 'uProjectionMatrix'];
@@ -109,7 +107,7 @@ export default class Shader {
 
     getShaderProgram(): WebGLProgram {
         if (!this.ok) {
-            log.error("getting invalid shader");
+            console.error("getting invalid shader");
             return;
         }
         return this.program;
@@ -122,6 +120,6 @@ export default class Shader {
     use(): void {
         this.gl.useProgram(this.program);
         const a = this.gl.getProgramParameter(this.program, this.gl.ACTIVE_ATTRIBUTES);
-        log.debug(a);
+        console.debug(a);
     }
 }

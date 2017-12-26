@@ -2,7 +2,6 @@
  * created by Zhenyun Yu.
  */
 
-import getLogger, {Level, Logger} from './logger'
 import {defaultEngineConfig} from './config';
 import KeyEventController from './keyevent';
 import ShaderManager from './shadermanager';
@@ -37,23 +36,23 @@ export default class Engine {
         try {
             gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
         } catch (e) {
-            log.error('get canvas context failed!');
+            console.error('get canvas context failed!');
             return this;
         }
         if (!gl) {
-            log.error('init webGL failed!');
+            console.error('init webGL failed!');
             return this;
         }
         this.gl = gl;
         this.keyEventController = new KeyEventController();
         this.timeEventController = new TimeEventController();
         this.shaderManager = new ShaderManager(gl);
-        log.info("engine constructed");
+        console.info("engine constructed");
     }
 
     init() {
         //TODO: maybe removed
-        log.info("engine initialized");
+        console.info("engine initialized");
     }
 
     start() {
@@ -70,7 +69,7 @@ export default class Engine {
 
         this.shaderManager.useShader(this.config.shader);
 
-        log.info("engine started");
+        console.info("engine started");
         this.animationRequest = window.requestAnimationFrame(this.render.bind(this));
     }
 
@@ -131,6 +130,3 @@ export default class Engine {
     }
 }
 
-const log = getLogger('ENGINE', Level.DEBUG);
-
-export {log};

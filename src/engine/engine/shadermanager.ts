@@ -1,7 +1,6 @@
 /*
  * created by Zhenyun Yu.
  */
-import {log} from './engine';
 import Shader from './shader';
 
 import * as primitiveVertexShaderText from '../shaders/primitive.vert';
@@ -24,9 +23,9 @@ export default class ShaderManager {
         const gl = this.gl;
         const vert = <string>(primitiveVertexShaderText as any);
         const frag = <string>(primitiveFragmentShaderText as any);
-        log.debug(frag);
-        log.debug(vert);
-        log.debug(String(gl));
+        console.debug(frag);
+        console.debug(vert);
+        console.debug(String(gl));
         this.addShader('primitive', new Shader(
             gl,
             vert,
@@ -39,7 +38,7 @@ export default class ShaderManager {
         if (!this.shaders[name]) {
             this.shaders[name] = shader;
         } else {
-            log.error("shader exists");
+            console.error("shader exists");
         }
     }
 
@@ -50,7 +49,7 @@ export default class ShaderManager {
             shader.use();
             this.currentName = name;
         } else {
-            log.error("shader " + name + " not found");
+            console.error("shader " + name + " not found");
         }
     }
 

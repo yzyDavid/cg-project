@@ -7,7 +7,7 @@ import {Drawable} from './component';
 import {Pos} from './public';
 import Shader from './shader';
 import {mat, mat4} from '../matrix';
-import {default as Engine, log} from './engine';
+import {default as Engine} from './engine';
 import Scene from './scene';
 
 // a demo object.
@@ -46,11 +46,10 @@ export default class GeometryObject extends IncolliableObject implements Drawabl
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.indices), gl.STATIC_DRAW);
 
-        log.debug(new Float32Array(this.vertices).length);
-
-        log.debug(this.vertices.length);
-        log.debug(this.colors.length);
-        log.debug(this.indices.length);
+        console.debug(new Float32Array(this.vertices).length);
+        console.debug(this.vertices.length);
+        console.debug(this.colors.length);
+        console.debug(this.indices.length);
     }
 
     protected deleteBuffers() {
