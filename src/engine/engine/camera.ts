@@ -11,10 +11,11 @@ export default class Camera extends Component {
     private aspect: number;
     private near: number;
     private far: number;
+    private lookDirection: Pos;
 
-    constructor(pos: Pos, fieldOFView: number, aspect: number, near: number, far: number) {
+    constructor(pos: Pos, fieldOfView: number, aspect: number, near: number, far: number) {
         super(pos);
-        this.fieldOfView = fieldOFView;
+        this.fieldOfView = fieldOfView;
         this.aspect = aspect;
         this.near = near;
         this.far = far;
@@ -25,5 +26,9 @@ export default class Camera extends Component {
     }
 
     attachTo(component: Component) {
+    }
+
+    lookAt(pos: Pos) {
+        this.lookDirection = pos;
     }
 }

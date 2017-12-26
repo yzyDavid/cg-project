@@ -28,9 +28,12 @@ export default class Scene {
     }
 
     getPerspectiveMatrix(): mat {
-        if(this.camera) {
+        if (this.camera) {
             return this.camera.getPerspectiveMatrix();
         } else {
+            (() => {
+                console.info("NO camera assigned, return an eyes matrix as default");
+            })();
             return mat4.eyes();
         }
     }
