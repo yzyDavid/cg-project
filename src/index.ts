@@ -2,10 +2,9 @@
  * created by Zhenyun Yu.
  */
 import './index.css';
-import {Engine, Scene} from './engine/index';
+import {Engine, Scene, Camera} from './engine';
+import {makeDemoCube} from './engine';
 import * as config from './config';
-import {makeDemoCube} from './engine/engine/geometryobject';
-import Camera from './engine/engine/camera';
 
 const canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById('root');
 canvas.setAttribute('width', String(config.WIDTH));

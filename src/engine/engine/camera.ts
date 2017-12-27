@@ -2,7 +2,7 @@
  * created by Zhenyun Yu.
  */
 
-import {Component} from "./component";
+import {Component} from './component';
 import {Pos} from './public';
 import {mat, mat4} from '../matrix';
 

@@ -56,10 +56,14 @@ export default class GeometryObject extends IncolliableObject implements Drawabl
     protected deleteBuffers() {
     }
 
-    draw(gl: WebGLRenderingContext, engine?: Engine, modelMatrix?: mat): void {
+    draw(gl: WebGLRenderingContext, engine: Engine, modelMatrix?: mat): void {
         if (!this.bufferCreated) {
             this.createBuffers(gl);
             this.bufferCreated = true;
+        }
+
+        if (!modelMatrix) {
+            modelMatrix = mat4.eyes();
         }
 
         const shader = engine.getCurrentShader();
@@ -80,7 +84,7 @@ export default class GeometryObject extends IncolliableObject implements Drawabl
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 
         const modelLoc = shader.getModelMatrixLocation();
-        const modelMat = mat4.eyes();
+        const modelMat = mat4.multiply(modelMatrix, mat4.eyes());
         gl.uniformMatrix4fv(modelLoc, false, new Float32Array(modelMat));
 
         gl.drawElements(gl.TRIANGLES, vertexCount, gl.UNSIGNED_SHORT, 0);

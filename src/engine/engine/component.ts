@@ -17,6 +17,7 @@ import Engine from './engine';
 export class Component implements EnumerableChildren<Component>, ChildrenDrawable {
     protected position: Pos;
     protected children: Component[];
+    protected radius: number;
 
     constructor(position: Pos) {
         this.position = position;
@@ -32,22 +33,38 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
     }
 
     removeChild(o: Component) {
-        throw new Error();
+        const index = this.children.indexOf(o);
+        if (index !== -1) {
+            this.children.splice(index, 1);
+        }
+    }
+
+    getChildren() {
+        return this.children;
+    }
+
+    setRadius(r: number) {
+        this.radius = r;
+    }
+
+    getRadius() {
+        return this.radius;
     }
 
     // may be designed not properly.
-    drawChildren(gl: WebGLRenderingContext, engine?: Engine, modelViewMatrix?: mat) {
+    drawChildren(gl: WebGLRenderingContext, engine?: Engine, modelMatrix?: mat): void {
         this.forEach((obj) => {
             if ('draw' in obj) {
                 const d = <Drawable>(obj as any);
-                d.draw(gl, engine);
+                d.draw(gl, engine, modelMatrix);
             }
+            obj.drawChildren(gl, engine, modelMatrix);
         });
     }
 }
 
 export interface Drawable {
-    draw(gl: WebGLRenderingContext, engine?: Engine, modelViewMatrix?: mat): void;
+    draw(gl: WebGLRenderingContext, engine: Engine, modelMatrix?: mat): void;
 }
 
 export interface EnumerableChildren<T> {
@@ -55,7 +72,7 @@ export interface EnumerableChildren<T> {
 }
 
 export interface ChildrenDrawable {
-    drawChildren(gl: WebGLRenderingContext, engine?: Engine, modelViewMatrix?: mat): void;
+    drawChildren(gl: WebGLRenderingContext, engine?: Engine, modelMatrix?: mat): void;
 }
 
 // TODO: maybe removed.
@@ -80,5 +97,5 @@ export class Barrier extends Colliable {
 
 // visible and colliable
 export abstract class BoxObject extends Colliable implements Drawable {
-    abstract draw(gl: WebGLRenderingContext, engine?: Engine, modelViewMatrix?: mat): void;
+    abstract draw(gl: WebGLRenderingContext, engine: Engine, modelMatrix?: mat): void;
 }

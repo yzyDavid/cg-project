@@ -12,7 +12,7 @@ import Engine from './engine';
 
 // visible and incolliable.
 export default abstract class IncolliableObject extends Incolliable implements Drawable {
-    draw(gl: WebGLRenderingContext, engine?: Engine, modelMatrix?: mat): void {
+    draw(gl: WebGLRenderingContext, engine: Engine, modelMatrix?: mat): void {
         throw new Error("Method not implemented.");
     }
 

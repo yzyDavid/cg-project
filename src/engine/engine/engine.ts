@@ -106,6 +106,7 @@ export default class Engine {
                 const d = <Drawable>(obj as any);
                 d.draw(gl, this);
             }
+            obj.drawChildren(gl, this);
         });
     }
 
