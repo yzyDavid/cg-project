@@ -15,7 +15,7 @@ const fov = 45 * Math.PI / 180;
 const aspect = config.WIDTH / config.HEIGHT;
 const near = 0.1;
 const far = 100.0;
-const camera = new Camera([0.0, 0.0, 1.0], fov, aspect, near, far);
+const camera = new Camera([0.0, 0.0, 2.0], fov, aspect, near, far);
 
 const scene = new Scene(camera);
 
