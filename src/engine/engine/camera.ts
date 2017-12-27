@@ -31,7 +31,7 @@ export default class Camera extends Component {
         const pos = this.position;
         const interest = this.lookDirection;
         const up = this.upDirection;
-        throw new Error();
+        return mat4.lookAt(pos, interest, up);
     }
 
     attachTo(component: Component) {

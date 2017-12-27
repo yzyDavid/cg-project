@@ -1,9 +1,11 @@
 /*
  * created by Zhenyun Yu.
+ *
+ * some algorithms here are from gl-matrix library, GotHub links is followed:
+ * https://github.com/toji/gl-matrix
  */
 
-import Matrix, {mat, vec} from './index';
-
+import {mat, vec, EPSILON} from './index';
 
 export function zeros(): mat {
     const out = new Array(16);
@@ -188,6 +190,94 @@ export function translate(a: mat, v: vec): mat {
         out[14] = a02 * x + a12 * y + a22 * z + a[14];
         out[15] = a03 * x + a13 * y + a23 * z + a[15];
     }
+
+    return out;
+}
+
+/**
+ * Generates a look-at matrix with the given eye position, focal point, and up axis
+ * Vector are of 3-dim, mat are of 4-dim.
+ *
+ * @param {vec} eye Position of the viewer
+ * @param {vec} center Point the viewer is looking at
+ * @param {vec} up vec3 pointing up
+ * @returns {mat} out
+ */
+export function lookAt(eye: vec, center: vec, up: vec): mat {
+    const out = new Array(16);
+    let x0, x1, x2, y0, y1, y2, z0, z1, z2, len;
+    const eyeX = eye[0];
+    const eyeY = eye[1];
+    const eyeZ = eye[2];
+    const upx = up[0];
+    const upy = up[1];
+    const upz = up[2];
+    const centerX = center[0];
+    const centerY = center[1];
+    const centerZ = center[2];
+
+    if (Math.abs(eyeX - centerX) < EPSILON &&
+        Math.abs(eyeY - centerY) < EPSILON &&
+        Math.abs(eyeZ - centerZ) < EPSILON) {
+        return eyes();
+    }
+
+    z0 = eyeX - centerX;
+    z1 = eyeY - centerY;
+    z2 = eyeZ - centerZ;
+
+    len = 1 / Math.sqrt(z0 * z0 + z1 * z1 + z2 * z2);
+    z0 *= len;
+    z1 *= len;
+    z2 *= len;
+
+    x0 = upy * z2 - upz * z1;
+    x1 = upz * z0 - upx * z2;
+    x2 = upx * z1 - upy * z0;
+    len = Math.sqrt(x0 * x0 + x1 * x1 + x2 * x2);
+    if (!len) {
+        x0 = 0;
+        x1 = 0;
+        x2 = 0;
+    } else {
+        len = 1 / len;
+        x0 *= len;
+        x1 *= len;
+        x2 *= len;
+    }
+
+    y0 = z1 * x2 - z2 * x1;
+    y1 = z2 * x0 - z0 * x2;
+    y2 = z0 * x1 - z1 * x0;
+
+    len = Math.sqrt(y0 * y0 + y1 * y1 + y2 * y2);
+    if (!len) {
+        y0 = 0;
+        y1 = 0;
+        y2 = 0;
+    } else {
+        len = 1 / len;
+        y0 *= len;
+        y1 *= len;
+        y2 *= len;
+    }
+
+    out[0] = x0;
+    out[1] = y0;
+    out[2] = z0;
+    out[3] = 0;
+    out[4] = x1;
+    out[5] = y1;
+    out[6] = z1;
+    out[7] = 0;
+    out[8] = x2;
+    out[9] = y2;
+    out[10] = z2;
+    out[11] = 0;
+    out[12] = -(x0 * eyeX + x1 * eyeY + x2 * eyeZ);
+    out[13] = -(y0 * eyeX + y1 * eyeY + y2 * eyeZ);
+    out[14] = -(z0 * eyeX + z1 * eyeY + z2 * eyeZ);
+    out[15] = 1;
 
     return out;
 }
