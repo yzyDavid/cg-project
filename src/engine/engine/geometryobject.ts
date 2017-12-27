@@ -46,6 +46,7 @@ export default class GeometryObject extends IncolliableObject implements Drawabl
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.indices), gl.STATIC_DRAW);
 
+        console.debug("creating geometry object:");
         console.debug(new Float32Array(this.vertices).length);
         console.debug(this.vertices.length);
         console.debug(this.colors.length);

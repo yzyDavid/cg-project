@@ -64,8 +64,6 @@ export default class Shader {
         this.ok = true;
         this.program = shaderProgram;
 
-        console.debug(String(attributes));
-        console.debug(String(uniforms));
         this.attribLocations = {};
         this.uniformLocations = {};
 
@@ -78,7 +76,12 @@ export default class Shader {
             console.info("shader init: load default uniform locations.");
             this.uniforms = ['uModelMatrix', 'uViewMatrix', 'uProjectionMatrix'];
         }
+
         this.initLocations();
+        console.log("attributes:");
+        console.log(this.attribLocations);
+        console.log("uniforms:");
+        console.log(this.uniformLocations);
         return this;
     }
 
@@ -139,6 +142,7 @@ export default class Shader {
     use(): void {
         this.gl.useProgram(this.program);
         const a = this.gl.getProgramParameter(this.program, this.gl.ACTIVE_ATTRIBUTES);
+        console.log("using shader: return value of gl.ACTIVE_ATTRIBUTES");
         console.debug(a);
     }
 }

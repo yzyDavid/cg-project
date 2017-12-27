@@ -23,9 +23,10 @@ export default class ShaderManager {
         const gl = this.gl;
         const vert = <string>(primitiveVertexShaderText as any);
         const frag = <string>(primitiveFragmentShaderText as any);
+        console.log("loading default Shader");
+        console.log(gl);
         console.debug(frag);
         console.debug(vert);
-        console.debug(String(gl));
         this.addShader('primitive', new Shader(
             gl,
             vert,
