@@ -10,7 +10,6 @@ export default class Shader {
     private ok: boolean;
     private readonly program: WebGLProgram;
 
-    // TODO: init them
     protected readonly attribLocations: { [key: string]: number };
     protected readonly uniformLocations: { [key: string]: WebGLUniformLocation };
     private readonly name: string;
@@ -70,11 +69,15 @@ export default class Shader {
         if (attributes === undefined || attributes === null) {
             console.info("shader init: load default attribute locations.");
             this.attributes = ['aVertexPosition', 'aVertexColor'];
+        } else {
+            this.attributes = attributes;
         }
 
         if (uniforms === undefined || uniforms === null) {
             console.info("shader init: load default uniform locations.");
             this.uniforms = ['uModelMatrix', 'uViewMatrix', 'uProjectionMatrix'];
+        } else {
+            this.uniforms = uniforms;
         }
 
         this.initLocations();

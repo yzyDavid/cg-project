@@ -2,7 +2,7 @@
  * created by Zhenyun Yu.
  */
 
-import {Pos} from './public';
+import {Pos, Vec3} from './public';
 import {mat} from '../matrix';
 import Shader from './shader';
 import Scene from './scene';
@@ -18,10 +18,13 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
     protected position: Pos;
     protected children: Component[];
     protected radius: number;
+    protected velocity: Vec3;
 
     constructor(position: Pos) {
         this.position = position;
         this.children = [];
+        this.radius = 0.0;
+        this.velocity = [0.0, 0.0, 0.0];
     }
 
     forEach(func: (o: Component, index?: number, array?: Component[]) => void): void {
@@ -39,6 +42,7 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
         }
     }
 
+    // internal use only.
     getChildren() {
         return this.children;
     }
@@ -60,6 +64,10 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
             }
             obj.drawChildren(gl, engine, modelMatrix);
         });
+    }
+
+    update() {
+        // TODO
     }
 }
 
@@ -93,6 +101,9 @@ export class Incolliable extends Component {
 
 // invisible but colliable
 export class Barrier extends Colliable {
+    constructor(position: Pos) {
+        super(position);
+    }
 }
 
 // visible and colliable
