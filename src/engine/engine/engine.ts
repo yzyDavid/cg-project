@@ -94,10 +94,12 @@ export default class Engine {
         const shader = this.shaderManager.currentShader();
 
         const perspective = scene.getPerspectiveMatrix();
-        const projectionLoc = shader.getProjectionMatrixLocation();
-        gl.uniformMatrix4fv(projectionLoc, false, new Float32Array(perspective));
-
         const viewMat = scene.hasCamera() ? scene.getCamera().getViewMatrix() : mat4.eyes();
+
+        const projectionLoc = shader.getProjectionMatrixLocation();
+        const viewLoc = shader.getViewMatrixLocation();
+        gl.uniformMatrix4fv(projectionLoc, false, new Float32Array(perspective));
+        gl.uniformMatrix4fv(viewLoc, false, new Float32Array(viewMat));
 
         scene.forEach((obj) => {
             if ('draw' in obj) {

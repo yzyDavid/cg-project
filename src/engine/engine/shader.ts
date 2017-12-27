@@ -33,6 +33,7 @@ export default class Shader {
         } else {
             this.name = 'BaseShader';
         }
+        console.log("init shader: " + this.name);
         this.gl = gl;
         this.ok = false;
         const vertShader = gl.createShader(gl.VERTEX_SHADER);
@@ -68,25 +69,27 @@ export default class Shader {
         this.attribLocations = {};
         this.uniformLocations = {};
 
-        // TODO: make it flexible.
-        if (attributes === undefined && uniforms === undefined) {
-            console.info("shader init: load default locations.");
-            this.initAttribLocationsForPrimitive();
+        if (attributes === undefined || attributes === null) {
+            console.info("shader init: load default attribute locations.");
             this.attributes = ['aVertexPosition', 'aVertexColor'];
-            this.uniforms = ['uModelViewMatrix', 'uProjectionMatrix'];
         }
+
+        if (uniforms === undefined || uniforms === null) {
+            console.info("shader init: load default uniform locations.");
+            this.uniforms = ['uModelMatrix', 'uViewMatrix', 'uProjectionMatrix'];
+        }
+        this.initLocations();
         return this;
     }
 
-    // TODO: refactor here.
-    private initAttribLocationsForPrimitive() {
+    private initLocations() {
         const gl = this.gl;
-
-        this.attribLocations['aVertexPosition'] = gl.getAttribLocation(this.program, 'aVertexPosition');
-        this.attribLocations['aVertexColor'] = gl.getAttribLocation(this.program, 'aVertexColor');
-
-        this.uniformLocations['uModelViewMatrix'] = gl.getUniformLocation(this.program, 'uModelViewMatrix');
-        this.uniformLocations['uProjectionMatrix'] = gl.getUniformLocation(this.program, 'uProjectionMatrix');
+        this.attributes.forEach((o) => {
+            this.attribLocations[o] = gl.getAttribLocation(this.program, o);
+        });
+        this.uniforms.forEach((o) => {
+            this.uniformLocations[o] = gl.getUniformLocation(this.program, o);
+        });
     }
 
     getAttribLocations() {
@@ -97,12 +100,28 @@ export default class Shader {
         return this.uniformLocations;
     }
 
-    getProjectionMatrixLocation() {
-        return this.getUniformLocations()['uProjectionMatrix'];
+    getProjectionMatrixLocation(): WebGLUniformLocation {
+        const r = this.getUniformLocations()['uProjectionMatrix'];
+        if (!r) {
+            throw new Error();
+        }
+        return r;
     }
 
-    getModelViewMatrixLocation() {
-        return this.getUniformLocations()['uModelViewMatrix'];
+    getModelMatrixLocation(): WebGLUniformLocation {
+        const r = this.getUniformLocations()['uModelMatrix'];
+        if (!r) {
+            throw new Error();
+        }
+        return r;
+    }
+
+    getViewMatrixLocation(): WebGLUniformLocation {
+        const r = this.getUniformLocations()['uViewMatrix'];
+        if (!r) {
+            throw new Error();
+        }
+        return r;
     }
 
     getShaderProgram(): WebGLProgram {

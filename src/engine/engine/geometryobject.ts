@@ -78,9 +78,9 @@ export default class GeometryObject extends IncolliableObject implements Drawabl
 
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 
-        const mvLoc = shader.getModelViewMatrixLocation();
-        const mvMat = mat4.eyes();
-        gl.uniformMatrix4fv(mvLoc, false, new Float32Array(mvMat));
+        const modelLoc = shader.getModelMatrixLocation();
+        const modelMat = mat4.eyes();
+        gl.uniformMatrix4fv(modelLoc, false, new Float32Array(modelMat));
 
         gl.drawElements(gl.TRIANGLES, vertexCount, gl.UNSIGNED_SHORT, 0);
     }
