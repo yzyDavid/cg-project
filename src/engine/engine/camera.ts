@@ -12,6 +12,7 @@ export default class Camera extends Component {
     private near: number;
     private far: number;
     private lookDirection: Pos;
+    private upDirection: Pos;
 
     constructor(pos: Pos, fieldOfView: number, aspect: number, near: number, far: number) {
         super(pos);
@@ -19,16 +20,25 @@ export default class Camera extends Component {
         this.aspect = aspect;
         this.near = near;
         this.far = far;
+        this.lookAt([0, 0, -1], [0, 1, 0]);
     }
 
     getPerspectiveMatrix(): mat {
         return mat4.perspective(this.fieldOfView, this.aspect, this.near, this.far);
     }
 
+    getViewMatrix(): mat {
+        const pos = this.position;
+        const interest = this.lookDirection;
+        const up = this.upDirection;
+        throw new Error();
+    }
+
     attachTo(component: Component) {
     }
 
-    lookAt(pos: Pos) {
+    lookAt(pos: Pos, up: Pos) {
         this.lookDirection = pos;
+        this.upDirection = up;
     }
 }

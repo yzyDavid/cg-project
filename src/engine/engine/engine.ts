@@ -97,6 +97,8 @@ export default class Engine {
         const projectionLoc = shader.getProjectionMatrixLocation();
         gl.uniformMatrix4fv(projectionLoc, false, new Float32Array(perspective));
 
+        const viewMat = scene.hasCamera() ? scene.getCamera().getViewMatrix() : mat4.eyes();
+
         scene.forEach((obj) => {
             if ('draw' in obj) {
                 const d = <Drawable>(obj as any);

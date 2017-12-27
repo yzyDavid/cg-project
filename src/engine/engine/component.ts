@@ -36,7 +36,7 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
     }
 
     // may be designed not properly.
-    drawChildren(gl: WebGLRenderingContext, engine?: Engine, modelMatrix?: mat) {
+    drawChildren(gl: WebGLRenderingContext, engine?: Engine, modelViewMatrix?: mat) {
         this.forEach((obj) => {
             if ('draw' in obj) {
                 const d = <Drawable>(obj as any);
@@ -47,7 +47,7 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
 }
 
 export interface Drawable {
-    draw(gl: WebGLRenderingContext, engine?: Engine, modelMatrix?: mat): void;
+    draw(gl: WebGLRenderingContext, engine?: Engine, modelViewMatrix?: mat): void;
 }
 
 export interface EnumerableChildren<T> {
@@ -55,7 +55,7 @@ export interface EnumerableChildren<T> {
 }
 
 export interface ChildrenDrawable {
-    drawChildren(gl: WebGLRenderingContext, engine?: Engine, modelMatrix?: mat): void;
+    drawChildren(gl: WebGLRenderingContext, engine?: Engine, modelViewMatrix?: mat): void;
 }
 
 // TODO: maybe removed.
@@ -80,5 +80,5 @@ export class Barrier extends Colliable {
 
 // visible and colliable
 export abstract class BoxObject extends Colliable implements Drawable {
-    abstract draw(gl: WebGLRenderingContext, engine?: Engine, modelMatrix?: mat): void;
+    abstract draw(gl: WebGLRenderingContext, engine?: Engine, modelViewMatrix?: mat): void;
 }

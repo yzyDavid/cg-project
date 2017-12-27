@@ -31,6 +31,10 @@ export default class Scene implements EnumerableChildren<Component> {
         return this.camera;
     }
 
+    hasCamera(): boolean {
+        return !!this.camera;
+    }
+
     getPerspectiveMatrix(): mat {
         if (this.camera) {
             return this.camera.getPerspectiveMatrix();
