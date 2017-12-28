@@ -19,7 +19,5 @@
     "build": "webpack -p",
     "dev": "webpack-dev-server --open"
   },
-  "dependencies": {
-    "gl-matrix": "^2.4.0"
-  }
+  "dependencies": {}
 }

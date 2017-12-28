@@ -11,7 +11,7 @@ yarn dev
 
 ### TO-DO list
 
-- [ ] switch shaders
+- [X] switch shaders
 - [ ] HUD
 - [ ] lighting
 - [ ] texture
