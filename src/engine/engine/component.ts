@@ -69,6 +69,14 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
     update() {
         // TODO
     }
+
+    getPosition() {
+        return this.position;
+    }
+
+    setPosition(pos: Pos) {
+        this.position = pos;
+    }
 }
 
 export interface Drawable {

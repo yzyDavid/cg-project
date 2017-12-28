@@ -2,9 +2,11 @@
  * created by Zhenyun Yu.
  */
 import './index.css';
+import * as config from './config';
+
 import {Engine, Scene, Camera} from './engine';
 import {makeDemoCube} from './engine';
-import * as config from './config';
+import {Pos} from './engine';
 
 const canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById('root');
 canvas.setAttribute('width', String(config.WIDTH));
@@ -14,7 +16,11 @@ const fov = 45 * Math.PI / 180;
 const aspect = config.WIDTH / config.HEIGHT;
 const near = 0.1;
 const far = 100.0;
-const camera = new Camera([0.0, 0.0, 2.0], fov, aspect, near, far);
+
+const pos: Pos = [3.0, 2.0, 5.0];
+
+const camera = new Camera(pos, fov, aspect, near, far);
+camera.lookAt([0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
 
 const scene = new Scene(camera);
 
@@ -32,6 +38,11 @@ const timeController = engine.getTimeEventController();
 
 keyController.addListener('q', () => engine.stop());
 keyController.enable();
+timeController.addListener('cameraMove', () => {
+    pos[0] += 0.01;
+    pos[1] += 0.01;
+    camera.setPosition(pos);
+});
 
 engine.start();
 

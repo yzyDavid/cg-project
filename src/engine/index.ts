@@ -8,6 +8,8 @@ import GeometryObject from './engine/geometryobject';
 
 import {makeDemoCube} from './engine/geometryobject';
 import Camera from './engine/camera';
+import {Pos} from './engine/public';
 
 export {Engine, Scene, GeometryObject, Camera};
+export {Pos};
 export {makeDemoCube};
