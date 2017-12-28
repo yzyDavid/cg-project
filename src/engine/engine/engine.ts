@@ -83,7 +83,7 @@ export default class Engine {
         this.then = now;
         this.draw(deltaTime);
         if (this.timeEventController.isEnabled()) {
-            this.timeEventController.getCallback()();
+            this.timeEventController.getCallback()(now, deltaTime);
         }
         this.animationRequest = window.requestAnimationFrame(this.render.bind(this));
     }

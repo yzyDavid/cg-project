@@ -3,7 +3,7 @@
  */
 
 export default class TimeEventController {
-    private callbacks: { [key: string]: () => void };
+    private callbacks: { [key: string]: (elapsedTime: number, deltaTime: number) => void };
     private enabled: boolean;
 
     constructor() {
@@ -11,7 +11,7 @@ export default class TimeEventController {
         this.enabled = true;
     }
 
-    addListener(name: string, action: () => void) {
+    addListener(name: string, action: (elapsedTime: number, deltaTime: number) => void) {
         this.callbacks[name] = action;
     }
 
@@ -37,11 +37,11 @@ export default class TimeEventController {
         return this.enabled;
     }
 
-    getCallback(): () => void {
-        return () => {
+    getCallback(): (elapsedTime: number, deltaTime: number) => void {
+        return (elapsedTime, deltaTime) => {
             for (let name in this.callbacks) {
                 if (this.callbacks.hasOwnProperty(name)) {
-                    this.callbacks[name]();
+                    this.callbacks[name](elapsedTime, deltaTime);
                 }
             }
         }
