@@ -106,6 +106,14 @@ export default class Shader {
         return this.uniformLocations;
     }
 
+    getVertexPositionLocation() {
+        const r = this.getAttribLocations()['aVertexPosition'];
+        if (!r) {
+            throw new Error();
+        }
+        return r;
+    }
+
     getProjectionMatrixLocation(): WebGLUniformLocation {
         const r = this.getUniformLocations()['uProjectionMatrix'];
         if (!r) {
@@ -143,6 +151,7 @@ export default class Shader {
     }
 
     use(): void {
+        // NOTE: this method should not be invoked by user, only should be invoked by ShaderManager.
         this.gl.useProgram(this.program);
         const a = this.gl.getProgramParameter(this.program, this.gl.ACTIVE_ATTRIBUTES);
         console.log("using shader: return value of gl.ACTIVE_ATTRIBUTES");

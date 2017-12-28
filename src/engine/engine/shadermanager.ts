@@ -7,8 +7,8 @@ import * as primitiveVertexShaderText from '../shaders/primitive.vert';
 import * as primitiveFragmentShaderText from '../shaders/primitive.frag';
 
 export default class ShaderManager {
-    private gl: WebGLRenderingContext;
-    private shaders: { [key: string]: Shader };
+    private readonly gl: WebGLRenderingContext;
+    private readonly shaders: { [key: string]: Shader };
     private currentName: string;
 
     constructor(gl: WebGLRenderingContext, loadDefaults?: boolean) {
@@ -44,6 +44,9 @@ export default class ShaderManager {
     }
 
     useShader(name: string) {
+        if (this.currentName === name) {
+            return;
+        }
         const gl = this.gl;
         const shader = this.shaders[name];
         if (shader) {
