@@ -5,6 +5,8 @@ import Shader from './shader';
 
 import * as primitiveVertexShaderText from '../shaders/primitive.vert';
 import * as primitiveFragmentShaderText from '../shaders/primitive.frag';
+import * as lightingVertexShaderText from '../shaders/lighting.vert';
+import * as lightingFragmentShaderText from '../shaders/lighting.frag';
 
 export default class ShaderManager {
     private readonly gl: WebGLRenderingContext;
@@ -21,17 +23,40 @@ export default class ShaderManager {
 
     loadDefaultShaders() {
         const gl = this.gl;
-        const vert = <string>(primitiveVertexShaderText as any);
-        const frag = <string>(primitiveFragmentShaderText as any);
+        let name: string;
+        let vert: string;
+        let frag: string;
+
         console.log("loading default Shader");
+
+        // Load primitive shader.
+        name = 'primitive';
+        vert = <string>(primitiveVertexShaderText as any);
+        frag = <string>(primitiveFragmentShaderText as any);
         console.log(gl);
-        console.debug(frag);
+        console.log(name);
         console.debug(vert);
-        this.addShader('primitive', new Shader(
+        console.debug(frag);
+        this.addShader(name, new Shader(
             gl,
             vert,
             frag,
-            'primitive'
+            name
+        ));
+
+        // Load lighting shader.
+        name = 'lighting';
+        vert = <string>(lightingVertexShaderText as any);
+        frag = <string>(lightingFragmentShaderText as any);
+        console.log(gl);
+        console.log(name);
+        console.debug(vert);
+        console.debug(frag);
+        this.addShader(name, new Shader(
+            gl,
+            vert,
+            frag,
+            name
         ));
     }
 

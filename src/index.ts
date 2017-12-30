@@ -6,7 +6,9 @@ import * as config from './config';
 
 import {Engine, Scene, Camera} from './engine';
 import {makeDemoCube} from './engine';
+import {makeDemoLightedCube} from './engine';
 import {Pos} from './engine';
+import Shader from "./engine/engine/shader";
 
 const canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById('root');
 canvas.setAttribute('width', String(config.WIDTH));
@@ -24,12 +26,13 @@ camera.lookAt([0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
 
 const scene = new Scene(camera);
 
-const cube = makeDemoCube();
-scene.addObject(cube);
+const lightedCube = makeDemoLightedCube();
+scene.addObject(lightedCube);
 
 const conf = {
+    shader: 'lighting',
     width: config.WIDTH,
-    height: config.HEIGHT
+    height: config.HEIGHT,
 };
 const engine = new Engine(scene, canvas, conf);
 
