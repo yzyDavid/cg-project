@@ -94,7 +94,7 @@ export default class Engine {
         const shader = this.shaderManager.currentShader();
 
         const perspective = scene.getPerspectiveMatrix();
-        const viewMat = scene.hasCamera() ? scene.getCamera().getViewMatrix() : mat4.eyes();
+        const viewMat = scene.hasCamera() ? scene.getCamera().getViewMatrix() : mat4.identity();
 
         const projectionLoc = shader.getProjectionMatrixLocation();
         const viewLoc = shader.getViewMatrixLocation();

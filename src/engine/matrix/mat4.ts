@@ -33,7 +33,7 @@ export function zeros(): mat {
     return out;
 }
 
-export function eyes(): mat {
+export function identity(): mat {
     const out = new Array(16);
 
     out[0] = 1;
@@ -218,7 +218,7 @@ export function lookAt(eye: vec, center: vec, up: vec): mat {
     if (Math.abs(eyeX - centerX) < EPSILON &&
         Math.abs(eyeY - centerY) < EPSILON &&
         Math.abs(eyeZ - centerZ) < EPSILON) {
-        return eyes();
+        return identity();
     }
 
     z0 = eyeX - centerX;

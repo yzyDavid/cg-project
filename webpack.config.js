@@ -55,7 +55,7 @@ module.exports = {
                 }
             },
             {
-                test: /\.(vert|frag|geom)$/,
+                test: /\.(vert|frag|geom|mtl|obj)$/,
                 use: 'raw-loader'
             }
         ]
