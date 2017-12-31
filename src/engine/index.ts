@@ -8,7 +8,7 @@ import GeometryObject from './engine/geometryobject';
 import Shader from './engine/shader';
 import ShaderManager from './engine/shadermanager';
 import Camera from './engine/camera';
-import Lighting from './engine/lighting';
+import Lighting from './engine/light';
 
 import {Component} from './engine/component';
 

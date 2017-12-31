@@ -5,10 +5,12 @@
 import Camera from './camera';
 import {Component, EnumerableChildren} from './component';
 import {mat, mat4} from '../matrix';
+import Light from './light';
 
 export default class Scene implements EnumerableChildren<Component> {
     private camera: Camera;
     private gameObjects: Component[];
+    private lights: Light[];
 
     constructor(camera?: Camera) {
         this.camera = camera || null;
@@ -17,10 +19,22 @@ export default class Scene implements EnumerableChildren<Component> {
 
     addObject(obj: Component) {
         this.gameObjects.push(obj);
+        if (obj instanceof Light) {
+            this.lights.push(obj);
+        }
     }
 
     removeObject(obj: Component) {
-        throw new Error();
+        if (obj instanceof Light) {
+            const index = this.lights.indexOf(obj);
+            if (index !== -1) {
+                this.lights.splice(index, 1);
+            }
+        }
+        const index = this.gameObjects.indexOf(obj);
+        if (index !== -1) {
+            this.gameObjects.splice(index, 1);
+        }
     }
 
     setCamera(camera: Camera) {
@@ -33,6 +47,10 @@ export default class Scene implements EnumerableChildren<Component> {
 
     hasCamera(): boolean {
         return !!this.camera;
+    }
+
+    getLights(): Light[] {
+        return this.lights;
     }
 
     getPerspectiveMatrix(): mat {
