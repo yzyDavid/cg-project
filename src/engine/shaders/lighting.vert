@@ -1,6 +1,6 @@
-uniform mat4 uModelMatrix;
-uniform mat4 uViewMatrix;
-uniform mat4 uProjectionMatrix;
+uniform mat4 uModel;
+uniform mat4 uView;
+uniform mat4 uProjection;
 
 attribute vec3 aVertexPos_model;
 
@@ -8,6 +8,6 @@ attribute vec3 aVertexPos_model;
 // varying vec3 vFragNormal;
 
 void main() {
-	gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * vec4(aVertexPos_model, 1.0);
+	gl_Position = uProjection * uView * uModel * vec4(aVertexPos_model, 1.0);
 
 }

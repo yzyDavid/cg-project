@@ -13,8 +13,9 @@ uniform float uLightAmbientCoeff;
 
 void main() {
 
-//    vec3 ambient = uMaterialAmbientColor * uLightColor;
+    vec3 ambient = uMaterialAmbientColor * uLightColor;
+    vec3 diffuse = uMaterialDiffuseColor;
 
-	gl_FragColor = vec4(uMaterialDiffuseColor, 1.0);
+	gl_FragColor = vec4(ambient + diffuse, 1.0);
 //	gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
 }
