@@ -2,6 +2,7 @@
  * created by Zhenyun Yu.
  */
 import Shader from './shader';
+import LightingShader from './lightingshader';
 
 import * as primitiveVertexShaderText from '../shaders/primitive.vert';
 import * as primitiveFragmentShaderText from '../shaders/primitive.frag';
@@ -17,6 +18,8 @@ export default class ShaderManager {
         if (loadDefaults || loadDefaults === undefined) {
             this.loadDefaultShaders();
         }
+
+        this.addShader('lighting', new LightingShader(gl));
     }
 
     loadDefaultShaders() {
