@@ -7,6 +7,7 @@ import * as config from './config';
 import {Engine, Scene, Camera} from './engine';
 import {makeDemoCube} from './engine';
 import {Pos} from './engine';
+import {ObjLoader} from './engine';
 
 const canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById('root');
 canvas.setAttribute('width', String(config.WIDTH));
@@ -23,6 +24,8 @@ const camera = new Camera(pos, fov, aspect, near, far);
 camera.lookAt([0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
 
 const scene = new Scene(camera);
+
+const tmp=new ObjLoader("haha",1,false);
 
 const cube = makeDemoCube();
 scene.addObject(cube);

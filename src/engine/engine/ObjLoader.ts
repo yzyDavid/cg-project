@@ -1,17 +1,37 @@
 import geometryObject from './geometryobject';
 
 export default class ObjLoader {
-    protected vertices: Vertex[];
-    protected normals:Normal[];
+    protected vertices: Vertex[]=[];
+    protected normals:Normal[]=[];
     protected scale:number;
     protected reverse:boolean;
+    protected textureVt:VTertex[]=[];
+    protected object:Face[]=[];
 
     constructor(filename:string,scale:number,reverse:boolean){
         var content:string;
         this.scale=scale;
         this.reverse=reverse;
-
+        var content="# Blender v2.60 (sub 0) OBJ File: ''\n" +
+            "# www.blender.org\n" +
+            "v 1.000000 -1.000000 -1.000000\n" +
+            "v 1.000000 -1.000000 1.000000\n" +
+            "v -1.000000 -1.000000 1.000000\n" +
+            "v -1.000000 -1.000000 -1.000000\n" +
+            "v 1.000000 1.000000 -1.000000\n" +
+            "v 1.000000 1.000000 1.000001\n" +
+            "v -1.000000 1.000000 1.000000\n" +
+            "v -1.000000 1.000000 -1.000000\n" +
+            "f 1 2 3 4\n" +
+            "f 5 8 7 6\n" +
+            "f 2 6 7 3\n" +
+            "f 3 7 8 4\n" +
+            "f 5 1 4 8\n" +
+            "f 1 5 6 2";
         this.OBJDocparser(content);
+        console.log(this.normals);
+        console.log(this.vertices);
+        console.log(this.object);
     }
 
     protected OBJDocparser(content:string){
@@ -19,9 +39,9 @@ export default class ObjLoader {
         lines.push(null); // Append null
         var tempIndex = 0;    // Initialize index of line
 
-        var currentObject = null;//理解为一个代号?
+        //var currentObject = null;//理解为一个代号?
         var currentMaterialName = "";
-        var ifmtl=false;
+        //var ifmtl=false;
 
         // Parse line by line
         var line;         // A string in the line to be parsed
@@ -29,6 +49,7 @@ export default class ObjLoader {
         sp=new StringParser();
 
         while ((line = lines[tempIndex++]) != null) {
+            console.debug(line);
             sp.init(line);                  // init StringParser
             var command = sp.getWord();     // Get command
             if(command == null)	 continue;  // check null command
@@ -83,7 +104,7 @@ export default class ObjLoader {
                 //     continue; // Go to the next line
                 case 'f': // Read face
                     var face = this.parseFace(sp, currentMaterialName, this.vertices,this.textureVt, this.normals, this.reverse);
-                    currentObject.addFace(face);
+                    this.object.push(face);
                     continue; // Go to the next line
                 // case 'vt':
                 //     var VTvertex = parseVTertex(sp,1);
@@ -112,7 +133,7 @@ export default class ObjLoader {
         return (new Normal(x, y, z));
     }
 
-    parseFace=function(sp:StringParser, materialName:string, vertices:Vertex[], textureVt, Normals:Normal[], reverse:boolean) {
+    parseFace=function(sp:StringParser, materialName:string, vertices:Vertex[], textureVt:VTertex[], Normals:Normal[], reverse:boolean) {
         var face = new Face(materialName);
         // get indices
         for(;;){
@@ -265,11 +286,6 @@ class Face{
     }
 }
 
-/**
- * Constructor of Vector3
- * If opt_src is specified, new vector is initialized by opt_src.
- * @param opt_src source vector(option)
- */
 class Vector3{
     elements:Float32Array;
     constructor(opt_src:Float32Array) {
