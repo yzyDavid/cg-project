@@ -1,4 +1,5 @@
 import geometryObject from './geometryobject';
+import * as contentText from '../../module/cube.obj';
 
 export default class ObjLoader {
     protected vertices: Vertex[]=[];
@@ -9,25 +10,10 @@ export default class ObjLoader {
     protected object:Face[]=[];
 
     constructor(filename:string,scale:number,reverse:boolean){
-        var content:string;
         this.scale=scale;
         this.reverse=reverse;
-        var content="# Blender v2.60 (sub 0) OBJ File: ''\n" +
-            "# www.blender.org\n" +
-            "v 1.000000 -1.000000 -1.000000\n" +
-            "v 1.000000 -1.000000 1.000000\n" +
-            "v -1.000000 -1.000000 1.000000\n" +
-            "v -1.000000 -1.000000 -1.000000\n" +
-            "v 1.000000 1.000000 -1.000000\n" +
-            "v 1.000000 1.000000 1.000001\n" +
-            "v -1.000000 1.000000 1.000000\n" +
-            "v -1.000000 1.000000 -1.000000\n" +
-            "f 1 2 3 4\n" +
-            "f 5 8 7 6\n" +
-            "f 2 6 7 3\n" +
-            "f 3 7 8 4\n" +
-            "f 5 1 4 8\n" +
-            "f 1 5 6 2";
+        const content = <string>(contentText as any);
+        console.log("content",content);
         this.OBJDocparser(content);
         console.log(this.normals);
         console.log(this.vertices);
