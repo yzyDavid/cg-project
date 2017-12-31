@@ -58,9 +58,9 @@ export default class Scene implements EnumerableChildren<Component> {
             return this.camera.getPerspectiveMatrix();
         } else {
             (() => {
-                console.info("NO camera assigned, return an eyes matrix as default");
+                console.info("NO camera assigned, return an identity matrix as default");
             })();
-            return mat4.eyes();
+            return mat4.identity();
         }
     }
 

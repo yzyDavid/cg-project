@@ -63,7 +63,7 @@ export default class GeometryObject extends IncolliableObject implements Drawabl
         }
 
         if (!modelMatrix) {
-            modelMatrix = mat4.eyes();
+            modelMatrix = mat4.identity();
         }
 
         const shader = engine.getCurrentShader();
@@ -84,7 +84,7 @@ export default class GeometryObject extends IncolliableObject implements Drawabl
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 
         const modelLoc = shader.getModelMatrixLocation();
-        const modelMat = mat4.multiply(modelMatrix, mat4.eyes());
+        const modelMat = mat4.multiply(modelMatrix, mat4.identity());
         gl.uniformMatrix4fv(modelLoc, false, new Float32Array(modelMat));
 
         gl.drawElements(gl.TRIANGLES, vertexCount, gl.UNSIGNED_SHORT, 0);
