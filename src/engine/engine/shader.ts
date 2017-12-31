@@ -5,6 +5,9 @@
 /*
  * write new shaders with the convention here, or subclass this class.
  */
+import {Pos} from "./public";
+import Light from "./light";
+
 export default class Shader {
     protected gl: WebGLRenderingContext;
     private ok: boolean;
@@ -144,6 +147,14 @@ export default class Shader {
             return;
         }
         return this.program;
+    }
+
+    setLights(gl: WebGLRenderingContext, lights: Light[]) {
+        // TODO: could better be abstract.
+    }
+
+    setCameraPos(gl: WebGLRenderingContext, pos: Pos) {
+        // TODO: could better be abstract.
     }
 
     valid(): boolean {
