@@ -30,7 +30,8 @@ const cube0=tmp.getObj();
 console.log("objlike",cube0);
 scene.addObject(cube0);
 
-// const cube = makeDemoCube();
+const cube = makeDemoCube();
+console.log("objlike2",cube);
 // scene.addObject(cube);
 
 const conf = {
@@ -44,11 +45,11 @@ const timeController = engine.getTimeEventController();
 
 keyController.addListener('q', () => engine.stop());
 keyController.enable();
-timeController.addListener('cameraMove', () => {
-    pos[0] += 0.01;
-    pos[1] += 0.01;
-    camera.setPosition(pos);
-});
+// timeController.addListener('cameraMove', () => {
+//     pos[0] += 0.01;
+//     pos[1] += 0.01;
+//     camera.setPosition(pos);
+// });
 
 engine.start();
 

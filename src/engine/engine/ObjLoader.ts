@@ -33,15 +33,46 @@ export default class ObjLoader {
         faceColors.forEach(v => {
             colors = colors.concat(v, v, v, v);
         });
-        const positions=[];
-        for (let entry of this.vertices){
-            positions.push(entry.x);
-            positions.push(entry.y);
-            positions.push(entry.z);
-        }
+        const vset:number[]=[];
+        var numv=0;
         var indices:number[]=[];
+        var positions:number[]=[];
+
+        function findv(faceset: { [p: number]: number }, v: number) {
+            var value:any;
+            for (value in faceset){
+                if (value==v) return true;
+            }
+            return false;
+        }
+
         for (let entry of this.object){
-            indices=indices.concat(entry.vIndices);
+            let faceset:{ [key: number]: number; }={};
+            for (let v of entry.vIndices){
+                if (vset.indexOf(v)!=-1){
+                    if (!findv(faceset,v)){
+                        positions.push(this.vertices[v].x);
+                        positions.push(this.vertices[v].y);
+                        positions.push(this.vertices[v].z);
+                        indices.push(numv);
+                        faceset[v]=numv;
+                        numv=numv+1;
+                    }
+                    else{
+                        indices.push(faceset[v]);
+                    }
+                }
+                else
+                {
+                    positions.push(this.vertices[v].x);
+                    positions.push(this.vertices[v].y);
+                    positions.push(this.vertices[v].z);
+                    indices.push(v);
+                    faceset[v]=numv;
+                    numv=numv+1;
+                    vset.push(v);
+                }
+            }
         }
         return new GeometryObject([0.0, 0.0, 0.0], positions, indices, colors);
     }
