@@ -1,4 +1,4 @@
-import geometryObject from './geometryobject';
+import GeometryObject from './geometryobject';
 import * as contentText from '../../module/cube.obj';
 
 export default class ObjLoader {
@@ -18,6 +18,32 @@ export default class ObjLoader {
         console.log(this.normals);
         console.log(this.vertices);
         console.log(this.object);
+    }
+
+    getObj(){
+        const faceColors = [
+            [0.7, 0.7, 0.3, 1.0],    // Front face: white - modified
+            [1.0, 0.0, 0.0, 1.0],    // Back face: red
+            [0.0, 1.0, 0.0, 1.0],    // Top face: green
+            [0.0, 0.0, 1.0, 1.0],    // Bottom face: blue
+            [1.0, 1.0, 0.0, 1.0],    // Right face: yellow
+            [1.0, 0.0, 1.0, 1.0],    // Left face: purple
+        ];
+        let colors: number[] = [];
+        faceColors.forEach(v => {
+            colors = colors.concat(v, v, v, v);
+        });
+        const positions=[];
+        for (let entry of this.vertices){
+            positions.push(entry.x);
+            positions.push(entry.y);
+            positions.push(entry.z);
+        }
+        var indices:number[]=[];
+        for (let entry of this.object){
+            indices=indices.concat(entry.vIndices);
+        }
+        return new GeometryObject([0.0, 0.0, 0.0], positions, indices, colors);
     }
 
     protected OBJDocparser(content:string){

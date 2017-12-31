@@ -26,9 +26,12 @@ camera.lookAt([0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
 const scene = new Scene(camera);
 
 const tmp=new ObjLoader("haha",1,false);
+const cube0=tmp.getObj();
+console.log("objlike",cube0);
+scene.addObject(cube0);
 
-const cube = makeDemoCube();
-scene.addObject(cube);
+// const cube = makeDemoCube();
+// scene.addObject(cube);
 
 const conf = {
     width: config.WIDTH,
