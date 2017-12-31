@@ -55,7 +55,7 @@ export default class LightedObject extends IncolliableObject implements Drawable
         }
 
         if (!modelMatrix) {
-            modelMatrix = mat4.eyes();
+            modelMatrix = mat4.identity();
         }
 
         const shader = engine.getCurrentShader();
@@ -63,7 +63,7 @@ export default class LightedObject extends IncolliableObject implements Drawable
         const attribLocs = shader.getAttribLocations();
 
         const modelLoc = shader.getModelMatrixLocation();
-        const modelMat = mat4.multiply(modelMatrix, mat4.eyes());
+        const modelMat = mat4.multiply(modelMatrix, mat4.identity());
         gl.uniformMatrix4fv(modelLoc, false, new Float32Array(modelMat));
 
         gl.uniform3fv(uniformLocs["uMaterialAmbientColor"], this.material.ambientColor);
@@ -130,7 +130,7 @@ export function makeDemoLightedCube() {
         20, 21, 22, 20, 22, 23,   // left
     ];
 
-    let material = new Material(
+    const material = new Material(
         [0, 0, 0],
         [1.0, 0, 0],
         [0.085514, 0.355277, 0.074845],
