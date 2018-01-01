@@ -4,16 +4,22 @@ import * as contentText from '../../module/cube.obj';
 export default class ObjLoader {
     protected vertices: Vertex[]=[];
     protected normals:Normal[]=[];
+    // protected mtls:MTLDoc[]=[];
     protected scale:number;
     protected reverse:boolean;
     protected textureVt:VTertex[]=[];
     protected object:Face[]=[];
+    protected filename:string;
+    protected content:string;
+    protected texturefile:string;
 
-    constructor(filename:string,scale:number,reverse:boolean){
+    constructor(filename:string,scale:number,reverse:boolean,texturefile:string){
         this.scale=scale;
         this.reverse=reverse;
+        this.filename=filename;
+        this.texturefile=texturefile;
         const content = <string>(contentText as any);
-        console.log("content",content);
+        //this.getText("/cube.obj",this.content);
         this.OBJDocparser(content);
         console.log(this.normals);
         console.log(this.vertices);
@@ -74,15 +80,38 @@ export default class ObjLoader {
                 }
             }
         }
-        return new GeometryObject([0.0, 0.0, 0.0], positions, indices, colors);
+        return new GeometryObject([0.0, 0.0, 0.0], positions, indices, colors,this.texturefile);
     }
 
+    getText=function (the_request:string,content:string)
+    {
+        var request=new XMLHttpRequest();
+        if(request)
+        {
+            request.open("GET",the_request,true);
+            request.send(null);
+            request.onreadystatechange=function()
+            {
+                if(request.readyState===4)
+                {
+                    if (request.status!=404)
+                    {
+                        content=request.responseText;
+                        console.log("content",content);
+                    }
+                }
+            };
+        }else{
+            alert("error");
+        }
+    }
+
+    //默认一个obj文件一个对象
     protected OBJDocparser(content:string){
         var lines=content.split("\n");
         lines.push(null); // Append null
         var tempIndex = 0;    // Initialize index of line
 
-        //var currentObject = null;//理解为一个代号?
         var currentMaterialName = "";
         //var ifmtl=false;
 
@@ -101,19 +130,18 @@ export default class ObjLoader {
                 case '#':
                     continue;  // Skip comments
                 // case 'mtllib':
-                //     ifmtl=true;// Read Material chunk
-                //     var path = parseMtllib(sp, this.fileName);
+                //     var ifmtl=true;// Read Material chunk
+                //     var path = this.parseMtllib(sp, this.filename);
                 //     var mtl = new MTLDoc();   // Create MTL instance
                 //     this.mtls.push(mtl);
-                //     console.log(this.mtls,":this.mtls",modelObject[index].mtls);
                 //     var request = new XMLHttpRequest();
                 //     request.onreadystatechange = function() {
                 //         if (request.readyState == 4) {
                 //             if (request.status != 404) {
-                //                 onReadMTLFile(request.responseText, mtl, modelObject, index, mtlArray);
+                //                 this.onReadMTLFile(request.responseText, mtl, mtlArray);
                 //             }else{
                 //                 mtlArray[index]=!modelObject[index].mtls.some(function(x){return !x});
-                //                 console.log("need a mtlib, but there is none",mtlArray[index]);
+                //                 // console.log("need a mtlib, but there is none",mtlArray[index]);
                 //                 mtl.complete = true;
                 //             }
                 //         }
@@ -129,7 +157,7 @@ export default class ObjLoader {
                 //     continue; // Go to the next line
                 // case 'o':
                 // case 'g':   // Read Object name
-                //     var object = parseObjectName(sp);
+                //     var object = this.parseObjectName(sp);
                 //     this.objects.push(object);
                 //     currentObject = object;
                 //     //这是一个浅复制，可以简单地认为和object指向同一块内容
@@ -149,10 +177,10 @@ export default class ObjLoader {
                     var face = this.parseFace(sp, currentMaterialName, this.vertices,this.textureVt, this.normals, this.reverse);
                     this.object.push(face);
                     continue; // Go to the next line
-                // case 'vt':
-                //     var VTvertex = parseVTertex(sp,1);
-                //     this.textureVt.push(VTvertex);
-                //     continue;
+                case 'vt':
+                    var VTvertex = this.parseVertex(sp,this.scale);
+                    this.textureVt.push(VTvertex);
+                    continue;
                 default:
                     continue;
             }
@@ -161,6 +189,11 @@ export default class ObjLoader {
         //if(!ifmtl)mtlArray[index]=true;
         return true;
     }
+
+    // parseObjectName=function(sp:StringParser) {
+    //     var name = sp.getWord();
+    //     return (new OBJObject(name));
+    // }
 
     parseVertex=function(sp:StringParser, scale:number) {
         var x = sp.getFloat() * scale;
@@ -187,7 +220,6 @@ export default class ObjLoader {
 
             if(subWords.length >= 1){
                 var vi = parseInt(subWords[0])<0?vertices.length+parseInt(subWords[0]):parseInt(subWords[0])- 1;
-                //if(iiii<4)console.log(vi,"vi",parseInt(subWords[0]),subWords,word,(word.replace( /^\s+|\s+$/g, "" )));
                 face.vIndices.push(vi);
             }
             if(subWords.length >= 2){
@@ -203,7 +235,6 @@ export default class ObjLoader {
                 face.nIndices.push(-1);
             }
         }
-        //if(iiii<4)console.log(face.vIndices,"face.vIndices",vertices[face.vIndices[0]],vertices[face.vIndices[1]],vertices[face.vIndices[2]]);
 
         // calc normal
         // console.log(vertices,face.vIndices[0],face.vIndices[1],face.vIndices[2]);
@@ -220,13 +251,10 @@ export default class ObjLoader {
             vertices[face.vIndices[2]].y,
             vertices[face.vIndices[2]].z];
 
-        //这个其实没有什么用，留着以后删除吧
         var t1,t2,t3;
 
         if(face.tIndices.length>=3) {
             if(!textureVt[face.tIndices[0]]){
-                console.log("textureVt.length:",textureVt.length,"face.tIndices[0]",face.tIndices,"face.tIndices.length",face.tIndices.length);
-                throw("hhhh");
             }
             t1 = [
                 textureVt[face.tIndices[0]].x,
@@ -240,16 +268,15 @@ export default class ObjLoader {
         }
         // 计算法向量
         var normal = this.calcNormal(v0, v1, v2);
-        // 法線が正しく求められたか調べる
         if (normal == null) {
-            if (face.vIndices.length >= 4) { // 面が四角形なら別の3点の組み合わせで法線計算
+            if (face.vIndices.length >= 4) {
                 var v3 = [
                     vertices[face.vIndices[3]].x,
                     vertices[face.vIndices[3]].y,
                     vertices[face.vIndices[3]].z ];
                 normal = this.calcNormal(v1, v2, v3);
             }
-            if(normal == null){         // 法線が求められなかったのでY軸方向の法線とする
+            if(normal == null){
                 normal = [0.0, 1.0, 0.0];
             }
         }
@@ -310,7 +337,99 @@ export default class ObjLoader {
         v.normalize();
         return v.elements;
     }
+
+    // parseMtllib=function(sp:StringParser, fileName:string) {
+    //     // Get directory path
+    //     var i = fileName.lastIndexOf("/");
+    //     var dirPath = "";
+    //     if(i > 0) dirPath = fileName.substr(0, i+1);
+    //
+    //     return dirPath + sp.getWord();   // Get path
+    // }
+    //
+    // onReadMTLFile=function (fileString:string, mtl:MTLDoc, mtlArray) {
+    //     var lines = fileString.split('\n');  // Break up into lines and store them as array
+    //     lines.push(null);           // Append null
+    //     var tempindex = 0;              // Initialize index of line
+    //
+    //     // Parse line by line
+    //     var line;      // A string in the line to be parsed
+    //     var name = ""; // Material name
+    //     var sp = new StringParser();  // Create StringParser
+    //     while ((line = lines[tempindex++]) != null) {
+    //         sp.init(line);                  // init StringParser
+    //         var command = sp.getWord();     // Get command
+    //         if(command == null)	 continue;  // check null command
+    //
+    //         switch(command){
+    //             case '#':
+    //                 continue;    // Skip comments
+    //             case 'newmtl': // Read Material chunk
+    //                 name = mtl.parseNewmtl(sp);    // Get name
+    //                 continue; // Go to the next line
+    //             case 'Kd':   // Read normal
+    //                 if(name == "") continue; // Go to the next line because of Error
+    //                 var material = mtl.parseRGB(sp, name);
+    //                 mtl.materials.push(material);
+    //                 name = "";
+    //                 continue; // Go to the next line
+    //         }
+    //     }
+    //     mtl.complete = true;
+    //
+    //     var tempii = 0,templock=false;
+    //     console.log("modelObject[index]",modelObject[index].mtls);
+    //     for(;tempii<modelObject[index].mtls.length;tempii++){
+    //         if(!!modelObject[index].mtls[tempii]){
+    //             templock=true;
+    //         }
+    //     }
+    //     mtlArray[index]=templock;
+    //     console.log(templock,mtlArray);
+    // }
 }
+
+// class MTLDoc{
+//     complete:boolean;
+//     materials:Array();
+//     constructor() {
+//         this.complete = false; // MTL is configured correctly
+//         this.materials = new Array(0);
+//     }
+//
+//     parseNewmtl = function(sp:StringParser) {
+//         return sp.getWord();         // Get name
+//     }
+//     parseRGB = function(sp:StringParser, name:string) {
+//         var r = sp.getFloat();
+//         var g = sp.getFloat();
+//         var b = sp.getFloat();
+//         return (new Material(name, r, g, b, 1));
+//     }
+//
+// }
+//
+// class Material{
+//     name:string;
+//     color:Color;
+//     constructor(name:string, r:number, g:number, b:number, a:number) {
+//         this.name = name;
+//         this.color = new Color(r, g, b, a);
+//     }
+// }
+
+class Color{
+    r:number;
+    g:number;
+    b:number;
+    a:number
+    constructor(r:number, g:number, b:number, a:number) {
+        this.r = r;
+        this.g = g;
+        this.b = b;
+        this.a = a;
+    }
+};
 
 class Face{
     materialName:string;

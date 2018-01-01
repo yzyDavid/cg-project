@@ -5,7 +5,7 @@ import './index.css';
 import * as config from './config';
 
 import {Engine, Scene, Camera} from './engine';
-import {makeDemoCube} from './engine';
+//import {makeDemoCube} from './engine';
 import {Pos} from './engine';
 import {ObjLoader} from './engine';
 
@@ -25,13 +25,13 @@ camera.lookAt([0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
 
 const scene = new Scene(camera);
 
-const tmp=new ObjLoader("haha",1,false);
+const tmp=new ObjLoader("haha",1,false,"haha2");
 const cube0=tmp.getObj();
 console.log("objlike",cube0);
 scene.addObject(cube0);
 
-const cube = makeDemoCube();
-console.log("objlike2",cube);
+// const cube = makeDemoCube();
+// console.log("objlike2",cube);
 // scene.addObject(cube);
 
 const conf = {

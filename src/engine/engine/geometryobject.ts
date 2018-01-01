@@ -22,18 +22,97 @@ export default class GeometryObject extends IncolliableObject implements Drawabl
     protected colorBuffer: WebGLBuffer;
     protected indexBuffer: WebGLBuffer;
 
+    protected texture:WebGLTexture;
+    protected  texturefile:string;
+
     constructor(pos: Pos,
                 vertices: number[],
                 indices: number[],
-                colors: number[]) {
+                colors: number[],
+                texturefile:string) {
         super(pos, undefined);
         this.vertices = vertices;
         this.indices = indices;
         this.colors = colors;
         this.bufferCreated = false;
+        this.texturefile=texturefile;
     }
 
+    create_texture=function(gl:WebGLRenderingContext,source:string,texture:WebGLTexture){
+        // イメージオブジェクトの生成
+        var img = new Image();
+
+        // データのオンロードをトリガーにする
+        img.onload = function(){
+            // テクスチャオブジェクトの生成
+            var tex = gl.createTexture();
+
+            // テクスチャをバインドする
+            gl.bindTexture(gl.TEXTURE_2D, tex);
+
+            // テクスチャへイメージを適用
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+
+            // ミップマップを生成
+            gl.generateMipmap(gl.TEXTURE_2D);
+
+            // テクスチャのバインドを無効化
+            gl.bindTexture(gl.TEXTURE_2D, null);
+
+            // 生成したテクスチャをグローバル変数に代入
+            texture = tex;
+        };
+
+        // イメージオブジェクトのソースを指定
+        img.src = source;
+    }
+
+    // initTextures=function(gl: WebGLRenderingContext,Url:string,texture:WebGLTexture) {
+    //     console.log(gl,"image to onload ..",gl);
+    //     texture = gl.createTexture();   // Create a texture object
+    //     if (!texture) {
+    //         console.log('Failed to create the texture object');
+    //         return false;
+    //     }
+    //     var image = new Image();  // Create the image object
+    //     if (!image) {
+    //         console.log('Failed to create the image object');
+    //         return false;
+    //     }
+    //     // Register the event handler to be called on loading an image
+    //     image.onload = function(){
+    //         //mtlOK++;
+    //         console.log("image onload");
+    //         var loadTexture=function(gl: WebGLRenderingContext, n:number, texture:WebGLTexture, image:HTMLImageElement) {
+    //             var TextureList = [gl.TEXTURE0,gl.TEXTURE1,gl.TEXTURE2,gl.TEXTURE3,gl.TEXTURE4,gl.TEXTURE5,gl.TEXTURE6,gl.TEXTURE7];
+    //
+    //             gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1); // Flip the image's y axis
+    //             // Enable texture unit0
+    //             gl.activeTexture(TextureList[n]);
+    //             // Bind the texture object to the target
+    //             gl.bindTexture(gl.TEXTURE_2D, texture);
+    //
+    //             // Set the texture parameters
+    //             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    //             // Set the texture image
+    //             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
+    //
+    //             //loadTextures.unload-=1;
+    //             // Set the texture unit 0 to the sampler
+    //             // gl.uniform1i(u_Sampler, n);
+    //         }
+    //         loadTexture(gl, 0, texture, image);
+    //     };
+    //     // Tell the browser to load an image
+    //     image.src = Url;
+    //     return true;
+    // }
+
+
+
     protected createBuffers(gl: WebGLRenderingContext) {
+        this.create_texture(gl,this.texturefile,this.texture);
+
         this.vertexBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW);
@@ -91,67 +170,67 @@ export default class GeometryObject extends IncolliableObject implements Drawabl
     }
 }
 
-export function makeDemoCube() {
-    const positions = [
-        // Front face
-        -1.0, -1.0, 1.0,
-        1.0, -1.0, 1.0,
-        1.0, 1.0, 1.0,
-        -1.0, 1.0, 1.0,
-
-        // Back face
-        -1.0, -1.0, -1.0,
-        -1.0, 1.0, -1.0,
-        1.0, 1.0, -1.0,
-        1.0, -1.0, -1.0,
-
-        // Top face
-        -1.0, 1.0, -1.0,
-        -1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0,
-        1.0, 1.0, -1.0,
-
-        // Bottom face
-        -1.0, -1.0, -1.0,
-        1.0, -1.0, -1.0,
-        1.0, -1.0, 1.0,
-        -1.0, -1.0, 1.0,
-
-        // Right face
-        1.0, -1.0, -1.0,
-        1.0, 1.0, -1.0,
-        1.0, 1.0, 1.0,
-        1.0, -1.0, 1.0,
-
-        // Left face
-        -1.0, -1.0, -1.0,
-        -1.0, -1.0, 1.0,
-        -1.0, 1.0, 1.0,
-        -1.0, 1.0, -1.0,
-    ];
-
-    const faceColors = [
-        [0.7, 0.7, 0.3, 1.0],    // Front face: white - modified
-        [1.0, 0.0, 0.0, 1.0],    // Back face: red
-        [0.0, 1.0, 0.0, 1.0],    // Top face: green
-        [0.0, 0.0, 1.0, 1.0],    // Bottom face: blue
-        [1.0, 1.0, 0.0, 1.0],    // Right face: yellow
-        [1.0, 0.0, 1.0, 1.0],    // Left face: purple
-    ];
-
-    const indices = [
-        0, 1, 2, 0, 2, 3,    // front
-        4, 5, 6, 4, 6, 7,    // back
-        8, 9, 10, 8, 10, 11,   // top
-        12, 13, 14, 12, 14, 15,   // bottom
-        16, 17, 18, 16, 18, 19,   // right
-        20, 21, 22, 20, 22, 23,   // left
-    ];
-
-    let colors: number[] = [];
-    faceColors.forEach(v => {
-        colors = colors.concat(v, v, v, v);
-    });
-
-    return new GeometryObject([0.0, 0.0, 0.0], positions, indices, colors);
-}
+// export function makeDemoCube() {
+//     const positions = [
+//         // Front face
+//         -1.0, -1.0, 1.0,
+//         1.0, -1.0, 1.0,
+//         1.0, 1.0, 1.0,
+//         -1.0, 1.0, 1.0,
+//
+//         // Back face
+//         -1.0, -1.0, -1.0,
+//         -1.0, 1.0, -1.0,
+//         1.0, 1.0, -1.0,
+//         1.0, -1.0, -1.0,
+//
+//         // Top face
+//         -1.0, 1.0, -1.0,
+//         -1.0, 1.0, 1.0,
+//         1.0, 1.0, 1.0,
+//         1.0, 1.0, -1.0,
+//
+//         // Bottom face
+//         -1.0, -1.0, -1.0,
+//         1.0, -1.0, -1.0,
+//         1.0, -1.0, 1.0,
+//         -1.0, -1.0, 1.0,
+//
+//         // Right face
+//         1.0, -1.0, -1.0,
+//         1.0, 1.0, -1.0,
+//         1.0, 1.0, 1.0,
+//         1.0, -1.0, 1.0,
+//
+//         // Left face
+//         -1.0, -1.0, -1.0,
+//         -1.0, -1.0, 1.0,
+//         -1.0, 1.0, 1.0,
+//         -1.0, 1.0, -1.0,
+//     ];
+//
+//     const faceColors = [
+//         [0.7, 0.7, 0.3, 1.0],    // Front face: white - modified
+//         [1.0, 0.0, 0.0, 1.0],    // Back face: red
+//         [0.0, 1.0, 0.0, 1.0],    // Top face: green
+//         [0.0, 0.0, 1.0, 1.0],    // Bottom face: blue
+//         [1.0, 1.0, 0.0, 1.0],    // Right face: yellow
+//         [1.0, 0.0, 1.0, 1.0],    // Left face: purple
+//     ];
+//
+//     const indices = [
+//         0, 1, 2, 0, 2, 3,    // front
+//         4, 5, 6, 4, 6, 7,    // back
+//         8, 9, 10, 8, 10, 11,   // top
+//         12, 13, 14, 12, 14, 15,   // bottom
+//         16, 17, 18, 16, 18, 19,   // right
+//         20, 21, 22, 20, 22, 23,   // left
+//     ];
+//
+//     let colors: number[] = [];
+//     faceColors.forEach(v => {
+//         colors = colors.concat(v, v, v, v);
+//     });
+//
+//     return new GeometryObject([0.0, 0.0, 0.0], positions, indices, colors);
+// }
