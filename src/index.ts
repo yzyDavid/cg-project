@@ -34,7 +34,7 @@ scene.addObject(cube0);
 
 const cube = makeDemoCube();
 console.log("objlike2", cube);
- scene.addObject(cube);
+scene.addObject(cube);
 
 const conf = {
     shader: 'lighting',
