@@ -9,22 +9,18 @@ export default class ObjLoader {
     protected reverse: boolean;
     protected textureVt: VT[] = [];
     protected object: Face[] = [];
-    protected texturefile: string;
-    protected vt: number[] = [];
-    protected content: string = "";
+    protected texturefile:string;
+    protected vt:number[]=[];
 
-    constructor(filename: string, scale: number, reverse: boolean, texturefile: string) {
+    constructor(filename: string, scale: number, reverse: boolean,texturefile:string) {
         this.scale = scale;
         this.reverse = reverse;
-        //const content = <string>(contentText as any);
-        this.getText(filename, this.content);
-
-        this.texturefile = texturefile;
-        this.OBJDocparser(this.content);
+        const content = <string>(contentText as any);
+        this.OBJDocparser(content);
+        this.texturefile=texturefile;
         console.log(this.normals);
         console.log(this.vertices);
         console.log(this.object);
-
     }
 
     getObj() {
@@ -80,47 +76,54 @@ export default class ObjLoader {
                 }
             }
         }
-        return new GeometryObject([0.0, 0.0, 0.0], positions, indices, colors, this.vt, this.texturefile, true);
+        return new GeometryObject([0.0, 0.0, 0.0], positions, indices, colors,this.vt,this.texturefile,true);
     }
 
-    getText = function (the_request: string, content: string) {
-        var request = new XMLHttpRequest();
-        if (request) {
-            request.open("GET", the_request, false);
+    getText=function (the_request:string,content:string)
+    {
+        var request=new XMLHttpRequest();
+        if(request)
+        {
+            request.open("GET",the_request,true);
             request.send(null);
-            request.onreadystatechange = function () {
-                if (request.readyState === 4) {
-                    if (request.status != 404) {
-                        content = request.responseText;
-                        console.log("content", content);
+            request.onreadystatechange=function()
+            {
+                if(request.readyState===4)
+                {
+                    if (request.status!=404)
+                    {
+                        content=request.responseText;
+                        console.log("content",content);
                     }
                 }
             };
-        } else {
+        }else{
             alert("error");
         }
     }
 
     protected OBJDocparser(content: string) {
         var lines = content.split("\n");
-        lines.push(null);
-        var tempIndex = 0;
+        lines.push(null); // Append null
+        var tempIndex = 0;    // Initialize index of line
 
         var currentMaterialName = "";
+        //var ifmtl=false;
 
-        var line;
-        var sp: StringParser;
+        // Parse line by line
+        var line;         // A string in the line to be parsed
+        var sp: StringParser;  // Create StringParser
         sp = new StringParser();
 
         while ((line = lines[tempIndex++]) != null) {
             console.debug(line);
-            sp.init(line);
-            var command = sp.getWord();
-            if (command == null) continue;
+            sp.init(line);                  // init StringParser
+            var command = sp.getWord();     // Get command
+            if (command == null) continue;  // check null command
 
             switch (command) {
                 case '#':
-                    continue;
+                    continue;  // Skip comments
                 // case 'mtllib':
                 //     var ifmtl=true;// Read Material chunk
                 //     var path = this.parseMtllib(sp, this.filename);
@@ -152,30 +155,33 @@ export default class ObjLoader {
                 //     var object = this.parseObjectName(sp);
                 //     this.objects.push(object);
                 //     currentObject = object;
+                //     //这是一个浅复制，可以简单地认为和object指向同一块内容
                 //     continue; // Go to the next line
-                case 'v':
+                case 'v':   // Read vertex
                     var vertex = this.parseVertex(sp, this.scale);
                     this.vertices.push(vertex);
-                    continue;
-                case 'vn':
+                    continue; // Go to the next line
+                case 'vn':   // Read normal
                     var normal = this.parseNormal(sp);
                     this.normals.push(normal);
-                    continue;
+                    continue; // Go to the next line
                 // case 'usemtl': // Read Material name
                 //     currentMaterialName = parseUsemtl(sp);
                 //     continue; // Go to the next line
-                case 'f':
+                case 'f': // Read face
                     var face = this.parseFace(sp, currentMaterialName, this.vertices, this.textureVt, this.normals, this.reverse);
                     this.object.push(face);
-                    continue;
+                    continue; // Go to the next line
                 case 'vt':
-                    var VTvertex = this.parseVertex(sp, this.scale);
+                    var VTvertex = this.parseVertex(sp,this.scale);
                     this.textureVt.push(VTvertex);
                     continue;
                 default:
                     continue;
             }
         }
+        //objArray[index]=true;
+        //if(!ifmtl)mtlArray[index]=true;
         return true;
     }
 
@@ -225,6 +231,8 @@ export default class ObjLoader {
             }
         }
 
+        // calc normal
+        // console.log(vertices,face.vIndices[0],face.vIndices[1],face.vIndices[2]);
         var v0 = [
             vertices[face.vIndices[0]].x,
             vertices[face.vIndices[0]].y,
@@ -238,6 +246,7 @@ export default class ObjLoader {
             vertices[face.vIndices[2]].y,
             vertices[face.vIndices[2]].z];
 
+        // 计算法向量
         var normal = this.calcNormal(v0, v1, v2);
         if (normal == null) {
             if (face.vIndices.length >= 4) {
@@ -247,7 +256,7 @@ export default class ObjLoader {
                     vertices[face.vIndices[3]].z];
                 normal = this.calcNormal(v1, v2, v3);
             }
-            if (normal == null) {
+            if (normal == null) {         // 法線が求められなかったのでY軸方向の法線とする
                 normal = [0.0, 1.0, 0.0];
             }
         }
@@ -258,11 +267,13 @@ export default class ObjLoader {
         }
         face.normal = new Normal(normal[0], normal[1], normal[2]);
 
-        for (let v of face.tIndices) {
-            this.vt.push(textureVt[v].x);
-            this.vt.push(textureVt[v].y);
-        }
+            for (let v of face.tIndices){
+                this.vt.push(textureVt[v].x);
+                this.vt.push(textureVt[v].y);
+            }
 
+
+        // Devide to triangles if face contains over 3 points.
         if (face.vIndices.length > 3) {
             var n = face.vIndices.length - 2;
             var newVIndices = new Array(n * 3);
@@ -282,6 +293,7 @@ export default class ObjLoader {
             face.vIndices = newVIndices;
             face.nIndices = newNIndices;
             face.tIndices = newTIndices;
+            //if(iiii<4)console.log("face.vIndices",face.vIndices);
         }
         face.numIndices = face.vIndices.length;
 
@@ -289,6 +301,7 @@ export default class ObjLoader {
     }
 
     calcNormal = function (p0: number[], p1: number[], p2: number[]) {
+        // v0: a vector from p1 to p0, v1; a vector from p1 to p2
         var v0 = new Float32Array(3);
         var v1 = new Float32Array(3);
         for (var i = 0; i < 3; i++) {
@@ -296,11 +309,13 @@ export default class ObjLoader {
             v1[i] = p2[i] - p1[i];
         }
 
+        // The cross product of v0 and v1
         var c = new Float32Array(3);
         c[0] = v0[1] * v1[2] - v0[2] * v1[1];
         c[1] = v0[2] * v1[0] - v0[0] * v1[2];
         c[2] = v0[0] * v1[1] - v0[1] * v1[0];
 
+        // Normalize the result
         var v = new Vector3(c);
         v.normalize();
         return v.elements;
@@ -386,13 +401,12 @@ export default class ObjLoader {
 //     }
 // }
 
-class Color {
-    r: number;
-    g: number;
-    b: number;
-    a: number
-
-    constructor(r: number, g: number, b: number, a: number) {
+class Color{
+    r:number;
+    g:number;
+    b:number;
+    a:number
+    constructor(r:number, g:number, b:number, a:number) {
         this.r = r;
         this.g = g;
         this.b = b;
@@ -413,7 +427,7 @@ class Face {
         if (materialName == null) this.materialName = "";
         this.vIndices = new Array(0);
         this.nIndices = new Array(0);
-        this.tIndices = new Array(0);
+        this.tIndices = new Array(0); // 用来记录纹理坐标
     }
 }
 
@@ -453,7 +467,6 @@ class Vector3 {
 class VT {
     x: number;
     y: number;
-
     constructor(x: number, y: number) {
         this.x = x;
         this.y = y;
@@ -464,7 +477,6 @@ class Vertex {
     x: number;
     y: number;
     z: number;
-
     constructor(x: number, y: number, z: number) {
         this.x = x;
         this.y = y;
@@ -489,8 +501,9 @@ class StringParser {
     index: number;
 
     constructor() {
-        this.str = null;
-        this.index = 0;
+        this.str = null;   // Store the string specified by the argument
+        this.index = 0; // Position in the string to be processed
+        // this.init(str);
     }
 
     init = function (str: string) {
@@ -511,6 +524,7 @@ class StringParser {
     skipDelimiters = function () {
         for (var i = this.index, len = this.str.length; i < len; i++) {
             var c = this.str.charAt(i);
+            // Skip TAB, Space, '(', ')
             if (c == '\t' || c == ' ' || c == '(' || c == ')' || c == '"') continue;
             break;
         }
