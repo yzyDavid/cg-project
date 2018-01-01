@@ -72,6 +72,7 @@ export default class GeometryObject extends IncolliableObject implements Drawabl
             console.log("texture");
             texture = gl.createTexture();//创建纹理图像缓冲区
             gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true); //纹理图片上下反转
+            gl.activeTexture(gl.TEXTURE0);//激活0号纹理单元TEXTURE0
             gl.bindTexture(gl.TEXTURE_2D, texture);//绑定纹理缓冲区
             //设置纹理贴图填充方式(纹理贴图像素尺寸大于顶点绘制区域像素尺寸)
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -96,7 +97,7 @@ export default class GeometryObject extends IncolliableObject implements Drawabl
             gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.colors), gl.STATIC_DRAW);
         }
         else {
-            gl.activeTexture(gl.TEXTURE0);//激活0号纹理单元TEXTURE0
+
             this.textBuffer = gl.createBuffer();
             gl.bindBuffer(gl.ARRAY_BUFFER, this.textBuffer);
             gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vt), gl.STATIC_DRAW);
