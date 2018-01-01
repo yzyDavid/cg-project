@@ -5,8 +5,10 @@ import './index.css';
 import * as config from './config';
 
 import {Engine, Scene, Camera} from './engine';
-//import {makeDemoCube} from './engine';
+import {makeDemoCube} from './engine';
+import {makeDemoLightedCube} from './engine';
 import {Pos} from './engine';
+import Shader from "./engine/engine/shader";
 import {ObjLoader} from './engine';
 
 const canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById('root');
@@ -25,18 +27,17 @@ camera.lookAt([0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
 
 const scene = new Scene(camera);
 
-const tmp=new ObjLoader("haha",1,false,"./assets/module/texture.jpg");
-console.log("objlike",tmp);
-const cube0=tmp.getObj();
-
+const tmp = new ObjLoader("haha", 1, false);
+const cube0 = tmp.getObj();
+console.log("objlike", cube0);
 scene.addObject(cube0);
 
-// const cube = makeDemoCube();
-// console.log("objlike2",cube);
-// scene.addObject(cube);
+const cube = makeDemoCube();
+console.log("objlike2", cube);
+ scene.addObject(cube);
 
 const conf = {
-    shader:'texture',
+    shader: 'lighting',
     width: config.WIDTH,
     height: config.HEIGHT
 };
