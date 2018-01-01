@@ -16,11 +16,11 @@ export default class ObjLoader {
     constructor(filename: string, scale: number, reverse: boolean, texturefile: string) {
         this.scale = scale;
         this.reverse = reverse;
-        //const content = <string>(contentText as any);
-        this.getText(filename, this.content);
+        const content = <string>(contentText as any);
+        //this.getText(filename, this.content);
 
         this.texturefile = texturefile;
-        this.OBJDocparser(this.content);
+        this.OBJDocparser(content);
         console.log(this.normals);
         console.log(this.vertices);
         console.log(this.object);
