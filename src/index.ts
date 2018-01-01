@@ -5,7 +5,6 @@ import './index.css';
 import * as config from './config';
 
 import {Engine, Scene, Camera} from './engine';
-//import {makeDemoCube} from './engine';
 import {Pos} from './engine';
 import {ObjLoader} from './engine';
 
@@ -25,9 +24,9 @@ camera.lookAt([0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
 
 const scene = new Scene(camera);
 
-const tmp=new ObjLoader("haha",1,false,"./assets/module/texture.jpg");
-console.log("objlike",tmp);
-const cube0=tmp.getObj();
+const tmp = new ObjLoader("./assets/module/cube.obj", 1, false, "./assets/module/texture.jpg");
+console.log("objlike", tmp);
+const cube0 = tmp.getObj();
 
 scene.addObject(cube0);
 
@@ -36,7 +35,7 @@ scene.addObject(cube0);
 // scene.addObject(cube);
 
 const conf = {
-    shader:'texture',
+    shader: 'texture',
     width: config.WIDTH,
     height: config.HEIGHT
 };
@@ -47,11 +46,11 @@ const timeController = engine.getTimeEventController();
 
 keyController.addListener('q', () => engine.stop());
 keyController.enable();
-// timeController.addListener('cameraMove', () => {
-//     pos[0] += 0.01;
-//     pos[1] += 0.01;
-//     camera.setPosition(pos);
-// });
+timeController.addListener('cameraMove', () => {
+    pos[0] += 0.01;
+    pos[1] += 0.01;
+    camera.setPosition(pos);
+});
 
 engine.start();
 
