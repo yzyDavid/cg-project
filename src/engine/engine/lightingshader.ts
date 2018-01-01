@@ -31,38 +31,6 @@ export default class LightingShader extends Shader {
         return this;
     }
 
-    getVertexPositionLocation() {
-        const r = this.getAttribLocations()['aVertexPos_model'];
-        if (!r) {
-            throw new Error();
-        }
-        return r;
-    }
-
-    getProjectionMatrixLocation(): WebGLUniformLocation {
-        const r = this.getUniformLocations()['uProjectionMatrix'];
-        if (!r) {
-            throw new Error();
-        }
-        return r;
-    }
-
-    getModelMatrixLocation(): WebGLUniformLocation {
-        const r = this.getUniformLocations()['uModelMatrix'];
-        if (!r) {
-            throw new Error();
-        }
-        return r;
-    }
-
-    getViewMatrixLocation(): WebGLUniformLocation {
-        const r = this.getUniformLocations()['uViewMatrix'];
-        if (!r) {
-            throw new Error();
-        }
-        return r;
-    }
-
     // TODO: to be extended to support three lights at most.
     setLights(lights: Light[]) {
         const gl = this.gl;
