@@ -95,13 +95,13 @@ export interface ChildrenDrawable {
 export class Model {
 }
 
-export class Colliable extends Component {
+export abstract class Colliable extends Component {
     constructor(position: Pos) {
         super(position);
     }
 }
 
-export class Incolliable extends Component {
+export abstract class Incolliable extends Component {
     constructor(position: Pos) {
         super(position);
     }
