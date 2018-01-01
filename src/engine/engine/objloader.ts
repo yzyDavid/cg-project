@@ -297,8 +297,6 @@ export default class ObjLoader {
         }
         face.numIndices = face.vIndices.length;
 
-        //iiii++;
-
         return face;
     }
 
