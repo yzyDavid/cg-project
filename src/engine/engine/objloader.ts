@@ -2,40 +2,22 @@ import GeometryObject from './geometryobject';
 import * as contentText from '../../module/cube.obj';
 
 export default class ObjLoader {
-<<<<<<< HEAD:src/engine/engine/ObjLoader.ts
-    protected vertices: Vertex[]=[];
-    protected normals:Normal[]=[];
-    // protected mtls:MTLDoc[]=[];
-    protected scale:number;
-    protected reverse:boolean;
-    protected textureVt:VTertex[]=[];
-    protected object:Face[]=[];
-    protected filename:string;
-    protected content:string;
-    protected texturefile:string;
 
-    constructor(filename:string,scale:number,reverse:boolean,texturefile:string){
-        this.scale=scale;
-        this.reverse=reverse;
-        this.filename=filename;
-        this.texturefile=texturefile;
-        const content = <string>(contentText as any);
-        //this.getText("/cube.obj",this.content);
-=======
     protected vertices: Vertex[] = [];
     protected normals: Normal[] = [];
     protected scale: number;
     protected reverse: boolean;
-    protected textureVt: VTertex[] = [];
+    protected textureVt: VT[] = [];
     protected object: Face[] = [];
+    protected texturefile:string;
+    protected vt:number[]=[];
 
-    constructor(filename: string, scale: number, reverse: boolean) {
+    constructor(filename: string, scale: number, reverse: boolean,texturefile:string) {
         this.scale = scale;
         this.reverse = reverse;
         const content = <string>(contentText as any);
-        console.log("content", content);
->>>>>>> 0f67042fe70351c563bee79ceb9f10c0e6221786:src/engine/engine/objloader.ts
         this.OBJDocparser(content);
+        this.texturefile=texturefile;
         console.log(this.normals);
         console.log(this.vertices);
         console.log(this.object);
@@ -94,10 +76,9 @@ export default class ObjLoader {
                 }
             }
         }
-        return new GeometryObject([0.0, 0.0, 0.0], positions, indices, colors,this.texturefile);
+        return new GeometryObject([0.0, 0.0, 0.0], positions, indices, colors,this.vt,this.texturefile,false);
     }
 
-<<<<<<< HEAD:src/engine/engine/ObjLoader.ts
     getText=function (the_request:string,content:string)
     {
         var request=new XMLHttpRequest();
@@ -121,13 +102,8 @@ export default class ObjLoader {
         }
     }
 
-    //默认一个obj文件一个对象
-    protected OBJDocparser(content:string){
-        var lines=content.split("\n");
-=======
     protected OBJDocparser(content: string) {
         var lines = content.split("\n");
->>>>>>> 0f67042fe70351c563bee79ceb9f10c0e6221786:src/engine/engine/objloader.ts
         lines.push(null); // Append null
         var tempIndex = 0;    // Initialize index of line
 
@@ -209,16 +185,12 @@ export default class ObjLoader {
         return true;
     }
 
-<<<<<<< HEAD:src/engine/engine/ObjLoader.ts
     // parseObjectName=function(sp:StringParser) {
     //     var name = sp.getWord();
     //     return (new OBJObject(name));
     // }
 
-    parseVertex=function(sp:StringParser, scale:number) {
-=======
     parseVertex = function (sp: StringParser, scale: number) {
->>>>>>> 0f67042fe70351c563bee79ceb9f10c0e6221786:src/engine/engine/objloader.ts
         var x = sp.getFloat() * scale;
         var y = sp.getFloat() * scale;
         var z = sp.getFloat() * scale;
@@ -232,7 +204,7 @@ export default class ObjLoader {
         return (new Normal(x, y, z));
     }
 
-    parseFace = function (sp: StringParser, materialName: string, vertices: Vertex[], textureVt: VTertex[], Normals: Normal[], reverse: boolean) {
+    parseFace = function (sp: StringParser, materialName: string, vertices: Vertex[], textureVt: VT[], Normals: Normal[], reverse: boolean) {
         var face = new Face(materialName);
         // get indices
         for (; ;) {
@@ -241,14 +213,8 @@ export default class ObjLoader {
             var subWords;
             subWords = word.split('/');
 
-<<<<<<< HEAD:src/engine/engine/ObjLoader.ts
-            if(subWords.length >= 1){
-                var vi = parseInt(subWords[0])<0?vertices.length+parseInt(subWords[0]):parseInt(subWords[0])- 1;
-=======
             if (subWords.length >= 1) {
                 var vi = parseInt(subWords[0]) < 0 ? vertices.length + parseInt(subWords[0]) : parseInt(subWords[0]) - 1;
-                //if(iiii<4)console.log(vi,"vi",parseInt(subWords[0]),subWords,word,(word.replace( /^\s+|\s+$/g, "" )));
->>>>>>> 0f67042fe70351c563bee79ceb9f10c0e6221786:src/engine/engine/objloader.ts
                 face.vIndices.push(vi);
             }
             if (subWords.length >= 2) {
@@ -280,31 +246,6 @@ export default class ObjLoader {
             vertices[face.vIndices[2]].y,
             vertices[face.vIndices[2]].z];
 
-<<<<<<< HEAD:src/engine/engine/ObjLoader.ts
-        var t1,t2,t3;
-
-        if(face.tIndices.length>=3) {
-            if(!textureVt[face.tIndices[0]]){
-=======
-        //这个其实没有什么用，留着以后删除吧
-        var t1, t2, t3;
-
-        if (face.tIndices.length >= 3) {
-            if (!textureVt[face.tIndices[0]]) {
-                console.log("textureVt.length:", textureVt.length, "face.tIndices[0]", face.tIndices, "face.tIndices.length", face.tIndices.length);
-                throw("hhhh");
->>>>>>> 0f67042fe70351c563bee79ceb9f10c0e6221786:src/engine/engine/objloader.ts
-            }
-            t1 = [
-                textureVt[face.tIndices[0]].x,
-                textureVt[face.tIndices[0]].y];
-            t2 = [
-                textureVt[face.tIndices[1]].x,
-                textureVt[face.tIndices[1]].y];
-            t3 = [
-                textureVt[face.tIndices[2]].x,
-                textureVt[face.tIndices[2]].y];
-        }
         // 计算法向量
         var normal = this.calcNormal(v0, v1, v2);
         if (normal == null) {
@@ -315,11 +256,7 @@ export default class ObjLoader {
                     vertices[face.vIndices[3]].z];
                 normal = this.calcNormal(v1, v2, v3);
             }
-<<<<<<< HEAD:src/engine/engine/ObjLoader.ts
-            if(normal == null){
-=======
             if (normal == null) {         // 法線が求められなかったのでY軸方向の法線とする
->>>>>>> 0f67042fe70351c563bee79ceb9f10c0e6221786:src/engine/engine/objloader.ts
                 normal = [0.0, 1.0, 0.0];
             }
         }
@@ -329,7 +266,12 @@ export default class ObjLoader {
             normal[2] = -normal[2];
         }
         face.normal = new Normal(normal[0], normal[1], normal[2]);
-        face.textureVt = [t1, t2, t3];
+
+            for (let v of face.tIndices){
+                this.vt.push(textureVt[v].x);
+                this.vt.push(textureVt[v].y);
+            }
+
 
         // Devide to triangles if face contains over 3 points.
         if (face.vIndices.length > 3) {
@@ -432,7 +374,6 @@ export default class ObjLoader {
     // }
 }
 
-<<<<<<< HEAD:src/engine/engine/ObjLoader.ts
 // class MTLDoc{
 //     complete:boolean;
 //     materials:Array();
@@ -475,27 +416,15 @@ class Color{
     }
 };
 
-class Face{
-    materialName:string;
-    vIndices:number[];
-    nIndices:number[];
-    tIndices:number[];
-    normal:Normal;
-    textureVt:number[][];
-    numIndices:number;
-    constructor(materialName:string) {
-=======
 class Face {
     materialName: string;
     vIndices: number[];
     nIndices: number[];
     tIndices: number[];
     normal: Normal;
-    textureVt: number[][];
     numIndices: number;
 
     constructor(materialName: string) {
->>>>>>> 0f67042fe70351c563bee79ceb9f10c0e6221786:src/engine/engine/objloader.ts
         this.materialName = materialName;
         if (materialName == null) this.materialName = "";
         this.vIndices = new Array(0);
@@ -537,10 +466,9 @@ class Vector3 {
     }
 }
 
-class VTertex {
+class VT {
     x: number;
     y: number;
-
     constructor(x: number, y: number) {
         this.x = x;
         this.y = y;
@@ -551,7 +479,6 @@ class Vertex {
     x: number;
     y: number;
     z: number;
-
     constructor(x: number, y: number, z: number) {
         this.x = x;
         this.y = y;

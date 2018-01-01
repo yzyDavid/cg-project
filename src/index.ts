@@ -25,7 +25,7 @@ camera.lookAt([0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
 
 const scene = new Scene(camera);
 
-const tmp=new ObjLoader("haha",1,false,"haha2");
+const tmp=new ObjLoader("haha",1,false,"/texture.png");
 const cube0=tmp.getObj();
 console.log("objlike",cube0);
 scene.addObject(cube0);

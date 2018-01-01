@@ -10,116 +10,93 @@ import {mat, mat4} from '../matrix';
 import {default as Engine} from './engine';
 import Scene from './scene';
 
+
 // a demo object.
 export default class GeometryObject extends IncolliableObject implements Drawable {
     protected vertices: number[];
     protected indices: number[];
     protected colors: number[];
+    protected vt:number[];
 
     protected bufferCreated: boolean;
 
     protected vertexBuffer: WebGLBuffer;
     protected colorBuffer: WebGLBuffer;
     protected indexBuffer: WebGLBuffer;
+    protected textBuffer:WebGLBuffer;
 
     protected texture:WebGLTexture;
     protected  texturefile:string;
+    protected hasTexture:boolean;
 
     constructor(pos: Pos,
                 vertices: number[],
                 indices: number[],
                 colors: number[],
-                texturefile:string) {
+                vt:number[],
+                texturefile:string,
+                hasText:boolean) {
         super(pos, undefined);
         this.vertices = vertices;
         this.indices = indices;
         this.colors = colors;
         this.bufferCreated = false;
         this.texturefile=texturefile;
+        this.vt=vt;
+        this.hasTexture=hasText;
     }
 
-    create_texture=function(gl:WebGLRenderingContext,source:string,texture:WebGLTexture){
-        // イメージオブジェクトの生成
+    saveObj=function(){
+        var output:string="";
+        var n=this.vertices.length;
+        for (var i=0;i<n;i=i+3){
+            output=output+"v "+this.vertices[i]+" "+this.vertices[i+1]+" "+this.vertices[i+2]+"\n";
+        }
+        n=this.vt.length;
+        for (var i=0;i<n;i=i+2){
+            output=output+"vt "+this.vt[i]+" "+this.vt[i+1]+"\n";
+        }
+        n=this.indices.length;
+        for (var i=0;i<n;i=i+3){
+            output=output+"f "+this.indices[i]+"/"+this.indices[i]+" "+this.indices[i+1]+"/"+this.indices[i+1]+" "+this.indices[i+2]+"/"+this.indices[i+2]+" "+"\n";
+        }
+        return output;
+    }
+
+    create_texture=function(gl:WebGLRenderingContext,source:string,texture:WebGLTexture,u_Sampler:WebGLUniformLocation){
         var img = new Image();
-
-        // データのオンロードをトリガーにする
         img.onload = function(){
-            // テクスチャオブジェクトの生成
-            var tex = gl.createTexture();
-
-            // テクスチャをバインドする
-            gl.bindTexture(gl.TEXTURE_2D, tex);
-
-            // テクスチャへイメージを適用
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
-
-            // ミップマップを生成
-            gl.generateMipmap(gl.TEXTURE_2D);
-
-            // テクスチャのバインドを無効化
-            gl.bindTexture(gl.TEXTURE_2D, null);
-
-            // 生成したテクスチャをグローバル変数に代入
-            texture = tex;
+            texture = gl.createTexture();//创建纹理图像缓冲区
+            gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true); //纹理图片上下反转
+            gl.activeTexture(gl.TEXTURE0);//激活0号纹理单元TEXTURE0
+            gl.bindTexture(gl.TEXTURE_2D, texture);//绑定纹理缓冲区
+            //设置纹理贴图填充方式(纹理贴图像素尺寸大于顶点绘制区域像素尺寸)
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+            //设置纹理贴图填充方式(纹理贴图像素尺寸小于顶点绘制区域像素尺寸)
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+            //设置纹素格式，jpg格式对应gl.RGB
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, img);
+            gl.uniform1i(u_Sampler, 0);//纹理缓冲区单元TEXTURE0中的颜色数据传入片元着色器
+            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
         };
-
-        // イメージオブジェクトのソースを指定
         img.src = source;
     }
 
-    // initTextures=function(gl: WebGLRenderingContext,Url:string,texture:WebGLTexture) {
-    //     console.log(gl,"image to onload ..",gl);
-    //     texture = gl.createTexture();   // Create a texture object
-    //     if (!texture) {
-    //         console.log('Failed to create the texture object');
-    //         return false;
-    //     }
-    //     var image = new Image();  // Create the image object
-    //     if (!image) {
-    //         console.log('Failed to create the image object');
-    //         return false;
-    //     }
-    //     // Register the event handler to be called on loading an image
-    //     image.onload = function(){
-    //         //mtlOK++;
-    //         console.log("image onload");
-    //         var loadTexture=function(gl: WebGLRenderingContext, n:number, texture:WebGLTexture, image:HTMLImageElement) {
-    //             var TextureList = [gl.TEXTURE0,gl.TEXTURE1,gl.TEXTURE2,gl.TEXTURE3,gl.TEXTURE4,gl.TEXTURE5,gl.TEXTURE6,gl.TEXTURE7];
-    //
-    //             gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1); // Flip the image's y axis
-    //             // Enable texture unit0
-    //             gl.activeTexture(TextureList[n]);
-    //             // Bind the texture object to the target
-    //             gl.bindTexture(gl.TEXTURE_2D, texture);
-    //
-    //             // Set the texture parameters
-    //             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    //             // Set the texture image
-    //             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
-    //
-    //             //loadTextures.unload-=1;
-    //             // Set the texture unit 0 to the sampler
-    //             // gl.uniform1i(u_Sampler, n);
-    //         }
-    //         loadTexture(gl, 0, texture, image);
-    //     };
-    //     // Tell the browser to load an image
-    //     image.src = Url;
-    //     return true;
-    // }
-
-
-
     protected createBuffers(gl: WebGLRenderingContext) {
-        this.create_texture(gl,this.texturefile,this.texture);
-
         this.vertexBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW);
 
-        this.colorBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.colors), gl.STATIC_DRAW);
+        if (!this.hasTexture) {
+            this.colorBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.colors), gl.STATIC_DRAW);
+        }
+        else {
+            this.textBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.textBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vt), gl.STATIC_DRAW);
+        }
 
         this.indexBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
@@ -128,7 +105,7 @@ export default class GeometryObject extends IncolliableObject implements Drawabl
         console.debug("creating geometry object:");
         console.debug(new Float32Array(this.vertices).length);
         console.debug(this.vertices.length);
-        console.debug(this.colors.length);
+        console.debug(this.vt.length);
         console.debug(this.indices.length);
     }
 
@@ -136,6 +113,7 @@ export default class GeometryObject extends IncolliableObject implements Drawabl
     }
 
     draw(gl: WebGLRenderingContext, engine: Engine, modelMatrix?: mat): void {
+
         if (!this.bufferCreated) {
             this.createBuffers(gl);
             this.bufferCreated = true;
@@ -149,16 +127,27 @@ export default class GeometryObject extends IncolliableObject implements Drawabl
 
         const attribLocs = shader.getAttribLocations();
         const loc = attribLocs['aVertexPosition'];
-        const clr = attribLocs['aVertexColor'];
+
         const vertexCount = this.indices.length;
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
         gl.vertexAttribPointer(loc, 3, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(loc);
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
-        gl.vertexAttribPointer(clr, 4, gl.FLOAT, false, 0, 0);
-        gl.enableVertexAttribArray(clr);
+        if (!this.hasTexture) {
+            const clr = attribLocs['aVertexColor'];
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
+            gl.vertexAttribPointer(clr, 4, gl.FLOAT, false, 0, 0);
+            gl.enableVertexAttribArray(clr);
+        }
+        else {
+            const a_TexCoord = attribLocs['a_TextCoord'];
+            const u_Sampler = attribLocs['u_Sampler'];
+            this.create_texture(gl, this.texturefile, this.texture, u_Sampler);
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.textBuffer);
+            gl.vertexAttribPointer(a_TexCoord, 2, gl.FLOAT, false, 0, 0);
+            gl.enableVertexAttribArray(a_TexCoord);
+        }
 
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 
