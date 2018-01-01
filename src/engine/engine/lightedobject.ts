@@ -166,9 +166,9 @@ export function makeDemoLightedCube() {
 
     const material = new Material(
         [1, 0, 0],
-        [1.0, 0, 0],
+        [1, 0, 0],
         [1, 1, 1],
-        50
+        30
     );
 
     return new LightedObject([0.0, 0.0, 0.0], positions, positions, indices, material);

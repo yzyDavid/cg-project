@@ -8,9 +8,8 @@ import {Engine, Scene, Camera, Vec3} from './engine';
 import {makeDemoCube} from './engine';
 import {makeDemoLightedCube} from './engine';
 import {Pos} from './engine';
-import Shader from "./engine/engine/shader";
 import Light from "./engine/engine/light";
-import LightingShader from "./engine/engine/lightingshader";
+import {ObjLoader} from './engine';
 
 const canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById('root');
 canvas.setAttribute('width', String(config.WIDTH));
@@ -34,6 +33,15 @@ const ambientCoeff = 0.2;
 const light = new Light(pos, lightColor, ambientCoeff, true);
 scene.addLight(light);
 
+const tmp = new ObjLoader("haha", 1, false);
+const cube0 = tmp.getObj();
+console.log("objlike", cube0);
+scene.addObject(cube0);
+
+const cube = makeDemoCube();
+console.log("objlike2", cube);
+scene.addObject(cube);
+
 // Add a demo lighted object.
 const lightedCube = makeDemoLightedCube();
 scene.addObject(lightedCube);
@@ -41,7 +49,7 @@ scene.addObject(lightedCube);
 // Create engine.
 const conf = {
     width: config.WIDTH,
-    height: config.HEIGHT,
+    height: config.HEIGHT
 };
 const engine = new Engine(scene, canvas, conf);
 
@@ -50,11 +58,11 @@ const timeController = engine.getTimeEventController();
 
 keyController.addListener('q', () => engine.stop());
 keyController.enable();
-timeController.addListener('cameraMove', () => {
-    pos[0] += 0.01;
-    pos[1] += 0.01;
-    camera.setPosition(pos);
-});
+// timeController.addListener('cameraMove', () => {
+//     pos[0] += 0.01;
+//     pos[1] += 0.01;
+//     camera.setPosition(pos);
+// });
 
 engine.start();
 
