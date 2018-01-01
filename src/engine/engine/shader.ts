@@ -7,35 +7,35 @@
  */
 import {Pos} from "./public";
 import Light from "./light";
+import construct = Reflect.construct;
 
-export default class Shader {
-    protected gl: WebGLRenderingContext;
+export default abstract class Shader {
+    private gl: WebGLRenderingContext;
     private ok: boolean;
     private readonly program: WebGLProgram;
 
-    protected readonly attribLocations: { [key: string]: number };
-    protected readonly uniformLocations: { [key: string]: WebGLUniformLocation };
+    private readonly attribLocations: { [key: string]: number };
+    private readonly uniformLocations: { [key: string]: WebGLUniformLocation };
     private readonly name: string;
 
-    protected readonly attributes: string[];
-    protected readonly uniforms: string[];
+    private readonly attributes: string[];
+    private readonly uniforms: string[];
 
     constructor(gl: WebGLRenderingContext,
                 vert: string,
                 frag: string,
-                name?: string,
+                name: string,
                 attributes?: string[],
                 uniforms?: string[],
                 optional?: object) {
         if (optional) {
             console.error("optional shaders are not implemented");
         }
-        if (name) {
-            this.name = name;
-        } else {
-            this.name = 'BaseShader';
-        }
+        this.name = name;
         console.log("init shader: " + this.name);
+        console.log(gl);
+        console.debug(frag);
+        console.debug(vert);
         this.gl = gl;
         this.ok = false;
         const vertShader = gl.createShader(gl.VERTEX_SHADER);
@@ -101,6 +101,14 @@ export default class Shader {
         });
     }
 
+    protected getGL(): WebGLRenderingContext {
+        return this.gl;
+    }
+
+    getName(): string {
+        return this.name;
+    }
+
     getAttribLocations() {
         return this.attribLocations;
     }
@@ -109,37 +117,13 @@ export default class Shader {
         return this.uniformLocations;
     }
 
-    getVertexPositionLocation() {
-        const r = this.getAttribLocations()['aVertexPosition'];
-        if (!r) {
-            throw new Error();
-        }
-        return r;
-    }
+    abstract getVertexPositionLocation(): number;
 
-    getProjectionMatrixLocation(): WebGLUniformLocation {
-        const r = this.getUniformLocations()['uProjectionMatrix'];
-        if (!r) {
-            throw new Error();
-        }
-        return r;
-    }
+    abstract getProjectionMatrixLocation(): WebGLUniformLocation;
 
-    getModelMatrixLocation(): WebGLUniformLocation {
-        const r = this.getUniformLocations()['uModelMatrix'];
-        if (!r) {
-            throw new Error();
-        }
-        return r;
-    }
+    abstract getModelMatrixLocation(): WebGLUniformLocation;
 
-    getViewMatrixLocation(): WebGLUniformLocation {
-        const r = this.getUniformLocations()['uViewMatrix'];
-        if (!r) {
-            throw new Error();
-        }
-        return r;
-    }
+    abstract getViewMatrixLocation(): WebGLUniformLocation;
 
     getShaderProgram(): WebGLProgram {
         if (!this.ok) {
@@ -147,14 +131,6 @@ export default class Shader {
             return;
         }
         return this.program;
-    }
-
-    setLights(gl: WebGLRenderingContext, lights: Light[]) {
-        // TODO: could better be abstract.
-    }
-
-    setCameraPos(gl: WebGLRenderingContext, pos: Pos) {
-        // TODO: could better be abstract.
     }
 
     valid(): boolean {

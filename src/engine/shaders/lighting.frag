@@ -24,5 +24,14 @@ void main() {
     float diffuseCoeff = clamp(dot(vFragNormal_world, fragLightDir), 0.0, 1.0);
     vec3 diffuse =  uMaterialDiffuseColor * diffuseCoeff * uLightColor;
 
-    gl_FragColor = vec4(ambient + diffuse, 1.0);
+    // Specular
+    vec3 cameraDir = normalize(uCameraPos_world - vFragPos_world);
+    vec3 reflectDir = reflect(-fragLightDir, vFragNormal_world);
+    float specularCoeff = pow(clamp(dot(cameraDir, reflectDir), 0.0, 1.0), uMaterialShininess);
+    vec3 specular = uMaterialSpecularColor * specularCoeff * uLightColor;
+
+	gl_FragColor = vec4(ambient + diffuse + specular, 1.0);
+//    gl_FragColor = vec4(diffuse, 1.0);
+//    gl_FragColor = vec4(ambient, 1.0);
+//    gl_FragColor = vec4(specular, 1.0);
 }

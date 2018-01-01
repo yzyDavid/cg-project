@@ -6,6 +6,7 @@ import {mat, mat4} from '../matrix';
 import {default as Engine} from './engine';
 import Scene from './scene';
 import Material from './material';
+import LightingShader from "./lightingshader";
 
 export default class LightedObject extends IncolliableObject implements Drawable {
     protected vertices: number[];
@@ -65,12 +66,23 @@ export default class LightedObject extends IncolliableObject implements Drawable
             modelMatrix = mat4.identity();
         }
 
-        const shader = engine.getCurrentShader();
-        const uniformLocs = shader.getUniformLocations();
-        const attribLocs = shader.getAttribLocations();
+        // Use lighting shader.
+        const shaderManager = engine.getShaderManager();
+        if (!(shaderManager.useShader('lighting'))) {
+            shaderManager.addShader(new LightingShader(gl, 'lighting'));
+            shaderManager.useShader('lighting');
+        }
+        const lightingShader =  <LightingShader>(engine.getCurrentShader());
+
+        const uniformLocs = lightingShader.getUniformLocations();
+        const attribLocs = lightingShader.getAttribLocations();
+
+        // Set lights and camera.
+        lightingShader.setLights(engine.getScene().getLights());
+        lightingShader.setCamera(engine.getScene().getCamera());
 
         // Model matrix.
-        const modelLoc = shader.getModelMatrixLocation();
+        const modelLoc = lightingShader.getModelMatrixLocation();
         const modelMat = mat4.multiply(modelMatrix, mat4.identity());
         gl.uniformMatrix4fv(modelLoc, false, new Float32Array(modelMat));
 
@@ -81,10 +93,10 @@ export default class LightedObject extends IncolliableObject implements Drawable
         gl.uniformMatrix4fv(uniformLocs['uModelNormalMatrix'], false, new Float32Array(modelNormalMat));
 
         // Material.
-        gl.uniform3fv(uniformLocs["uMaterialAmbientColor"], this.material.ambientColor);
-        gl.uniform3fv(uniformLocs["uMaterialDiffuseColor"], this.material.diffuseColor);
-        gl.uniform3fv(uniformLocs["uMaterialSpecularColor"], this.material.specularColor);
-        gl.uniform1f(uniformLocs["uMaterialShininess"], this.material.shininess);
+        gl.uniform3fv(uniformLocs["uMaterialAmbientColor"], this.material.getAmbientColor());
+        gl.uniform3fv(uniformLocs["uMaterialDiffuseColor"], this.material.getDiffuseColor());
+        gl.uniform3fv(uniformLocs["uMaterialSpecularColor"], this.material.getSpecularColor());
+        gl.uniform1f(uniformLocs["uMaterialShininess"], this.material.getShininess());
 
         // Vertex positions in MCS.
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
@@ -156,8 +168,8 @@ export function makeDemoLightedCube() {
         [1, 0, 0],
         [1.0, 0, 0],
         [1, 1, 1],
-        96.078431
+        50
     );
 
-    return new LightedObject([0.0, 0.0, 0.0], positions, positions ,indices, material);
+    return new LightedObject([0.0, 0.0, 0.0], positions, positions, indices, material);
 }

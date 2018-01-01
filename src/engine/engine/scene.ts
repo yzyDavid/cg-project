@@ -15,6 +15,7 @@ export default class Scene implements EnumerableChildren<Component> {
     constructor(camera?: Camera) {
         this.camera = camera || null;
         this.gameObjects = [];
+        this.lights = [];
     }
 
     addObject(obj: Component) {
@@ -47,6 +48,16 @@ export default class Scene implements EnumerableChildren<Component> {
 
     hasCamera(): boolean {
         return !!this.camera;
+    }
+
+    addLight(light: Light) {
+        if (this.lights.length >= 3) {
+            console.log("lights overflow, at most 3 lights");
+            throw new Error();
+        }
+
+        console.log("a new light added");
+        this.lights.push(light);
     }
 
     getLights(): Light[] {
