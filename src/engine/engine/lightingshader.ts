@@ -6,9 +6,7 @@ import Light from "./light";
 
 export default class LightingShader extends Shader {
 
-    constructor(gl: WebGLRenderingContext,
-                name: string,
-                optional?: object) {
+    constructor(gl: WebGLRenderingContext) {
         const vert = <string>(lightingVertexShaderText as any);
         const frag = <string>(lightingFragmentShaderText as any);
         const attributes = [
@@ -29,7 +27,7 @@ export default class LightingShader extends Shader {
             'uMaterialSpecularColor',
             'uMaterialShininess',
         ];
-        super(gl, vert, frag, name, attributes, uniforms, optional);
+        super(gl, vert, frag, 'lighting', attributes, uniforms);
         return this;
     }
 
@@ -67,7 +65,7 @@ export default class LightingShader extends Shader {
 
     // TODO: to be extended to support three lights at most.
     setLights(lights: Light[]) {
-        const gl = this.getGL();
+        const gl = this.gl;
         if(lights[0] !== undefined && lights[0].isOn()) {
             const uniformLocations = this.getUniformLocations();
             gl.uniform3fv(uniformLocations["uLightPos_world"], new Float32Array(lights[0].getPosition()));
@@ -77,7 +75,7 @@ export default class LightingShader extends Shader {
     }
 
     setCamera(camera: Camera) {
-        const gl = this.getGL();
+        const gl = this.gl;
         gl.uniform3fv(this.getUniformLocations()["uCameraPos_world"], camera.getPosition());
     }
 }

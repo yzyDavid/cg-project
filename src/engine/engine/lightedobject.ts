@@ -69,7 +69,7 @@ export default class LightedObject extends IncolliableObject implements Drawable
         // Use lighting shader.
         const shaderManager = engine.getShaderManager();
         if (!(shaderManager.useShader('lighting'))) {
-            shaderManager.addShader(new LightingShader(gl, 'lighting'));
+            shaderManager.addShader(new LightingShader(gl));
             shaderManager.useShader('lighting');
         }
         const lightingShader =  <LightingShader>(engine.getCurrentShader());
@@ -164,7 +164,7 @@ export function makeDemoLightedCube() {
         20, 21, 22, 20, 22, 23,   // left
     ];
 
-    let material = new Material(
+    const material = new Material(
         [1, 0, 0],
         [1.0, 0, 0],
         [1, 1, 1],

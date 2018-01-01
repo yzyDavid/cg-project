@@ -3,39 +3,28 @@
  */
 
 /*
- * write new shaders with the convention here, or subclass this class.
+ * Shaders should subclass this class.
  */
-import {Pos} from "./public";
-import Light from "./light";
-import construct = Reflect.construct;
-
 export default abstract class Shader {
-    private gl: WebGLRenderingContext;
+    protected gl: WebGLRenderingContext;
     private ok: boolean;
     private readonly program: WebGLProgram;
 
-    private readonly attribLocations: { [key: string]: number };
-    private readonly uniformLocations: { [key: string]: WebGLUniformLocation };
+    protected readonly attribLocations: { [key: string]: number };
+    protected readonly uniformLocations: { [key: string]: WebGLUniformLocation };
     private readonly name: string;
 
-    private readonly attributes: string[];
-    private readonly uniforms: string[];
+    protected readonly attributes: string[];
+    protected readonly uniforms: string[];
 
     constructor(gl: WebGLRenderingContext,
                 vert: string,
                 frag: string,
                 name: string,
-                attributes?: string[],
-                uniforms?: string[],
-                optional?: object) {
-        if (optional) {
-            console.error("optional shaders are not implemented");
-        }
+                attributes: string[],
+                uniforms: string[]) {
         this.name = name;
         console.log("init shader: " + this.name);
-        console.log(gl);
-        console.debug(frag);
-        console.debug(vert);
         this.gl = gl;
         this.ok = false;
         const vertShader = gl.createShader(gl.VERTEX_SHADER);
@@ -69,19 +58,8 @@ export default abstract class Shader {
         this.attribLocations = {};
         this.uniformLocations = {};
 
-        if (attributes === undefined || attributes === null) {
-            console.info("shader init: load default attribute locations.");
-            this.attributes = ['aVertexPosition', 'aVertexColor'];
-        } else {
-            this.attributes = attributes;
-        }
-
-        if (uniforms === undefined || uniforms === null) {
-            console.info("shader init: load default uniform locations.");
-            this.uniforms = ['uModelMatrix', 'uViewMatrix', 'uProjectionMatrix'];
-        } else {
-            this.uniforms = uniforms;
-        }
+        this.attributes = attributes;
+        this.uniforms = uniforms;
 
         this.initLocations();
         console.log("attributes:");
@@ -101,14 +79,6 @@ export default abstract class Shader {
         });
     }
 
-    protected getGL(): WebGLRenderingContext {
-        return this.gl;
-    }
-
-    getName(): string {
-        return this.name;
-    }
-
     getAttribLocations() {
         return this.attribLocations;
     }
@@ -117,13 +87,37 @@ export default abstract class Shader {
         return this.uniformLocations;
     }
 
-    abstract getVertexPositionLocation(): number;
+    getVertexPositionLocation() {
+        const r = this.getAttribLocations()['aVertexPosition'];
+        if (!r) {
+            throw new Error();
+        }
+        return r;
+    }
 
-    abstract getProjectionMatrixLocation(): WebGLUniformLocation;
+    getProjectionMatrixLocation(): WebGLUniformLocation {
+        const r = this.getUniformLocations()['uProjectionMatrix'];
+        if (!r) {
+            throw new Error();
+        }
+        return r;
+    }
 
-    abstract getModelMatrixLocation(): WebGLUniformLocation;
+    getModelMatrixLocation(): WebGLUniformLocation {
+        const r = this.getUniformLocations()['uModelMatrix'];
+        if (!r) {
+            throw new Error();
+        }
+        return r;
+    }
 
-    abstract getViewMatrixLocation(): WebGLUniformLocation;
+    getViewMatrixLocation(): WebGLUniformLocation {
+        const r = this.getUniformLocations()['uViewMatrix'];
+        if (!r) {
+            throw new Error();
+        }
+        return r;
+    }
 
     getShaderProgram(): WebGLProgram {
         if (!this.ok) {
@@ -142,6 +136,11 @@ export default abstract class Shader {
         this.gl.useProgram(this.program);
         const a = this.gl.getProgramParameter(this.program, this.gl.ACTIVE_ATTRIBUTES);
         console.log("using shader: return value of gl.ACTIVE_ATTRIBUTES");
-        console.debug(a);
+        console.log(a);
+        console.log("using shader: " + this.name);
+    }
+
+    getName(): string {
+        return this.name;
     }
 }

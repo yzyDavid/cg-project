@@ -1,34 +1,26 @@
 /*
  * created by Zhenyun Yu.
  */
+
 import Shader from './shader';
-import PrimitiveShader from "./primitiveshader";
+import LightingShader from './lightingshader';
+import PrimitiveShader from './primitiveshader';
 
 export default class ShaderManager {
     private readonly gl: WebGLRenderingContext;
     private readonly shaders: { [key: string]: Shader };
     private currentName: string;
 
-    constructor(gl: WebGLRenderingContext, loadDefaults?: boolean) {
+    constructor(gl: WebGLRenderingContext) {
         this.gl = gl;
         this.shaders = {};
-        if (loadDefaults || loadDefaults === undefined) {
-            this.loadDefaultShaders();
-        }
-    }
 
-    loadDefaultShaders() {
-        const gl = this.gl;
-        this.addShader(new PrimitiveShader(gl, 'primitive'));
+        this.addShader(new LightingShader(gl));
+        this.addShader(new PrimitiveShader(gl));
     }
 
     addShader(shader: Shader) {
-        const name = shader.getName();
-        if (!this.shaders[name]) {
-            this.shaders[name] = shader;
-        } else {
-            console.error("shader exists");
-        }
+        this.shaders[shader.getName()] = shader;
     }
 
     useShader(name: string): boolean {

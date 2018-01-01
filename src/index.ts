@@ -48,13 +48,13 @@ const engine = new Engine(scene, canvas, conf);
 const keyController = engine.getKeyEventController();
 const timeController = engine.getTimeEventController();
 
-// keyController.addListener('q', () => engine.stop());
-// keyController.enable();
-// timeController.addListener('cameraMove', () => {
-//     pos[0] += 0.01;
-//     pos[1] += 0.01;
-//     camera.setPosition(pos);
-// });
+keyController.addListener('q', () => engine.stop());
+keyController.enable();
+timeController.addListener('cameraMove', () => {
+    pos[0] += 0.01;
+    pos[1] += 0.01;
+    camera.setPosition(pos);
+});
 
 engine.start();
 
