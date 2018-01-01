@@ -24,15 +24,6 @@ export default class LightingShader extends Shader {
         ];
 
         super(gl, vert, frag, 'lighting', attributes, uniforms);
-        return this;
-    }
-
-    getAttribLocations() {
-        return this.attribLocations;
-    }
-
-    getUniformLocations() {
-        return this.uniformLocations;
     }
 
     getVertexPositionLocation() {
