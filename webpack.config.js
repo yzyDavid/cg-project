@@ -1,5 +1,6 @@
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 // noinspection JSUnresolvedVariable
 module.exports = {
@@ -65,5 +66,11 @@ module.exports = {
             inject: true,
             template: 'public/index.html'
         }),
+        new CopyWebpackPlugin([
+            {
+                from: 'assets',
+                to: 'assets'
+            }
+        ])
     ]
 };
