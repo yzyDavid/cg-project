@@ -2,12 +2,12 @@ import GeometryObject from './geometryobject';
 import * as contentText from '../../module/cube.obj';
 
 export default class ObjLoader {
-    protected filename:string;
+    protected filename: string;
     protected vertices: Vertex[] = [];
     protected normals: Normal[] = [];
     protected textureVt: VT[] = [];
     protected object: Face[] = [];
-    protected material:Material[]=[];
+    protected material: Material[] = [];
     protected scale: number;
     protected reverse: boolean;
     protected texturefile: string;
@@ -15,17 +15,17 @@ export default class ObjLoader {
     protected content: string = "";
     private usematerial: number;
 
-    constructor(filename: string, scale: number, reverse: boolean,texturefile:string) {
+    constructor(filename: string, scale: number, reverse: boolean, texturefile: string) {
         this.scale = scale;
         this.reverse = reverse;
         const content = <string>(contentText as any);
         //this.getText(filename, this.content);
         //var content:string;
         //this.fetchThatAsync(filename).then<string>();
-        this.filename=filename;
+        this.filename = filename;
         this.texturefile = texturefile;
         this.OBJDocparser(content);
-        this.texturefile=texturefile;
+        this.texturefile = texturefile;
         console.log(this.normals);
         console.log(this.vertices);
         console.log(this.object);
@@ -48,15 +48,15 @@ export default class ObjLoader {
         var numv = 0;
         var indices: number[] = [];
         var positions: number[] = [];
-        var vt:number[]=[];
-        var count=0;
+        var vt: number[] = [];
+        var count = 0;
 
-        for(let entry of this.object){
-            for (var i=0;i<entry.vIndices.length;i++){
+        for (let entry of this.object) {
+            for (var i = 0; i < entry.vIndices.length; i++) {
                 positions.push(this.vertices[entry.vIndices[i]].x);
                 positions.push(this.vertices[entry.vIndices[i]].y);
                 positions.push(this.vertices[entry.vIndices[i]].z);
-                if (this.textureVt.length>0) {
+                if (this.textureVt.length > 0) {
                     vt.push(this.textureVt[entry.tIndices[i]].x);
                     vt.push(this.textureVt[entry.tIndices[i]].y);
                 }
@@ -64,7 +64,7 @@ export default class ObjLoader {
                 count++;
             }
         }
-        console.log("material",this.material[this.usematerial]);
+        console.log("material", this.material[this.usematerial]);
         // function findv(faceset: { [p: number]: number }, v: number) {
         //     var value: any;
         //     for (value in faceset) {
@@ -103,13 +103,13 @@ export default class ObjLoader {
         return new GeometryObject([0.0, 0.0, 0.0], positions, indices, colors, vt, this.texturefile, true);
     }
 
-    async fetchThatAsync(url:string) {
-        const a = await fetch(url).then(function(response) {
+    async fetchThatAsync(url: string) {
+        const a = await fetch(url).then(function (response) {
             return response;
-        }).then(function(data) {
-            console.log("data",data);
+        }).then(function (data) {
+            console.log("data", data);
             return data.text();
-        }).catch(function(e) {
+        }).catch(function (e) {
             console.log("Oops, error");
         });
         return a;
@@ -138,10 +138,10 @@ export default class ObjLoader {
                 case '#':
                     continue;
                 case 'mtllib':
-                    var ifmtl=true;
+                    var ifmtl = true;
                     var path = this.parseMtllib(sp, this.filename);
                     var mtl = new MTLDoc();
-                    var content="newmtl new\n" +
+                    var content = "newmtl new\n" +
                         "\tNs 32\n" +
                         "\td 1\n" +
                         "\tTr 0\n" +
@@ -150,10 +150,10 @@ export default class ObjLoader {
                         "\tKa 0.1255 0.1255 0.1255\n" +
                         "\tKd 0.1255 0.1255 0.1255\n" +
                         "\tKs 0.3500 0.3500 0.3500";
-                    this.onReadMTLFile(content,mtl);
+                    this.onReadMTLFile(content, mtl);
                     continue;
 
-                    //默认一个obj文件里只有一个obj，默认一个obj只有一个mtl（暂时
+                //默认一个obj文件里只有一个obj，默认一个obj只有一个mtl（暂时
                 // case 'o':
                 // case 'g':   // Read Object name
                 //     var object = this.parseObjectName(sp);
@@ -171,8 +171,8 @@ export default class ObjLoader {
                     continue;
                 case 'usemtl':
                     currentMaterialName = this.parseUsemtl(sp);
-                    for (let i=0;i<this.material.length;i++){
-                        this.usematerial=i;
+                    for (let i = 0; i < this.material.length; i++) {
+                        this.usematerial = i;
                         break;
                     }
                     continue;
@@ -181,7 +181,7 @@ export default class ObjLoader {
                     this.object.push(face);
                     continue; // Go to the next line
                 case 'vt':
-                    var VTvertex = this.parseVertex(sp,this.scale);
+                    var VTvertex = this.parseVertex(sp, this.scale);
                     this.textureVt.push(VTvertex);
                     continue;
                 default:
@@ -274,7 +274,7 @@ export default class ObjLoader {
             normal[2] = -normal[2];
         }
         face.normal = new Normal(normal[0], normal[1], normal[2]);
-        if (face.nIndices[0]!=-1) {
+        if (face.nIndices[0] != -1) {
             if (!face.normal.parallel(Normals[face.nIndices[0]])) {
                 face.vIndices.reverse();
                 face.nIndices.reverse();
@@ -282,10 +282,10 @@ export default class ObjLoader {
             }
         }
 
-            for (let v of face.tIndices){
-                this.vt.push(textureVt[v].x);
-                this.vt.push(textureVt[v].y);
-            }
+        for (let v of face.tIndices) {
+            this.vt.push(textureVt[v].x);
+            this.vt.push(textureVt[v].y);
+        }
 
 
         // Devide to triangles if face contains over 3 points.
@@ -336,18 +336,18 @@ export default class ObjLoader {
         return v.elements;
     }
 
-    parseUsemtl=function(sp:StringParser) {
+    parseUsemtl = function (sp: StringParser) {
         return sp.getWord();
     }
 
-    parseMtllib=function(sp:StringParser, fileName:string) {
+    parseMtllib = function (sp: StringParser, fileName: string) {
         var i = fileName.lastIndexOf("/");
         var dirPath = "";
-        if(i > 0) dirPath = fileName.substr(0, i+1);
+        if (i > 0) dirPath = fileName.substr(0, i + 1);
         return dirPath + sp.getWord();
     }
 
-    onReadMTLFile=function (fileString:string, mtl:MTLDoc) {
+    onReadMTLFile = function (fileString: string, mtl: MTLDoc) {
         var lines = fileString.split('\n');
         lines.push(null);
         var tempindex = 0;
@@ -355,33 +355,33 @@ export default class ObjLoader {
         var line;
         var name = "";
         var sp = new StringParser();
-        var currentMaterial=null;
+        var currentMaterial = null;
         while ((line = lines[tempindex++]) != null) {
             sp.init(line);
             var command = sp.getWord();
-            if(command == null) continue;
-            switch(command){
+            if (command == null) continue;
+            switch (command) {
                 case '#':
                     continue;
                 case 'newmtl':
                     name = mtl.parseNewmtl(sp);
-                    if (currentMaterial!=null){
+                    if (currentMaterial != null) {
                         this.material.push(currentMaterial);
                     }
-                    currentMaterial=new Material(name);
+                    currentMaterial = new Material(name);
                     continue;
                 case 'Kd':
-                    if(name == "") continue;
+                    if (name == "") continue;
                     var color = mtl.parseRGB(sp, name);
                     currentMaterial.setKd(color);
                     continue;
                 case 'Ka':
-                    if(name == "") continue;
+                    if (name == "") continue;
                     var color = mtl.parseRGB(sp, name);
                     currentMaterial.setKa(color);
                     continue;
                 case 'Ks':
-                    if(name == "") continue;
+                    if (name == "") continue;
                     var color = mtl.parseRGB(sp, name);
                     currentMaterial.setKs(color);
                     continue;
@@ -392,53 +392,59 @@ export default class ObjLoader {
     }
 }
 
-class MTLDoc{
-    complete:boolean;
-    materials:Array<Material>;
+class MTLDoc {
+    complete: boolean;
+    materials: Array<Material>;
+
     constructor() {
         this.complete = false;
         this.materials = new Array(0);
     }
 
-    parseNewmtl = function(sp:StringParser) {
+    parseNewmtl = function (sp: StringParser) {
         return sp.getWord();         // Get name
     }
-    parseRGB = function(sp:StringParser, name:string) {
+    parseRGB = function (sp: StringParser, name: string) {
         var r = sp.getFloat();
         var g = sp.getFloat();
         var b = sp.getFloat();
-        return new Color(r,g,b,1);
+        return new Color(r, g, b, 1);
     }
 
 }
 
-class Material{
-    name:string;
-    Ka:Color;
-    Kd:Color;
-    Ks:Color;
-    d:number;
-    constructor(name:string) {
+class Material {
+    name: string;
+    Ka: Color;
+    Kd: Color;
+    Ks: Color;
+    d: number;
+
+    constructor(name: string) {
         this.name = name;
-        this.d=1;
+        this.d = 1;
     }
-    setKa(c:Color){
-        this.Ka=c;
+
+    setKa(c: Color) {
+        this.Ka = c;
     }
-    setKd(c:Color){
-        this.Kd=c;
+
+    setKd(c: Color) {
+        this.Kd = c;
     }
-    setKs(c:Color){
-        this.Ks=c;
+
+    setKs(c: Color) {
+        this.Ks = c;
     }
 }
 
-class Color{
-    r:number;
-    g:number;
-    b:number;
-    a:number
-    constructor(r:number, g:number, b:number, a:number) {
+class Color {
+    r: number;
+    g: number;
+    b: number;
+    a: number
+
+    constructor(r: number, g: number, b: number, a: number) {
         this.r = r;
         this.g = g;
         this.b = b;
@@ -495,14 +501,15 @@ class Vector3 {
         return this;
     }
 
-    parallel=function(direction2:Vector3){
-        if (this.normalize()==direction2.normalize()) return true; else return false;
+    parallel = function (direction2: Vector3) {
+        if (this.normalize() == direction2.normalize()) return true; else return false;
     }
 }
 
 class VT {
     x: number;
     y: number;
+
     constructor(x: number, y: number) {
         this.x = x;
         this.y = y;
@@ -513,6 +520,7 @@ class Vertex {
     x: number;
     y: number;
     z: number;
+
     constructor(x: number, y: number, z: number) {
         this.x = x;
         this.y = y;
@@ -530,11 +538,18 @@ class Normal {
         this.y = y;
         this.z = z;
     }
-    parallel=function(n2:Normal){
-        var v1=new Float32Array(3);v1[0]=this.x;v1[1]=this.y;v1[2]=this.z;
-        var v2=new Float32Array(3);v2[0]=n2.x;v2[0]=n2.y;v2[2]=n2.z;
-        var V1=new Vector3(v1);
-        var V2=new Vector3(v2);
+
+    parallel = function (n2: Normal) {
+        var v1 = new Float32Array(3);
+        v1[0] = this.x;
+        v1[1] = this.y;
+        v1[2] = this.z;
+        var v2 = new Float32Array(3);
+        v2[0] = n2.x;
+        v2[0] = n2.y;
+        v2[2] = n2.z;
+        var V1 = new Vector3(v1);
+        var V2 = new Vector3(v2);
         return V1.parallel(V2);
     }
 
