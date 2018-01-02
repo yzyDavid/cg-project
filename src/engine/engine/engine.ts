@@ -40,7 +40,7 @@ export default class Engine {
             return this;
         }
         if (!gl) {
-            console.error('initAsync webGL failed!');
+            console.error('init webGL failed!');
             return this;
         }
         this.gl = gl;

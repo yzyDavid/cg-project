@@ -5,9 +5,7 @@ import './index.css';
 import * as config from './config';
 
 import {Engine, Scene, Camera} from './engine';
-import {makeDemoLightedCube} from './engine';
 import {Pos} from './engine';
-import Shader from "./engine/engine/shader";
 import {queryObjAsync} from './engine';
 import {makeDemoCube} from './engine';
 
@@ -27,6 +25,8 @@ camera.lookAt([0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
 
 const scene = new Scene(camera);
 
+// const tmp = new ObjLoader("./assets/module/cube.obj", 0.001, false, "./assets/module/wood11.jpg");
+// console.log("objlike", tmp);
 queryObjAsync("/assets/module/cube.obj", "/assets/module/wood11.jpg").then(cube0 => {
     scene.addObject(cube0);
 });

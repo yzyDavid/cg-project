@@ -5,6 +5,7 @@
 import Shader from './shader';
 import LightingShader from './lightingshader';
 import PrimitiveShader from './primitiveshader';
+import TextureShader from "./textureshader";
 
 export default class ShaderManager {
     private readonly gl: WebGLRenderingContext;
@@ -17,6 +18,7 @@ export default class ShaderManager {
 
         this.addShader(new LightingShader(gl));
         this.addShader(new PrimitiveShader(gl));
+        this.addShader(new TextureShader(gl));
     }
 
     addShader(shader: Shader) {
