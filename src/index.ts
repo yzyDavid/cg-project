@@ -27,7 +27,7 @@ camera.lookAt([0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
 
 const scene = new Scene(camera);
 
-queryObjAsync("./assets/module/cube.obj", "./assets/module/wood11.jpg").then(cube0 => {
+queryObjAsync("/assets/module/cube.obj", "/assets/module/wood11.jpg").then(cube0 => {
     scene.addObject(cube0);
 });
 
