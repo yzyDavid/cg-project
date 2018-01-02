@@ -115,6 +115,16 @@ export default class ObjLoader {
         return a;
     }
 
+    fetchText(url: string) {
+        return fetch(url).then((response) => {
+            return response.text();
+        }).then((text) => {
+            return text;
+        }).catch((e) => {
+            console.error("fetch text error: " + url);
+        });
+    }
+
     protected OBJDocparser(content: string) {
         var lines = content.split("\n");
         lines.push(null); // Append null
