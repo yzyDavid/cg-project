@@ -1,30 +1,43 @@
 import GeometryObject from './geometryobject';
 import * as contentText from '../../module/cube.obj';
 
-export default class ObjLoader {
+type ImageUrl = string;
+type ObjUrl = string;
+type MtlUrl = string;
+
+type ObjContent = string;
+type MtlContent = string;
+
+const SCALE = 1;
+const REVERSE = false;
+
+export default async function queryObjAsync(objUrl: ObjUrl, textureUrl: ImageUrl): Promise<GeometryObject> {
+    const loader = new ObjLoader(objUrl, textureUrl);
+    await loader.initAsync();
+    return loader.getObj();
+}
+
+class ObjLoader {
     protected filename: string;
     protected vertices: Vertex[] = [];
     protected normals: Normal[] = [];
     protected textureVt: VT[] = [];
     protected object: Face[] = [];
     protected material: Material[] = [];
-    protected scale: number;
-    protected reverse: boolean;
     protected textureFile: string;
     protected vt: number[] = [];
     private useMaterial: number;
 
-    constructor(filename: string, scale: number, reverse: boolean, textureFile: string) {
-        this.scale = scale;
-        this.reverse = reverse;
-        const content = <string>(contentText as any);
-        //this.getText(filename, this.content);
-        //let content:string;
-        //this.fetchThatAsync(filename).then<string>();
+    constructor(filename: string, textureFile: string) {
         this.filename = filename;
         this.textureFile = textureFile;
-        this.OBJDocParser(content);
-        this.textureFile = textureFile;
+    }
+
+    async initAsync() {
+        // const content = <string>(contentText as any);
+        const query = await fetch(this.filename);
+        const content: ObjContent = await query.text();
+        await this.OBJDocParserAsync(content);
         console.log(this.normals);
         console.log(this.vertices);
         console.log(this.object);
@@ -82,7 +95,7 @@ export default class ObjLoader {
         };
     }
 
-    protected OBJDocParser(content: string) {
+    protected async OBJDocParserAsync(content: string) {
         let lines = content.split("\n");
         lines.push(null);
         let tempIndex = 0;
@@ -104,17 +117,21 @@ export default class ObjLoader {
                     continue;
                 case 'mtllib':
                     let ifmtl = true;
-                    let path = ObjLoader.parseMtllib(sp, this.filename);
+                    const path: string = ObjLoader.parseMtllib(sp, this.filename);
+
+                    const query = await fetch(path);
+                    const content = await query.text();
+
                     let mtl = new MTLDoc();
-                    let content = "newmtl new\n" +
-                        "\tNs 32\n" +
-                        "\td 1\n" +
-                        "\tTr 0\n" +
-                        "\tTf 1 1 1\n" +
-                        "\tillum 2\n" +
-                        "\tKa 0.1255 0.1255 0.1255\n" +
-                        "\tKd 0.1255 0.1255 0.1255\n" +
-                        "\tKs 0.3500 0.3500 0.3500";
+                    /*                    let content = "newmtl new\n" +
+                                            "\tNs 32\n" +
+                                            "\td 1\n" +
+                                            "\tTr 0\n" +
+                                            "\tTf 1 1 1\n" +
+                                            "\tillum 2\n" +
+                                            "\tKa 0.1255 0.1255 0.1255\n" +
+                                            "\tKd 0.1255 0.1255 0.1255\n" +
+                                            "\tKs 0.3500 0.3500 0.3500";*/
                     this.onReadMTLFile(content, mtl);
                     continue;
 
@@ -127,7 +144,7 @@ export default class ObjLoader {
                 //     //这是一个浅复制，可以简单地认为和object指向同一块内容
                 //     continue; // Go to the next line
                 case 'v':   // Read vertex
-                    let vertex = ObjLoader.parseVertex(sp, this.scale);
+                    let vertex = ObjLoader.parseVertex(sp, SCALE);
                     this.vertices.push(vertex);
                     continue; // Go to the next line
                 case 'vn':   // Read normal
@@ -142,11 +159,11 @@ export default class ObjLoader {
                     }
                     continue;
                 case 'f':
-                    let face = this.parseFace(sp, currentMaterialName, this.vertices, this.textureVt, this.normals, this.reverse);
+                    let face = this.parseFace(sp, currentMaterialName, this.vertices, this.textureVt, this.normals, REVERSE);
                     this.object.push(face);
                     continue; // Go to the next line
                 case 'vt':
-                    let VTVertex = ObjLoader.parseVertex(sp, this.scale);
+                    let VTVertex = ObjLoader.parseVertex(sp, SCALE);
                     this.textureVt.push(VTVertex);
             }
         }

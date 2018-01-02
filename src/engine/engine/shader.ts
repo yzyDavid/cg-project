@@ -24,7 +24,7 @@ export default abstract class Shader {
                 attributes: string[],
                 uniforms: string[]) {
         this.name = name;
-        console.log("init shader: " + this.name);
+        console.log("initAsync shader: " + this.name);
         this.gl = gl;
         this.ok = false;
         const vertShader = gl.createShader(gl.VERTEX_SHADER);

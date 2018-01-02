@@ -8,7 +8,7 @@ import {Engine, Scene, Camera} from './engine';
 import {makeDemoLightedCube} from './engine';
 import {Pos} from './engine';
 import Shader from "./engine/engine/shader";
-import {ObjLoader} from './engine';
+import {queryObjAsync} from './engine';
 import {makeDemoCube} from './engine';
 
 const canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById('root');
@@ -27,10 +27,9 @@ camera.lookAt([0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
 
 const scene = new Scene(camera);
 
-const tmp = new ObjLoader("./assets/module/cube.obj", 1, false, "./assets/module/wood11.jpg");
-console.log("objlike", tmp);
-const cube0 = tmp.getObj();
-scene.addObject(cube0);
+queryObjAsync("./assets/module/cube.obj", "./assets/module/wood11.jpg").then(cube0 => {
+    scene.addObject(cube0);
+});
 
 // const cube = makeDemoCube();
 // console.log("objlike2",cube);
