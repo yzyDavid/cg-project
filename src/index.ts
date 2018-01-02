@@ -8,6 +8,7 @@ import {Engine, Scene, Camera} from './engine';
 //import {makeDemoCube} from './engine';
 import {Pos} from './engine';
 import {ObjLoader} from './engine';
+import {makeDemoCube} from './engine';
 
 const canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById('root');
 canvas.setAttribute('width', String(config.WIDTH));
@@ -25,9 +26,9 @@ camera.lookAt([0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
 
 const scene = new Scene(camera);
 
-const tmp=new ObjLoader("haha",1,false,"/texture.png");
-const cube0=tmp.getObj();
-console.log("objlike",cube0);
+const tmp = new ObjLoader("./assets/module/cube.obj", 1, false, "./assets/module/wood11.jpg");
+console.log("objlike", tmp);
+const cube0 = tmp.getObj();
 scene.addObject(cube0);
 
 // const cube = makeDemoCube();
@@ -35,6 +36,7 @@ scene.addObject(cube0);
 // scene.addObject(cube);
 
 const conf = {
+    shader:'texture',
     width: config.WIDTH,
     height: config.HEIGHT
 };

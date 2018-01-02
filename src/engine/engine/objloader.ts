@@ -2,20 +2,28 @@ import GeometryObject from './geometryobject';
 import * as contentText from '../../module/cube.obj';
 
 export default class ObjLoader {
-
+    protected filename:string;
     protected vertices: Vertex[] = [];
     protected normals: Normal[] = [];
-    protected scale: number;
-    protected reverse: boolean;
     protected textureVt: VT[] = [];
     protected object: Face[] = [];
-    protected texturefile:string;
-    protected vt:number[]=[];
+    protected material:Material[]=[];
+    protected scale: number;
+    protected reverse: boolean;
+    protected texturefile: string;
+    protected vt: number[] = [];
+    protected content: string = "";
+    private usematerial: number;
 
     constructor(filename: string, scale: number, reverse: boolean,texturefile:string) {
         this.scale = scale;
         this.reverse = reverse;
         const content = <string>(contentText as any);
+        //this.getText(filename, this.content);
+        //var content:string;
+        //this.fetchThatAsync(filename).then<string>();
+        this.filename=filename;
+        this.texturefile = texturefile;
         this.OBJDocparser(content);
         this.texturefile=texturefile;
         console.log(this.normals);
@@ -40,66 +48,71 @@ export default class ObjLoader {
         var numv = 0;
         var indices: number[] = [];
         var positions: number[] = [];
+        var vt:number[]=[];
+        var count=0;
 
-        function findv(faceset: { [p: number]: number }, v: number) {
-            var value: any;
-            for (value in faceset) {
-                if (value == v) return true;
-            }
-            return false;
-        }
-
-        for (let entry of this.object) {
-            let faceset: { [key: number]: number; } = {};
-            for (let v of entry.vIndices) {
-                if (vset.indexOf(v) != -1) {
-                    if (!findv(faceset, v)) {
-                        positions.push(this.vertices[v].x);
-                        positions.push(this.vertices[v].y);
-                        positions.push(this.vertices[v].z);
-                        indices.push(numv);
-                        faceset[v] = numv;
-                        numv = numv + 1;
-                    }
-                    else {
-                        indices.push(faceset[v]);
-                    }
+        for(let entry of this.object){
+            for (var i=0;i<entry.vIndices.length;i++){
+                positions.push(this.vertices[entry.vIndices[i]].x);
+                positions.push(this.vertices[entry.vIndices[i]].y);
+                positions.push(this.vertices[entry.vIndices[i]].z);
+                if (this.textureVt.length>0) {
+                    vt.push(this.textureVt[entry.tIndices[i]].x);
+                    vt.push(this.textureVt[entry.tIndices[i]].y);
                 }
-                else {
-                    positions.push(this.vertices[v].x);
-                    positions.push(this.vertices[v].y);
-                    positions.push(this.vertices[v].z);
-                    indices.push(v);
-                    faceset[v] = numv;
-                    numv = numv + 1;
-                    vset.push(v);
-                }
+                indices.push(count);
+                count++;
             }
         }
-        return new GeometryObject([0.0, 0.0, 0.0], positions, indices, colors,this.vt,this.texturefile,false);
+        console.log("material",this.material[this.usematerial]);
+        // function findv(faceset: { [p: number]: number }, v: number) {
+        //     var value: any;
+        //     for (value in faceset) {
+        //         if (value == v) return true;
+        //     }
+        //     return false;
+        // }
+        //
+        // for (let entry of this.object) {
+        //     let faceset: { [key: number]: number; } = {};
+        //     for (let v of entry.vIndices) {
+        //         if (vset.indexOf(v) != -1) {
+        //             if (!findv(faceset, v)) {
+        //                 positions.push(this.vertices[v].x);
+        //                 positions.push(this.vertices[v].y);
+        //                 positions.push(this.vertices[v].z);
+        //                 indices.push(numv);
+        //                 faceset[v] = numv;
+        //                 numv = numv + 1;
+        //             }
+        //             else {
+        //                 indices.push(faceset[v]);
+        //             }
+        //         }
+        //         else {
+        //             positions.push(this.vertices[v].x);
+        //             positions.push(this.vertices[v].y);
+        //             positions.push(this.vertices[v].z);
+        //             indices.push(v);
+        //             faceset[v] = numv;
+        //             numv = numv + 1;
+        //             vset.push(v);
+        //         }
+        //     }
+        // }
+        return new GeometryObject([0.0, 0.0, 0.0], positions, indices, colors, vt, this.texturefile, true);
     }
 
-    getText=function (the_request:string,content:string)
-    {
-        var request=new XMLHttpRequest();
-        if(request)
-        {
-            request.open("GET",the_request,true);
-            request.send(null);
-            request.onreadystatechange=function()
-            {
-                if(request.readyState===4)
-                {
-                    if (request.status!=404)
-                    {
-                        content=request.responseText;
-                        console.log("content",content);
-                    }
-                }
-            };
-        }else{
-            alert("error");
-        }
+    async fetchThatAsync(url:string) {
+        const a = await fetch(url).then(function(response) {
+            return response;
+        }).then(function(data) {
+            console.log("data",data);
+            return data.text();
+        }).catch(function(e) {
+            console.log("Oops, error");
+        });
+        return a;
     }
 
     protected OBJDocparser(content: string) {
@@ -123,33 +136,24 @@ export default class ObjLoader {
 
             switch (command) {
                 case '#':
-                    continue;  // Skip comments
-                // case 'mtllib':
-                //     var ifmtl=true;// Read Material chunk
-                //     var path = this.parseMtllib(sp, this.filename);
-                //     var mtl = new MTLDoc();   // Create MTL instance
-                //     this.mtls.push(mtl);
-                //     var request = new XMLHttpRequest();
-                //     request.onreadystatechange = function() {
-                //         if (request.readyState == 4) {
-                //             if (request.status != 404) {
-                //                 this.onReadMTLFile(request.responseText, mtl, mtlArray);
-                //             }else{
-                //                 mtlArray[index]=!modelObject[index].mtls.some(function(x){return !x});
-                //                 // console.log("need a mtlib, but there is none",mtlArray[index]);
-                //                 mtl.complete = true;
-                //             }
-                //         }
-                //     };
-                //     request.onerror=function(error){
-                //         console.log(error);
-                //     };
-                //     request.ontimeout=function(error){
-                //         console.log("timeout",error);
-                //     };
-                //     request.open('GET', path, true);  // Create a request to acquire the file
-                //     request.send();
-                //     continue; // Go to the next line
+                    continue;
+                case 'mtllib':
+                    var ifmtl=true;
+                    var path = this.parseMtllib(sp, this.filename);
+                    var mtl = new MTLDoc();
+                    var content="newmtl new\n" +
+                        "\tNs 32\n" +
+                        "\td 1\n" +
+                        "\tTr 0\n" +
+                        "\tTf 1 1 1\n" +
+                        "\tillum 2\n" +
+                        "\tKa 0.1255 0.1255 0.1255\n" +
+                        "\tKd 0.1255 0.1255 0.1255\n" +
+                        "\tKs 0.3500 0.3500 0.3500";
+                    this.onReadMTLFile(content,mtl);
+                    continue;
+
+                    //默认一个obj文件里只有一个obj，默认一个obj只有一个mtl（暂时
                 // case 'o':
                 // case 'g':   // Read Object name
                 //     var object = this.parseObjectName(sp);
@@ -164,11 +168,15 @@ export default class ObjLoader {
                 case 'vn':   // Read normal
                     var normal = this.parseNormal(sp);
                     this.normals.push(normal);
-                    continue; // Go to the next line
-                // case 'usemtl': // Read Material name
-                //     currentMaterialName = parseUsemtl(sp);
-                //     continue; // Go to the next line
-                case 'f': // Read face
+                    continue;
+                case 'usemtl':
+                    currentMaterialName = this.parseUsemtl(sp);
+                    for (let i=0;i<this.material.length;i++){
+                        this.usematerial=i;
+                        break;
+                    }
+                    continue;
+                case 'f':
                     var face = this.parseFace(sp, currentMaterialName, this.vertices, this.textureVt, this.normals, this.reverse);
                     this.object.push(face);
                     continue; // Go to the next line
@@ -266,6 +274,13 @@ export default class ObjLoader {
             normal[2] = -normal[2];
         }
         face.normal = new Normal(normal[0], normal[1], normal[2]);
+        if (face.nIndices[0]!=-1) {
+            if (!face.normal.parallel(Normals[face.nIndices[0]])) {
+                face.vIndices.reverse();
+                face.nIndices.reverse();
+                face.tIndices.reverse();
+            }
+        }
 
             for (let v of face.tIndices){
                 this.vt.push(textureVt[v].x);
@@ -321,85 +336,102 @@ export default class ObjLoader {
         return v.elements;
     }
 
-    // parseMtllib=function(sp:StringParser, fileName:string) {
-    //     // Get directory path
-    //     var i = fileName.lastIndexOf("/");
-    //     var dirPath = "";
-    //     if(i > 0) dirPath = fileName.substr(0, i+1);
-    //
-    //     return dirPath + sp.getWord();   // Get path
-    // }
-    //
-    // onReadMTLFile=function (fileString:string, mtl:MTLDoc, mtlArray) {
-    //     var lines = fileString.split('\n');  // Break up into lines and store them as array
-    //     lines.push(null);           // Append null
-    //     var tempindex = 0;              // Initialize index of line
-    //
-    //     // Parse line by line
-    //     var line;      // A string in the line to be parsed
-    //     var name = ""; // Material name
-    //     var sp = new StringParser();  // Create StringParser
-    //     while ((line = lines[tempindex++]) != null) {
-    //         sp.init(line);                  // init StringParser
-    //         var command = sp.getWord();     // Get command
-    //         if(command == null)	 continue;  // check null command
-    //
-    //         switch(command){
-    //             case '#':
-    //                 continue;    // Skip comments
-    //             case 'newmtl': // Read Material chunk
-    //                 name = mtl.parseNewmtl(sp);    // Get name
-    //                 continue; // Go to the next line
-    //             case 'Kd':   // Read normal
-    //                 if(name == "") continue; // Go to the next line because of Error
-    //                 var material = mtl.parseRGB(sp, name);
-    //                 mtl.materials.push(material);
-    //                 name = "";
-    //                 continue; // Go to the next line
-    //         }
-    //     }
-    //     mtl.complete = true;
-    //
-    //     var tempii = 0,templock=false;
-    //     console.log("modelObject[index]",modelObject[index].mtls);
-    //     for(;tempii<modelObject[index].mtls.length;tempii++){
-    //         if(!!modelObject[index].mtls[tempii]){
-    //             templock=true;
-    //         }
-    //     }
-    //     mtlArray[index]=templock;
-    //     console.log(templock,mtlArray);
-    // }
+    parseUsemtl=function(sp:StringParser) {
+        return sp.getWord();
+    }
+
+    parseMtllib=function(sp:StringParser, fileName:string) {
+        var i = fileName.lastIndexOf("/");
+        var dirPath = "";
+        if(i > 0) dirPath = fileName.substr(0, i+1);
+        return dirPath + sp.getWord();
+    }
+
+    onReadMTLFile=function (fileString:string, mtl:MTLDoc) {
+        var lines = fileString.split('\n');
+        lines.push(null);
+        var tempindex = 0;
+
+        var line;
+        var name = "";
+        var sp = new StringParser();
+        var currentMaterial=null;
+        while ((line = lines[tempindex++]) != null) {
+            sp.init(line);
+            var command = sp.getWord();
+            if(command == null) continue;
+            switch(command){
+                case '#':
+                    continue;
+                case 'newmtl':
+                    name = mtl.parseNewmtl(sp);
+                    if (currentMaterial!=null){
+                        this.material.push(currentMaterial);
+                    }
+                    currentMaterial=new Material(name);
+                    continue;
+                case 'Kd':
+                    if(name == "") continue;
+                    var color = mtl.parseRGB(sp, name);
+                    currentMaterial.setKd(color);
+                    continue;
+                case 'Ka':
+                    if(name == "") continue;
+                    var color = mtl.parseRGB(sp, name);
+                    currentMaterial.setKa(color);
+                    continue;
+                case 'Ks':
+                    if(name == "") continue;
+                    var color = mtl.parseRGB(sp, name);
+                    currentMaterial.setKs(color);
+                    continue;
+            }
+        }
+        mtl.complete = true;
+        this.material.push(currentMaterial);
+    }
 }
 
-// class MTLDoc{
-//     complete:boolean;
-//     materials:Array();
-//     constructor() {
-//         this.complete = false; // MTL is configured correctly
-//         this.materials = new Array(0);
-//     }
-//
-//     parseNewmtl = function(sp:StringParser) {
-//         return sp.getWord();         // Get name
-//     }
-//     parseRGB = function(sp:StringParser, name:string) {
-//         var r = sp.getFloat();
-//         var g = sp.getFloat();
-//         var b = sp.getFloat();
-//         return (new Material(name, r, g, b, 1));
-//     }
-//
-// }
-//
-// class Material{
-//     name:string;
-//     color:Color;
-//     constructor(name:string, r:number, g:number, b:number, a:number) {
-//         this.name = name;
-//         this.color = new Color(r, g, b, a);
-//     }
-// }
+class MTLDoc{
+    complete:boolean;
+    materials:Array<Material>;
+    constructor() {
+        this.complete = false;
+        this.materials = new Array(0);
+    }
+
+    parseNewmtl = function(sp:StringParser) {
+        return sp.getWord();         // Get name
+    }
+    parseRGB = function(sp:StringParser, name:string) {
+        var r = sp.getFloat();
+        var g = sp.getFloat();
+        var b = sp.getFloat();
+        return new Color(r,g,b,1);
+    }
+
+}
+
+class Material{
+    name:string;
+    Ka:Color;
+    Kd:Color;
+    Ks:Color;
+    d:number;
+    constructor(name:string) {
+        this.name = name;
+        this.d=1;
+    }
+    setKa(c:Color){
+        this.Ka=c;
+    }
+    setKd(c:Color){
+        this.Kd=c;
+    }
+    setKs(c:Color){
+        this.Ks=c;
+    }
+}
 
 class Color{
     r:number;
@@ -462,6 +494,10 @@ class Vector3 {
         v[2] = e * g;
         return this;
     }
+
+    parallel=function(direction2:Vector3){
+        if (this.normalize()==direction2.normalize()) return true; else return false;
+    }
 }
 
 class VT {
@@ -494,6 +530,14 @@ class Normal {
         this.y = y;
         this.z = z;
     }
+    parallel=function(n2:Normal){
+        var v1=new Float32Array(3);v1[0]=this.x;v1[1]=this.y;v1[2]=this.z;
+        var v2=new Float32Array(3);v2[0]=n2.x;v2[0]=n2.y;v2[2]=n2.z;
+        var V1=new Vector3(v1);
+        var V2=new Vector3(v2);
+        return V1.parallel(V2);
+    }
+
 }
 
 class StringParser {
