@@ -8,6 +8,7 @@ import Shader from './shader';
 import Scene from './scene';
 import Engine from './engine';
 import {AABBCollider} from "./AABBCollider";
+import {Collider} from "./Collider";
 
 /**
  * Drawable or interactive with the scene Object
@@ -108,6 +109,10 @@ export abstract class Colliable extends Component {
     constructor(position: Pos, min?: Pos, max?: Pos) {
         super(position);
     }
+
+    abstract onCollisionEnter(collider: Collider, info: Vec3): void;
+
+    abstract onCollisionExit(collider: Collider): void;
 }
 
 export abstract class Incolliable extends Component {
@@ -120,6 +125,14 @@ export abstract class Incolliable extends Component {
 export class Barrier extends Colliable {
     constructor(position: Pos) {
         super(position);
+    }
+
+    onCollisionEnter(collider: Collider, info: Vec3) {
+
+    }
+
+    onCollisionExit(collider: Collider) {
+
     }
 }
 
