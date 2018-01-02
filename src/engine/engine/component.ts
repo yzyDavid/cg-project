@@ -7,6 +7,7 @@ import {mat} from '../matrix';
 import Shader from './shader';
 import Scene from './scene';
 import Engine from './engine';
+import {AABBCollider} from "./AABBCollider";
 
 /**
  * Drawable or interactive with the scene Object
@@ -19,6 +20,12 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
     protected children: Component[];
     protected radius: number;
     protected velocity: Vec3;
+
+    protected linearSpeed: Vec3;
+    protected linearAcceleration: Vec3;
+    protected axis: Vec3;
+    protected angularSpeed: Vec3;
+    protected angularAcceleration: Vec3;
 
     constructor(position: Pos) {
         this.position = position;
@@ -96,7 +103,9 @@ export class Model {
 }
 
 export abstract class Colliable extends Component {
-    constructor(position: Pos) {
+    protected aabb: AABBCollider;
+
+    constructor(position: Pos, min?: Pos, max?: Pos) {
         super(position);
     }
 }
