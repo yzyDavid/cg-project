@@ -93,20 +93,20 @@ export default class LightedObject extends IncolliableObject implements Drawable
         gl.uniformMatrix4fv(uniformLocs['uModelNormalMatrix'], false, new Float32Array(modelNormalMat));
 
         // Material.
-        gl.uniform3fv(uniformLocs["uMaterialAmbientColor"], this.material.getAmbientColor());
-        gl.uniform3fv(uniformLocs["uMaterialDiffuseColor"], this.material.getDiffuseColor());
-        gl.uniform3fv(uniformLocs["uMaterialSpecularColor"], this.material.getSpecularColor());
-        gl.uniform1f(uniformLocs["uMaterialShininess"], this.material.getShininess());
+        gl.uniform3fv(uniformLocs["uMaterial.ambient"], this.material.getAmbientColor());
+        gl.uniform3fv(uniformLocs["uMaterial.diffuse"], this.material.getDiffuseColor());
+        gl.uniform3fv(uniformLocs["uMaterial.specular"], this.material.getSpecularColor());
+        gl.uniform1f(uniformLocs["uMaterial.shininess"], this.material.getShininess());
 
         // Vertex positions in MCS.
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-        gl.vertexAttribPointer(attribLocs['aVertexPos_model'], 3, gl.FLOAT, false, 0, 0);
-        gl.enableVertexAttribArray(attribLocs['aVertexPos_model']);
+        gl.vertexAttribPointer(attribLocs['aVertexPos'], 3, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(attribLocs['aVertexPos']);
 
         // Vertex normals in MCS.
         gl.bindBuffer(gl.ARRAY_BUFFER, this.normalBuffer);
-        gl.vertexAttribPointer(attribLocs['aVertexNormal_model'], 3, gl.FLOAT, false, 0, 0);
-        gl.enableVertexAttribArray(attribLocs['aVertexNormal_model']);
+        gl.vertexAttribPointer(attribLocs['aVertexNormal'], 3, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(attribLocs['aVertexNormal']);
 
         // Indices.
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);

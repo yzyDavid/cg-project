@@ -1,37 +1,58 @@
+// Computing lighting in world coordinate system.
+
 precision mediump float;
 
-uniform vec3 uCameraPos_world;
+#define MAX_NUM_POINT_LIGHTS 4
 
-uniform vec3 uLightPos_world;
-uniform vec3 uLightColor;
-uniform float uLightAmbientCoeff;
+struct PointLight {
+    vec3 position;
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
 
-uniform vec3 uMaterialAmbientColor;
-uniform vec3 uMaterialDiffuseColor;
-uniform vec3 uMaterialSpecularColor;
-uniform float uMaterialShininess;
+struct Material {
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+    float shininess;
+};
 
-varying vec3 vFragPos_world;
-varying vec3 vFragNormal_world;
+// Camera.
+uniform vec3 uCameraPos;
+
+// Lights.
+uniform PointLight uPointLights[MAX_NUM_POINT_LIGHTS];
+
+// Texture and material.
+uniform sampler2D uTexture;
+uniform Material uMaterial;
+
+varying vec3 vFragPos;
+varying vec3 vFragNormal;
+varying vec2 vTexCoord;
+
+vec3 CalPointLight(PointLight light, vec3 fragPos, vec3 fragNormal, vec3 cameraPos);
 
 void main() {
 
+//    texture2D(u_Sampler, v_TexCoord);
+    vec3 result = CalPointLight(uPointLights[0], vFragPos, vFragNormal, uCameraPos);
+
+	gl_FragColor = vec4(result, 1.0);
+}
+
+vec3 CalPointLight(PointLight light, vec3 fragPos, vec3 fragNormal, vec3 cameraPos){
     // Ambient.
-    vec3 ambient = uMaterialAmbientColor * uLightColor * uLightAmbientCoeff;
-
+    vec3 ambient = uMaterial.ambient * light.ambient;
     // Diffuse.
-    vec3 fragLightDir = normalize(uLightPos_world - vFragPos_world);
-    float diffuseCoeff = clamp(dot(vFragNormal_world, fragLightDir), 0.0, 1.0);
-    vec3 diffuse =  uMaterialDiffuseColor * diffuseCoeff * uLightColor;
-
+    vec3 lightDir = normalize(light.position - vFragPos);
+    float diffuseCoeff = clamp(dot(vFragNormal, lightDir), 0.0, 1.0);
+    vec3 diffuse =  uMaterial.diffuse * diffuseCoeff * light.diffuse;
     // Specular
-    vec3 cameraDir = normalize(uCameraPos_world - vFragPos_world);
-    vec3 reflectDir = reflect(-fragLightDir, vFragNormal_world);
-    float specularCoeff = pow(clamp(dot(cameraDir, reflectDir), 0.0, 1.0), uMaterialShininess);
-    vec3 specular = uMaterialSpecularColor * specularCoeff * uLightColor;
-
-	gl_FragColor = vec4(ambient + diffuse + specular, 1.0);
-//    gl_FragColor = vec4(diffuse, 1.0);
-//    gl_FragColor = vec4(ambient, 1.0);
-//    gl_FragColor = vec4(specular, 1.0);
+    vec3 cameraDir = normalize(uCameraPos - vFragPos);
+    vec3 reflectDir = reflect(-lightDir, vFragNormal);
+    float specularCoeff = pow(clamp(dot(cameraDir, reflectDir), 0.0, 1.0), uMaterial.shininess);
+    vec3 specular = uMaterial.specular * specularCoeff * light.specular;
+    return (ambient + diffuse + specular);
 }

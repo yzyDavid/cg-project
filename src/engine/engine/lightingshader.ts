@@ -3,6 +3,9 @@ import * as lightingVertexShaderText from '../shaders/lighting.vert';
 import * as lightingFragmentShaderText from '../shaders/lighting.frag';
 import Camera from "./camera";
 import Light from "./light";
+import PointLight from "./pointlight";
+
+export const MAX_NUM_POINT_LIGHTS = 4;
 
 export default class LightingShader extends Shader {
 
@@ -10,23 +13,30 @@ export default class LightingShader extends Shader {
         const vert = <string>(lightingVertexShaderText as any);
         const frag = <string>(lightingFragmentShaderText as any);
         const attributes = [
-            'aVertexPos_model',
-            'vVertexNormal_model',
+            'aVertexPos',
+            'aVertexNormal',
+            'aTextCoord',
         ];
         const uniforms = [
             'uModelMatrix',
             'uViewMatrix',
             'uProjectionMatrix',
             'uModelNormalMatrix',
-            'uCameraPos_world',
-            'uLightPos_world',
-            'uLightColor',
-            'uLightAmbientCoeff',
-            'uMaterialAmbientColor',
-            'uMaterialDiffuseColor',
-            'uMaterialSpecularColor',
-            'uMaterialShininess',
+            'uCameraPos',
+            'uTexture',
+            'uMaterial.ambient',
+            'uMaterial.diffuse',
+            'uMaterial.specular',
+            'uMaterial.shininess',
         ];
+
+        for (let i = 0; i < MAX_NUM_POINT_LIGHTS; i++) {
+            uniforms.push(pointLightAttrNamePos(i));
+            uniforms.push(pointLightAttrNameAmbient(i));
+            uniforms.push(pointLightAttrNameDiffuse(i));
+            uniforms.push(pointLightAttrNameSpecular(i));
+        }
+
         super(gl, vert, frag, 'lighting', attributes, uniforms);
         return this;
     }
@@ -34,16 +44,41 @@ export default class LightingShader extends Shader {
     // TODO: to be extended to support three lights at most.
     setLights(lights: Light[]) {
         const gl = this.gl;
-        if(lights[0] !== undefined && lights[0].isOn()) {
-            const uniformLocations = this.getUniformLocations();
-            gl.uniform3fv(uniformLocations["uLightPos_world"], new Float32Array(lights[0].getPosition()));
-            gl.uniform3fv(uniformLocations["uLightColor"], new Float32Array(lights[0].getColor()));
-            gl.uniform1f(uniformLocations["uLightAmbientCoeff"], lights[0].getAmbientCoeff());
+        const uniformLocations = this.getUniformLocations();
+        let pointLightCnt = 0;
+
+        for (let i=0, len=lights.length; i<len; i++) {
+            const light = lights[i];
+            if (light instanceof PointLight) {
+                if (pointLightCnt >= MAX_NUM_POINT_LIGHTS)
+                    continue;
+                const pointLight = <PointLight>light;
+                gl.uniform3fv(uniformLocations[pointLightAttrNamePos(pointLightCnt)], new Float32Array(pointLight.getPosition()));
+                gl.uniform3fv(uniformLocations[pointLightAttrNameAmbient(pointLightCnt)], new Float32Array(pointLight.getAmbient()));
+                gl.uniform3fv(uniformLocations[pointLightAttrNameDiffuse(pointLightCnt)], new Float32Array(pointLight.getDiffuse()));
+                gl.uniform3fv(uniformLocations[pointLightAttrNameSpecular(pointLightCnt)], new Float32Array(pointLight.getSpecular()));
+            }
         }
     }
 
     setCamera(camera: Camera) {
         const gl = this.gl;
-        gl.uniform3fv(this.getUniformLocations()["uCameraPos_world"], camera.getPosition());
+        gl.uniform3fv(this.getUniformLocations()["uCameraPos"], camera.getPosition());
     }
+}
+
+function pointLightAttrNamePos(i: number): string {
+    return "uPointLights[" + i + "].position";
+}
+
+function pointLightAttrNameAmbient(i: number): string {
+    return "uPointLights[" + i + "].ambient";
+}
+
+function pointLightAttrNameDiffuse(i: number): string {
+    return "uPointLights[" + i + "].diffuse";
+}
+
+function pointLightAttrNameSpecular(i: number): string {
+    return "uPointLights[" + i + "].specular";
 }
