@@ -1,46 +1,26 @@
 /*
  * created by Zhenyun Yu.
  */
-import Shader from './shader';
 
-import * as primitiveVertexShaderText from '../shaders/primitive.vert';
-import * as primitiveFragmentShaderText from '../shaders/primitive.frag';
+import Shader from './shader';
+import LightingShader from './lightingshader';
+import PrimitiveShader from './primitiveshader';
 
 export default class ShaderManager {
     private readonly gl: WebGLRenderingContext;
     private readonly shaders: { [key: string]: Shader };
     private currentName: string;
 
-    constructor(gl: WebGLRenderingContext, loadDefaults?: boolean) {
+    constructor(gl: WebGLRenderingContext) {
         this.gl = gl;
         this.shaders = {};
-        if (loadDefaults || loadDefaults === undefined) {
-            this.loadDefaultShaders();
-        }
+
+        this.addShader(new LightingShader(gl));
+        this.addShader(new PrimitiveShader(gl));
     }
 
-    loadDefaultShaders() {
-        const gl = this.gl;
-        const vert = <string>(primitiveVertexShaderText as any);
-        const frag = <string>(primitiveFragmentShaderText as any);
-        console.log("loading default Shader");
-        console.log(gl);
-        console.debug(frag);
-        console.debug(vert);
-        this.addShader('primitive', new Shader(
-            gl,
-            vert,
-            frag,
-            'primitive'
-        ));
-    }
-
-    addShader(name: string, shader: Shader) {
-        if (!this.shaders[name]) {
-            this.shaders[name] = shader;
-        } else {
-            console.error("shader exists");
-        }
+    addShader(shader: Shader) {
+        this.shaders[shader.getName()] = shader;
     }
 
     useShader(name: string) {

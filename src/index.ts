@@ -5,8 +5,9 @@ import './index.css';
 import * as config from './config';
 
 import {Engine, Scene, Camera} from './engine';
-//import {makeDemoCube} from './engine';
+import {makeDemoLightedCube} from './engine';
 import {Pos} from './engine';
+import Shader from "./engine/engine/shader";
 import {ObjLoader} from './engine';
 import {makeDemoCube} from './engine';
 
@@ -36,7 +37,7 @@ scene.addObject(cube0);
 // scene.addObject(cube);
 
 const conf = {
-    shader:'texture',
+    shader: 'texture',
     width: config.WIDTH,
     height: config.HEIGHT
 };

@@ -3,9 +3,9 @@
  */
 
 /*
- * write new shaders with the convention here, or subclass this class.
+ * Shaders should subclass this class.
  */
-export default class Shader {
+export default abstract class Shader {
     protected gl: WebGLRenderingContext;
     private ok: boolean;
     private readonly program: WebGLProgram;
@@ -20,18 +20,10 @@ export default class Shader {
     constructor(gl: WebGLRenderingContext,
                 vert: string,
                 frag: string,
-                name?: string,
-                attributes?: string[],
-                uniforms?: string[],
-                optional?: object) {
-        if (optional) {
-            console.error("optional shaders are not implemented");
-        }
-        if (name) {
-            this.name = name;
-        } else {
-            this.name = 'BaseShader';
-        }
+                name: string,
+                attributes: string[],
+                uniforms: string[]) {
+        this.name = name;
         console.log("init shader: " + this.name);
         this.gl = gl;
         this.ok = false;
@@ -66,19 +58,8 @@ export default class Shader {
         this.attribLocations = {};
         this.uniformLocations = {};
 
-        if (attributes === undefined || attributes === null) {
-            console.info("shader init: load default attribute locations.");
-            this.attributes = ['aVertexPosition', 'aVertexColor'];
-        } else {
-            this.attributes = attributes;
-        }
-
-        if (uniforms === undefined || uniforms === null) {
-            console.info("shader init: load default uniform locations.");
-            this.uniforms = ['uModelMatrix', 'uViewMatrix', 'uProjectionMatrix'];
-        } else {
-            this.uniforms = uniforms;
-        }
+        this.attributes = attributes;
+        this.uniforms = uniforms;
 
         this.initLocations();
         console.log("attributes:");
@@ -155,6 +136,11 @@ export default class Shader {
         this.gl.useProgram(this.program);
         const a = this.gl.getProgramParameter(this.program, this.gl.ACTIVE_ATTRIBUTES);
         console.log("using shader: return value of gl.ACTIVE_ATTRIBUTES");
-        console.debug(a);
+        console.log(a);
+        console.log("using shader: " + this.name);
+    }
+
+    getName(): string {
+        return this.name;
     }
 }

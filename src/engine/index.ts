@@ -13,8 +13,8 @@ import Lighting from './engine/light';
 import {Component} from './engine/component';
 
 import {makeDemoCube} from './engine/geometryobject';
-//import {makeDemoLightedCube} from './engine/lightedobject';
 
+import {makeDemoLightedCube} from './engine/lightedobject';
 import {Pos, Vec3} from './engine/public';
 
 import ObjLoader from './engine/objloader';
@@ -23,5 +23,5 @@ export {Engine, Scene, GeometryObject, Camera, Shader, ShaderManager, Lighting, 
 export {Pos, Vec3};
 
 export {makeDemoCube};
-//export {makeDemoLightedCube};
+export {makeDemoLightedCube};
 export {ObjLoader};
