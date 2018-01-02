@@ -21,6 +21,7 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
     protected children: Component[];
     protected radius: number;
     protected velocity: Vec3;
+    protected shaderName: string;
 
     protected linearSpeed: Vec3;
     protected linearAcceleration: Vec3;
@@ -33,6 +34,7 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
         this.children = [];
         this.radius = 0.0;
         this.velocity = [0.0, 0.0, 0.0];
+        this.shaderName = '';
     }
 
     forEach(func: (o: Component, index?: number, array?: Component[]) => void): void {
@@ -63,6 +65,10 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
         return this.radius;
     }
 
+    shaderAssigned(): boolean {
+        return this.shaderName !== '';
+    }
+
     // may be designed not properly.
     drawChildren(gl: WebGLRenderingContext, engine?: Engine, modelMatrix?: mat): void {
         this.forEach((obj) => {
@@ -84,6 +90,15 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
 
     setPosition(pos: Pos) {
         this.position = pos;
+    }
+
+    setShader(shader: string) {
+        // TODO: judge shader name valid here.
+        this.shaderName = shader;
+    }
+
+    getShader(): string {
+        return this.shaderName;
     }
 }
 
