@@ -10,22 +10,21 @@ export default class ObjLoader {
     protected material: Material[] = [];
     protected scale: number;
     protected reverse: boolean;
-    protected texturefile: string;
+    protected textureFile: string;
     protected vt: number[] = [];
-    protected content: string = "";
-    private usematerial: number;
+    private useMaterial: number;
 
-    constructor(filename: string, scale: number, reverse: boolean, texturefile: string) {
+    constructor(filename: string, scale: number, reverse: boolean, textureFile: string) {
         this.scale = scale;
         this.reverse = reverse;
         const content = <string>(contentText as any);
         //this.getText(filename, this.content);
-        //var content:string;
+        //let content:string;
         //this.fetchThatAsync(filename).then<string>();
         this.filename = filename;
-        this.texturefile = texturefile;
-        this.OBJDocparser(content);
-        this.texturefile = texturefile;
+        this.textureFile = textureFile;
+        this.OBJDocParser(content);
+        this.textureFile = textureFile;
         console.log(this.normals);
         console.log(this.vertices);
         console.log(this.object);
@@ -44,15 +43,13 @@ export default class ObjLoader {
         faceColors.forEach(v => {
             colors = colors.concat(v, v, v, v);
         });
-        const vset: number[] = [];
-        var numv = 0;
-        var indices: number[] = [];
-        var positions: number[] = [];
-        var vt: number[] = [];
-        var count = 0;
+        let indices: number[] = [];
+        let positions: number[] = [];
+        let vt: number[] = [];
+        let count = 0;
 
         for (let entry of this.object) {
-            for (var i = 0; i < entry.vIndices.length; i++) {
+            for (let i = 0; i < entry.vIndices.length; i++) {
                 positions.push(this.vertices[entry.vIndices[i]].x);
                 positions.push(this.vertices[entry.vIndices[i]].y);
                 positions.push(this.vertices[entry.vIndices[i]].z);
@@ -64,8 +61,8 @@ export default class ObjLoader {
                 count++;
             }
         }
-        console.log("material", this.material[this.usematerial]);
-        return new GeometryObject([0.0, 0.0, 0.0], positions, indices, colors, vt, this.texturefile, true);
+        console.log("material", this.material[this.useMaterial]);
+        return new GeometryObject([0.0, 0.0, 0.0], positions, indices, colors, vt, this.textureFile, true);
     }
 
     async fetchTextAsync(url: string): Promise<string> {
@@ -85,33 +82,31 @@ export default class ObjLoader {
         };
     }
 
-    protected OBJDocparser(content: string) {
-        var lines = content.split("\n");
-        lines.push(null); // Append null
-        var tempIndex = 0;    // Initialize index of line
+    protected OBJDocParser(content: string) {
+        let lines = content.split("\n");
+        lines.push(null);
+        let tempIndex = 0;
 
-        var currentMaterialName = "";
-        //var ifmtl=false;
+        let currentMaterialName = "";
 
-        // Parse line by line
-        var line;         // A string in the line to be parsed
-        var sp: StringParser;  // Create StringParser
+        let line;
+        let sp: StringParser;
         sp = new StringParser();
 
         while ((line = lines[tempIndex++]) != null) {
             console.debug(line);
-            sp.init(line);                  // init StringParser
-            var command = sp.getWord();     // Get command
-            if (command == null) continue;  // check null command
+            sp.init(line);
+            let command = sp.getWord();
+            if (command == null) continue;
 
             switch (command) {
                 case '#':
                     continue;
                 case 'mtllib':
-                    var ifmtl = true;
-                    var path = this.parseMtllib(sp, this.filename);
-                    var mtl = new MTLDoc();
-                    var content = "newmtl new\n" +
+                    let ifmtl = true;
+                    let path = ObjLoader.parseMtllib(sp, this.filename);
+                    let mtl = new MTLDoc();
+                    let content = "newmtl new\n" +
                         "\tNs 32\n" +
                         "\td 1\n" +
                         "\tTr 0\n" +
@@ -123,86 +118,76 @@ export default class ObjLoader {
                     this.onReadMTLFile(content, mtl);
                     continue;
 
-                //默认一个obj文件里只有一个obj，默认一个obj只有一个mtl（暂时
+                // TODO: 默认一个obj文件里只有一个obj，默认一个obj只有一个mtl（暂时
                 // case 'o':
                 // case 'g':   // Read Object name
-                //     var object = this.parseObjectName(sp);
+                //     let object = this.parseObjectName(sp);
                 //     this.objects.push(object);
                 //     currentObject = object;
                 //     //这是一个浅复制，可以简单地认为和object指向同一块内容
                 //     continue; // Go to the next line
                 case 'v':   // Read vertex
-                    var vertex = this.parseVertex(sp, this.scale);
+                    let vertex = ObjLoader.parseVertex(sp, this.scale);
                     this.vertices.push(vertex);
                     continue; // Go to the next line
                 case 'vn':   // Read normal
-                    var normal = this.parseNormal(sp);
+                    let normal = ObjLoader.parseNormal(sp);
                     this.normals.push(normal);
                     continue;
                 case 'usemtl':
-                    currentMaterialName = this.parseUsemtl(sp);
+                    currentMaterialName = ObjLoader.parseUsemtl(sp);
                     for (let i = 0; i < this.material.length; i++) {
-                        this.usematerial = i;
+                        this.useMaterial = i;
                         break;
                     }
                     continue;
                 case 'f':
-                    var face = this.parseFace(sp, currentMaterialName, this.vertices, this.textureVt, this.normals, this.reverse);
+                    let face = this.parseFace(sp, currentMaterialName, this.vertices, this.textureVt, this.normals, this.reverse);
                     this.object.push(face);
                     continue; // Go to the next line
                 case 'vt':
-                    var VTvertex = this.parseVertex(sp, this.scale);
-                    this.textureVt.push(VTvertex);
-                    continue;
-                default:
-                    continue;
+                    let VTVertex = ObjLoader.parseVertex(sp, this.scale);
+                    this.textureVt.push(VTVertex);
             }
         }
-        //objArray[index]=true;
-        //if(!ifmtl)mtlArray[index]=true;
         return true;
     }
 
-    // parseObjectName=function(sp:StringParser) {
-    //     var name = sp.getWord();
-    //     return (new OBJObject(name));
-    // }
-
-    parseVertex = function (sp: StringParser, scale: number) {
-        var x = sp.getFloat() * scale;
-        var y = sp.getFloat() * scale;
-        var z = sp.getFloat() * scale;
+    static parseVertex(sp: StringParser, scale: number) {
+        let x = sp.getFloat() * scale;
+        let y = sp.getFloat() * scale;
+        let z = sp.getFloat() * scale;
         return (new Vertex(x, y, z));
-    }
+    };
 
-    parseNormal = function (sp: StringParser) {
-        var x = sp.getFloat();
-        var y = sp.getFloat();
-        var z = sp.getFloat();
+    static parseNormal(sp: StringParser) {
+        let x = sp.getFloat();
+        let y = sp.getFloat();
+        let z = sp.getFloat();
         return (new Normal(x, y, z));
-    }
+    };
 
-    parseFace = function (sp: StringParser, materialName: string, vertices: Vertex[], textureVt: VT[], Normals: Normal[], reverse: boolean) {
-        var face = new Face(materialName);
+    parseFace(sp: StringParser, materialName: string, vertices: Vertex[], textureVt: VT[], Normals: Normal[], reverse: boolean) {
+        let face = new Face(materialName);
         // get indices
         for (; ;) {
-            var word = sp.getWord();
+            let word = sp.getWord();
             if (!word || !word.replace(/^\s+|\s+$/g, "")) break;
-            var subWords;
+            let subWords;
             subWords = word.split('/');
 
             if (subWords.length >= 1) {
-                var vi = parseInt(subWords[0]) < 0 ? vertices.length + parseInt(subWords[0]) : parseInt(subWords[0]) - 1;
+                let vi = parseInt(subWords[0]) < 0 ? vertices.length + parseInt(subWords[0]) : parseInt(subWords[0]) - 1;
                 face.vIndices.push(vi);
             }
             if (subWords.length >= 2) {
                 if (subWords[1]) {
-                    var ti = parseInt(subWords[1]) < 0 ? textureVt.length + parseInt(subWords[1]) : parseInt(subWords[1]) - 1;
+                    let ti = parseInt(subWords[1]) < 0 ? textureVt.length + parseInt(subWords[1]) : parseInt(subWords[1]) - 1;
                     face.tIndices.push(ti);
                 }
             }
             if (subWords.length >= 3) {
-                var ni = parseInt(subWords[2]) < 0 ? Normals.length + parseInt(subWords[2]) : parseInt(subWords[2]) - 1;
+                let ni = parseInt(subWords[2]) < 0 ? Normals.length + parseInt(subWords[2]) : parseInt(subWords[2]) - 1;
                 face.nIndices.push(ni);
             } else {
                 face.nIndices.push(-1);
@@ -211,31 +196,31 @@ export default class ObjLoader {
 
         // calc normal
         // console.log(vertices,face.vIndices[0],face.vIndices[1],face.vIndices[2]);
-        var v0 = [
+        let v0 = [
             vertices[face.vIndices[0]].x,
             vertices[face.vIndices[0]].y,
             vertices[face.vIndices[0]].z];
-        var v1 = [
+        let v1 = [
             vertices[face.vIndices[1]].x,
             vertices[face.vIndices[1]].y,
             vertices[face.vIndices[1]].z];
-        var v2 = [
+        let v2 = [
             vertices[face.vIndices[2]].x,
             vertices[face.vIndices[2]].y,
             vertices[face.vIndices[2]].z];
 
         // 计算法向量
-        var normal = this.calcNormal(v0, v1, v2);
+        let normal = ObjLoader.calcNormal(v0, v1, v2);
         if (normal == null) {
             if (face.vIndices.length >= 4) {
-                var v3 = [
+                let v3 = [
                     vertices[face.vIndices[3]].x,
                     vertices[face.vIndices[3]].y,
                     vertices[face.vIndices[3]].z];
-                normal = this.calcNormal(v1, v2, v3);
+                normal = ObjLoader.calcNormal(v1, v2, v3);
             }
-            if (normal == null) {         // 法線が求められなかったのでY軸方向の法線とする
-                normal = [0.0, 1.0, 0.0];
+            if (normal == null) {
+                normal = new Float32Array([0.0, 1.0, 0.0]);
             }
         }
         if (reverse) {
@@ -260,11 +245,11 @@ export default class ObjLoader {
 
         // Devide to triangles if face contains over 3 points.
         if (face.vIndices.length > 3) {
-            var n = face.vIndices.length - 2;
-            var newVIndices = new Array(n * 3);
-            var newNIndices = new Array(n * 3);
-            var newTIndices = new Array(n * 3);
-            for (var i = 0; i < n; i++) {
+            let n = face.vIndices.length - 2;
+            let newVIndices = new Array(n * 3);
+            let newNIndices = new Array(n * 3);
+            let newTIndices = new Array(n * 3);
+            for (let i = 0; i < n; i++) {
                 newVIndices[i * 3] = face.vIndices[0];
                 newVIndices[i * 3 + 1] = face.vIndices[i + 1];
                 newVIndices[i * 3 + 2] = face.vIndices[i + 2];
@@ -285,56 +270,57 @@ export default class ObjLoader {
         return face;
     }
 
-    calcNormal = function (p0: number[], p1: number[], p2: number[]) {
+    static calcNormal(p0: number[], p1: number[], p2: number[]) {
         // v0: a vector from p1 to p0, v1; a vector from p1 to p2
-        var v0 = new Float32Array(3);
-        var v1 = new Float32Array(3);
-        for (var i = 0; i < 3; i++) {
+        let v0 = new Float32Array(3);
+        let v1 = new Float32Array(3);
+        for (let i = 0; i < 3; i++) {
             v0[i] = p0[i] - p1[i];
             v1[i] = p2[i] - p1[i];
         }
 
         // The cross product of v0 and v1
-        var c = new Float32Array(3);
+        let c = new Float32Array(3);
         c[0] = v0[1] * v1[2] - v0[2] * v1[1];
         c[1] = v0[2] * v1[0] - v0[0] * v1[2];
         c[2] = v0[0] * v1[1] - v0[1] * v1[0];
 
         // Normalize the result
-        var v = new Vector3(c);
+        let v = new Vector3(c);
         v.normalize();
         return v.elements;
     }
 
-    parseUsemtl = function (sp: StringParser) {
+    static parseUsemtl(sp: StringParser) {
         return sp.getWord();
     }
 
-    parseMtllib = function (sp: StringParser, fileName: string) {
-        var i = fileName.lastIndexOf("/");
-        var dirPath = "";
+    static parseMtllib(sp: StringParser, fileName: string) {
+        let i = fileName.lastIndexOf("/");
+        let dirPath = "";
         if (i > 0) dirPath = fileName.substr(0, i + 1);
         return dirPath + sp.getWord();
     }
 
-    onReadMTLFile = function (fileString: string, mtl: MTLDoc) {
-        var lines = fileString.split('\n');
+    onReadMTLFile(fileString: string, mtl: MTLDoc) {
+        let lines = fileString.split('\n');
         lines.push(null);
-        var tempindex = 0;
+        let tempindex = 0;
 
-        var line;
-        var name = "";
-        var sp = new StringParser();
-        var currentMaterial = null;
+        let line;
+        let name = "";
+        let sp = new StringParser();
+        let currentMaterial = null;
         while ((line = lines[tempindex++]) != null) {
             sp.init(line);
-            var command = sp.getWord();
+            let command = sp.getWord();
             if (command == null) continue;
+            let color;
             switch (command) {
                 case '#':
                     continue;
                 case 'newmtl':
-                    name = mtl.parseNewmtl(sp);
+                    name = MTLDoc.parseNewmtl(sp);
                     if (currentMaterial != null) {
                         this.material.push(currentMaterial);
                     }
@@ -342,19 +328,18 @@ export default class ObjLoader {
                     continue;
                 case 'Kd':
                     if (name == "") continue;
-                    var color = mtl.parseRGB(sp, name);
+                    color = MTLDoc.parseRGB(sp, name);
                     currentMaterial.setKd(color);
                     continue;
                 case 'Ka':
                     if (name == "") continue;
-                    var color = mtl.parseRGB(sp, name);
+                    color = MTLDoc.parseRGB(sp, name);
                     currentMaterial.setKa(color);
                     continue;
                 case 'Ks':
                     if (name == "") continue;
-                    var color = mtl.parseRGB(sp, name);
+                    color = MTLDoc.parseRGB(sp, name);
                     currentMaterial.setKs(color);
-                    continue;
             }
         }
         mtl.complete = true;
@@ -371,13 +356,14 @@ class MTLDoc {
         this.materials = new Array(0);
     }
 
-    parseNewmtl = function (sp: StringParser) {
+    static parseNewmtl(sp: StringParser) {
         return sp.getWord();         // Get name
     }
-    parseRGB = function (sp: StringParser, name: string) {
-        var r = sp.getFloat();
-        var g = sp.getFloat();
-        var b = sp.getFloat();
+
+    static parseRGB(sp: StringParser, name: string) {
+        let r = sp.getFloat();
+        let g = sp.getFloat();
+        let b = sp.getFloat();
         return new Color(r, g, b, 1);
     }
 
@@ -412,7 +398,7 @@ class Color {
     r: number;
     g: number;
     b: number;
-    a: number
+    a: number;
 
     constructor(r: number, g: number, b: number, a: number) {
         this.r = r;
@@ -420,7 +406,7 @@ class Color {
         this.b = b;
         this.a = a;
     }
-};
+}
 
 class Face {
     materialName: string;
@@ -443,7 +429,7 @@ class Vector3 {
     elements: Float32Array;
 
     constructor(opt_src: Float32Array) {
-        var v = new Float32Array(3);
+        let v = new Float32Array(3);
         if (opt_src && typeof opt_src === 'object') {
             v[0] = opt_src[0];
             v[1] = opt_src[1];
@@ -452,9 +438,9 @@ class Vector3 {
         this.elements = v;
     }
 
-    normalize = function () {
-        var v = this.elements;
-        var c = v[0], d = v[1], e = v[2], g = Math.sqrt(c * c + d * d + e * e);
+    normalize() {
+        let v = this.elements;
+        let c = v[0], d = v[1], e = v[2], g = Math.sqrt(c * c + d * d + e * e);
         if (g) {
             if (g == 1)
                 return this;
@@ -471,8 +457,8 @@ class Vector3 {
         return this;
     }
 
-    parallel = function (direction2: Vector3) {
-        if (this.normalize() == direction2.normalize()) return true; else return false;
+    parallel(direction2: Vector3) {
+        return this.normalize() == direction2.normalize();
     }
 }
 
@@ -510,16 +496,16 @@ class Normal {
     }
 
     parallel = function (n2: Normal) {
-        var v1 = new Float32Array(3);
+        let v1 = new Float32Array(3);
         v1[0] = this.x;
         v1[1] = this.y;
         v1[2] = this.z;
-        var v2 = new Float32Array(3);
+        let v2 = new Float32Array(3);
         v2[0] = n2.x;
         v2[0] = n2.y;
         v2[2] = n2.z;
-        var V1 = new Vector3(v1);
-        var V2 = new Vector3(v2);
+        let V1 = new Vector3(v1);
+        let V2 = new Vector3(v2);
         return V1.parallel(V2);
     }
 
@@ -530,57 +516,57 @@ class StringParser {
     index: number;
 
     constructor() {
-        this.str = null;   // Store the string specified by the argument
-        this.index = 0; // Position in the string to be processed
-        // this.init(str);
+        this.str = null;
+        this.index = 0;
     }
 
-    init = function (str: string) {
+    init(str: string) {
         this.str = str;
         this.index = 0;
     }
 
-    getWordLength = function (str: string, start: number) {
-        var n = 0;
-        for (var i = start, len = str.length; i < len; i++) {
-            var c = str.charAt(i);
+    static getWordLength(str: string, start: number) {
+        let i, len;
+        for (i = start, len = str.length; i < len; i++) {
+            let c = str.charAt(i);
             if (c == '\t' || c == ' ' || c == '(' || c == ')' || c == '"')
                 break;
         }
         return i - start;
     }
 
-    skipDelimiters = function () {
-        for (var i = this.index, len = this.str.length; i < len; i++) {
-            var c = this.str.charAt(i);
+    skipDelimiters() {
+        let i, len;
+        for (i = this.index, len = this.str.length; i < len; i++) {
+            let c = this.str.charAt(i);
             // Skip TAB, Space, '(', ')
             if (c == '\t' || c == ' ' || c == '(' || c == ')' || c == '"') continue;
             break;
         }
         this.index = i;
-    }
+    };
 
-    getWord = function () {
+    getWord() {
         this.skipDelimiters();
-        var n = this.getWordLength(this.str, this.index);
+        let n = StringParser.getWordLength(this.str, this.index);
         if (n == 0) return null;
-        var word = this.str.substr(this.index, n);
+        let word = this.str.substr(this.index, n);
         this.index += (n + 1);
 
         return word;
-    }
+    };
 
-    skipToNextWord = function () {
+    skipToNextWord() {
         this.skipDelimiters();
-        var n = this.getWordLength(this.str, this.index);
+        let n = StringParser.getWordLength(this.str, this.index);
         this.index += (n + 1);
-    }
+    };
 
-    getInt = function () {
+    getInt() {
         return parseInt(this.getWord());
-    }
+    };
 
-    getFloat = function () {
+    getFloat() {
         return parseFloat(this.getWord());
-    }
+    };
 }
