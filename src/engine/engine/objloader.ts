@@ -65,64 +65,24 @@ export default class ObjLoader {
             }
         }
         console.log("material", this.material[this.usematerial]);
-        // function findv(faceset: { [p: number]: number }, v: number) {
-        //     var value: any;
-        //     for (value in faceset) {
-        //         if (value == v) return true;
-        //     }
-        //     return false;
-        // }
-        //
-        // for (let entry of this.object) {
-        //     let faceset: { [key: number]: number; } = {};
-        //     for (let v of entry.vIndices) {
-        //         if (vset.indexOf(v) != -1) {
-        //             if (!findv(faceset, v)) {
-        //                 positions.push(this.vertices[v].x);
-        //                 positions.push(this.vertices[v].y);
-        //                 positions.push(this.vertices[v].z);
-        //                 indices.push(numv);
-        //                 faceset[v] = numv;
-        //                 numv = numv + 1;
-        //             }
-        //             else {
-        //                 indices.push(faceset[v]);
-        //             }
-        //         }
-        //         else {
-        //             positions.push(this.vertices[v].x);
-        //             positions.push(this.vertices[v].y);
-        //             positions.push(this.vertices[v].z);
-        //             indices.push(v);
-        //             faceset[v] = numv;
-        //             numv = numv + 1;
-        //             vset.push(v);
-        //         }
-        //     }
-        // }
         return new GeometryObject([0.0, 0.0, 0.0], positions, indices, colors, vt, this.texturefile, true);
     }
 
-    async fetchThatAsync(url: string) {
-        const a = await fetch(url).then(function (response) {
-            return response;
-        }).then(function (data) {
-            console.log("data", data);
-            return data.text();
-        }).catch(function (e) {
-            console.log("Oops, error");
-        });
-        return a;
+    async fetchTextAsync(url: string): Promise<string> {
+        const response = await fetch(url);
+        return await response.text();
     }
 
     fetchText(url: string) {
-        return fetch(url).then((response) => {
-            return response.text();
-        }).then((text) => {
-            return text;
-        }).catch((e) => {
-            console.error("fetch text error: " + url);
-        });
+        const fn = async () => {
+            return fetch(url).then((response) => {
+                return response.text();
+            }).then((text) => {
+                return text;
+            }).catch((e) => {
+                console.error("fetch text error: " + url);
+            });
+        };
     }
 
     protected OBJDocparser(content: string) {
