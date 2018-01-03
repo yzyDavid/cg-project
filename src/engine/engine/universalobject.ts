@@ -39,8 +39,8 @@ export default class UnniversalObject extends IncolliableObject implements Drawa
         this.vt = vt;
     }
 
-    saveObj = function () {
-        let output: string = "";
+    saveObj = function (name: string) {
+        let output: string = "o " + name;
         let n = this.vertices.length;
         for (let i = 0; i < n; i = i + 3) {
             output = output + "v " + this.vertices[i] + " " + this.vertices[i + 1] + " " + this.vertices[i + 2] + "\n";
@@ -50,17 +50,23 @@ export default class UnniversalObject extends IncolliableObject implements Drawa
             output = output + "vt " + this.vt[i] + " " + this.vt[i + 1] + "\n";
         }
         n = this.indices.length;
+        output = output + "usemtl " + ".mtl\n";
         for (let i = 0; i < n; i = i + 3) {
             output = output + "f " + this.indices[i] + "/" + this.indices[i] + " " + this.indices[i + 1] + "/" + this.indices[i + 1] + " " + this.indices[i + 2] + "/" + this.indices[i + 2] + " " + "\n";
         }
+        this.saveMtl(name);
         return output;
     }
 
-    saveMtl=function(){
-        let output:string="";
-        output=output+"Ka "+this.material.getAmbientColor()[0]+" "+this.material.getAmbientColor()[1]+" "+this.material.getAmbientColor()[2]+"\n";
-        output=output+"Kd "+this.material.getDiffuseColor()[0]+" "+this.material.getDiffuseColor()[1]+" "+this.material.getDiffuseColor()[2]+"\n";
-        output=output+"Ka "+this.material.getSpecularColor()[0]+" "+this.material.getSpecularColor()[1]+" "+this.material.getSpecularColor()[2]+"\n";
+    saveMtl = function (name: string) {
+        let output: string = "newmtl " + name;
+        if (this.material.getAmbientColor().indexOf(0) == -1)
+            output = output + "Ka " + this.material.getAmbientColor()[0] + " " + this.material.getAmbientColor()[1] + " " + this.material.getAmbientColor()[2] + "\n";
+        if (this.material.getDiffuseColor().indexOf(0) == -1)
+            output = output + "Kd " + this.material.getDiffuseColor()[0] + " " + this.material.getDiffuseColor()[1] + " " + this.material.getDiffuseColor()[2] + "\n";
+        if (this.material.getSpecularColor().indexOf(0) == -1)
+            output = output + "Ka " + this.material.getSpecularColor()[0] + " " + this.material.getSpecularColor()[1] + " " + this.material.getSpecularColor()[2] + "\n";
+        if (this.texturefile != "none") output = output + this.texturefile;
         return output;
     }
 
