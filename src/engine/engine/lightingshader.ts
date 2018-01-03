@@ -5,7 +5,7 @@ import Camera from "./camera";
 import Light from "./light";
 import PointLight from "./pointlight";
 
-export const MAX_NUM_POINT_LIGHTS = 4;
+export const NUM_POINT_LIGHTS = 4;
 
 export default class LightingShader extends Shader {
 
@@ -30,7 +30,7 @@ export default class LightingShader extends Shader {
             'uMaterial.shininess',
         ];
 
-        for (let i = 0; i < MAX_NUM_POINT_LIGHTS; i++) {
+        for (let i = 0; i < NUM_POINT_LIGHTS; i++) {
             uniforms.push(pointLightAttrNamePos(i));
             uniforms.push(pointLightAttrNameAmbient(i));
             uniforms.push(pointLightAttrNameDiffuse(i));
@@ -50,7 +50,7 @@ export default class LightingShader extends Shader {
         for (let i=0, len=lights.length; i<len; i++) {
             const light = lights[i];
             if (light instanceof PointLight) {
-                if (pointLightCnt >= MAX_NUM_POINT_LIGHTS)
+                if (pointLightCnt >= NUM_POINT_LIGHTS)
                     continue;
                 const pointLight = <PointLight>light;
                 gl.uniform3fv(uniformLocations[pointLightAttrNamePos(pointLightCnt)], new Float32Array(pointLight.getPosition()));
@@ -59,6 +59,8 @@ export default class LightingShader extends Shader {
                 gl.uniform3fv(uniformLocations[pointLightAttrNameSpecular(pointLightCnt)], new Float32Array(pointLight.getSpecular()));
             }
         }
+
+        // TODO: default lights.
     }
 
     setCamera(camera: Camera) {

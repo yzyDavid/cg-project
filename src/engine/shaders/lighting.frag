@@ -2,7 +2,15 @@
 
 precision mediump float;
 
-#define MAX_NUM_POINT_LIGHTS 4
+#define NUM_DIR_LIGHTS 4
+#define NUM_POINT_LIGHTS 4
+
+struct DirectLight {
+    vec3 direction;
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
 
 struct PointLight {
     vec3 position;
@@ -22,7 +30,8 @@ struct Material {
 uniform vec3 uCameraPos;
 
 // Lights.
-uniform PointLight uPointLights[MAX_NUM_POINT_LIGHTS];
+uniform DirectLight uDirectLights[NUM_DIR_LIGHTS];
+uniform PointLight uPointLights[NUM_POINT_LIGHTS];
 
 // Texture and material.
 uniform sampler2D uTexture;
@@ -36,13 +45,34 @@ vec3 CalPointLight(PointLight light, vec3 fragPos, vec3 fragNormal, vec3 cameraP
 
 void main() {
 
-//    texture2D(u_Sampler, v_TexCoord);
-    vec3 result = CalPointLight(uPointLights[0], vFragPos, vFragNormal, uCameraPos);
+    vec3 cameraDir = normalize(uCameraPos - vFragPos);
+    vec3 result = vec3(0.0, 0.0, 0.0);
+
+//    for(int i = 0; i < NR_DIR_LIGHTS; i++){
+//        result += CalcDirLight(uDirectLights[i], vFragNormal, cameraDir);
+//    }
+    for(int i = 0; i < 1; i++){
+        result += CalPointLight(uPointLights[i], vFragPos, vFragNormal, cameraDir);
+    }
 
 	gl_FragColor = vec4(result, 1.0);
 }
 
-vec3 CalPointLight(PointLight light, vec3 fragPos, vec3 fragNormal, vec3 cameraPos){
+//vec3 CalDirLight(DirectLight light, vec3 fragNormal, vec3 cameraDir){
+//    // Ambient.
+//    vec3 ambient = uMaterial.ambient * light.ambient;
+//    // Diffuse.
+//    vec3 lightDir = normalize(-light.direction);
+//    float diffuseCoeff = clamp(dot(vFragNormal, lightDir), 0.0, 1.0);
+//    vec3 diffuse =  uMaterial.diffuse * diffuseCoeff * light.diffuse;
+//    // Specular
+//    vec3 reflectDir = reflect(-lightDir, vFragNormal);
+//    float specularCoeff = pow(clamp(dot(cameraDir, reflectDir), 0.0, 1.0), uMaterial.shininess);
+//    vec3 specular = uMaterial.specular * specularCoeff * light.specular;
+//    return (ambient + diffuse + specular);
+//}
+
+vec3 CalPointLight(PointLight light, vec3 fragPos, vec3 fragNormal, vec3 cameraDir){
     // Ambient.
     vec3 ambient = uMaterial.ambient * light.ambient;
     // Diffuse.
@@ -50,7 +80,6 @@ vec3 CalPointLight(PointLight light, vec3 fragPos, vec3 fragNormal, vec3 cameraP
     float diffuseCoeff = clamp(dot(vFragNormal, lightDir), 0.0, 1.0);
     vec3 diffuse =  uMaterial.diffuse * diffuseCoeff * light.diffuse;
     // Specular
-    vec3 cameraDir = normalize(uCameraPos - vFragPos);
     vec3 reflectDir = reflect(-lightDir, vFragNormal);
     float specularCoeff = pow(clamp(dot(cameraDir, reflectDir), 0.0, 1.0), uMaterial.shininess);
     vec3 specular = uMaterial.specular * specularCoeff * light.specular;
