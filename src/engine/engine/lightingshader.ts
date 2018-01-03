@@ -27,7 +27,11 @@ export default class LightingShader extends Shader {
             'uMaterialDiffuseColor',
             'uMaterialSpecularColor',
             'uMaterialShininess',
-            'u_Sampler'
+            'u_Sampler',
+            'hasText',
+            'hasAmbientColor',
+            'hasDiffuseColor',
+            'hasSpecularColor'
         ];
         super(gl, vert, frag, 'lighting', attributes, uniforms);
         return this;

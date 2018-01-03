@@ -141,6 +141,11 @@ export default class UnniversalObject extends IncolliableObject implements Drawa
         gl.uniform3fv(uniformLocs["uMaterialSpecularColor"], this.material.getSpecularColor());
         gl.uniform1f(uniformLocs["uMaterialShininess"], this.material.getShininess());
 
+        //has material or texture infos?
+        if (this.material.getAmbientColor().indexOf(0)==-1) gl.uniform1f(uniformLocs["hasAmbientColor"], -1); else gl.uniform1f(uniformLocs["hasAmbientColor"], 1);
+        if (this.material.getDiffuseColor().indexOf(0)==-1) gl.uniform1f(uniformLocs["hasDiffuseColor"], -1); else gl.uniform1f(uniformLocs["hasDiffuseColor"], 1);
+        if (this.material.getSpecularColor().indexOf(0)==-1) gl.uniform1f(uniformLocs["hasSpecularColor"], -1);else gl.uniform1f(uniformLocs["hasSpecularColor"], 1);
+
         // Vertex positions in MCS.
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
         gl.vertexAttribPointer(attribLocs['aVertexPos_model'], 3, gl.FLOAT, false, 0, 0);
@@ -151,13 +156,20 @@ export default class UnniversalObject extends IncolliableObject implements Drawa
         gl.vertexAttribPointer(attribLocs['aVertexNormal_model'], 3, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(attribLocs['aVertexNormal_model']);
 
-        //texture
-        const a_TexCoord = attribLocs['a_TextCoord'];
-        const u_Sampler = attribLocs['u_Sampler'];
-        this.create_texture(gl, this.texturefile, this.texture, u_Sampler);
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.textBuffer);
-        gl.vertexAttribPointer(a_TexCoord, 2, gl.FLOAT, false, 0, 0);
-        gl.enableVertexAttribArray(a_TexCoord);
+        if (this.texturefile=="none")
+        {
+            gl.uniform1f(uniformLocs["hasText"], -1);
+        }
+        else {
+            //texture
+            gl.uniform1f(uniformLocs["hasText"], 1);
+            const a_TexCoord = attribLocs['a_TextCoord'];
+            const u_Sampler = attribLocs['u_Sampler'];
+            this.create_texture(gl, this.texturefile, this.texture, u_Sampler);
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.textBuffer);
+            gl.vertexAttribPointer(a_TexCoord, 2, gl.FLOAT, false, 0, 0);
+            gl.enableVertexAttribArray(a_TexCoord);
+        }
 
         // Indices.
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);

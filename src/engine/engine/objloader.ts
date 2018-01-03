@@ -1,8 +1,6 @@
-import GeometryObject from './geometryobject';
 import Material from './material';
 import {Vec3} from "./public";
 import UniversalObject from './universalobject';
-import * as contentText from '../../module/cube.obj';
 
 type ImageUrl = string;
 type ObjUrl = string;
@@ -22,14 +20,19 @@ export default async function queryObjAsync(objUrl: ObjUrl, textureUrl: ImageUrl
 
 class ObjLoader {
     protected filename: string;
+
     protected vertices: Vertex[] = [];
     protected normals: Normal[] = [];
     protected textureVt: VT[] = [];
     protected object: Face[] = [];
     protected material: namedMaterial[] = [];
+
     protected textureFile: string;
     protected vt: number[] = [];
+    protected positions: number[] = [];
+    protected indices: number[] = [];
     private useMaterial: number;
+    protected count: number = 0;
 
     constructor(filename: string, textureFile: string) {
         this.filename = filename;
@@ -47,29 +50,17 @@ class ObjLoader {
     }
 
     getObj() {
-        let indices: number[] = [];
-        let positions: number[] = [];
-        let vt: number[] = [];
-        let count = 0;
+        let material;
+        if (this.material.length==0) {
+            material = new Material([-1,-1,-1], [-1,-1,-1], [-1,-1,-1], 30);
+        }
+        else {
+            console.log("material", this.material[this.useMaterial]);
+            material = this.material[this.useMaterial].changeToMaterial(30);
 
-        for (let entry of this.object) {
-            for (let i = 0; i < entry.vIndices.length; i++) {
-                positions.push(this.vertices[entry.vIndices[i]].x);
-                positions.push(this.vertices[entry.vIndices[i]].y);
-                positions.push(this.vertices[entry.vIndices[i]].z);
-                if (this.textureVt.length > 0) {
-                    vt.push(this.textureVt[entry.tIndices[i]].x);
-                    vt.push(this.textureVt[entry.tIndices[i]].y);
-                }
-                indices.push(count);
-                count++;
-            }
         }
 
-        let material = this.material[this.useMaterial].changeToMaterial(30);
-        console.log("material", this.material[this.useMaterial]);
-        return new UniversalObject([0, 0, 0], positions, positions, indices, material, vt, this.textureFile);
-        //return new GeometryObject([0.0, 0.0, 0.0], positions, indices, colors, vt, this.textureFile, true);
+        return new UniversalObject([0, 0, 0], this.positions, this.positions, this.indices, material, this.vt, this.textureFile);
     }
 
     async fetchTextAsync(url: string): Promise<string> {
@@ -212,11 +203,6 @@ class ObjLoader {
                 normal = new Float32Array([0.0, 1.0, 0.0]);
             }
         }
-        if (reverse) {
-            normal[0] = -normal[0];
-            normal[1] = -normal[1];
-            normal[2] = -normal[2];
-        }
         face.normal = new Normal(normal[0], normal[1], normal[2]);
         if (face.nIndices[0] != -1) {
             if (!face.normal.parallel(Normals[face.nIndices[0]])) {
@@ -226,31 +212,22 @@ class ObjLoader {
             }
         }
 
-        for (let v of face.tIndices) {
-            this.vt.push(textureVt[v].x);
-            this.vt.push(textureVt[v].y);
+        for (let i = 0; i < face.vIndices.length; i++) {
+            this.vt.push(textureVt[face.tIndices[i]].x);
+            this.vt.push(textureVt[face.tIndices[i]].y);
+            this.positions.push(vertices[face.vIndices[i]].x);
+            this.positions.push(vertices[face.vIndices[i]].y);
+            this.positions.push(vertices[face.vIndices[i]].z);
+            face.vIndices[i] = this.count;
+            this.count++;
         }
 
         // Devide to triangles if face contains over 3 points.
         if (face.vIndices.length > 3) {
             let n = face.vIndices.length - 2;
-            let newVIndices = new Array(n * 3);
-            let newNIndices = new Array(n * 3);
-            let newTIndices = new Array(n * 3);
             for (let i = 0; i < n; i++) {
-                newVIndices[i * 3] = face.vIndices[0];
-                newVIndices[i * 3 + 1] = face.vIndices[i + 1];
-                newVIndices[i * 3 + 2] = face.vIndices[i + 2];
-                newNIndices[i * 3] = face.nIndices[0];
-                newNIndices[i * 3 + 1] = face.nIndices[i + 1];
-                newNIndices[i * 3 + 2] = face.nIndices[i + 2];
-                newTIndices[i * 3] = face.tIndices[0];
-                newTIndices[i * 3 + 1] = face.tIndices[i + 1];
-                newTIndices[i * 3 + 2] = face.tIndices[i + 2]
+                this.indices.push(face.vIndices[0], face.vIndices[i + 1], face.vIndices[i + 2]);
             }
-            face.vIndices = newVIndices;
-            face.nIndices = newNIndices;
-            face.tIndices = newTIndices;
         }
         face.numIndices = face.vIndices.length;
 
@@ -365,6 +342,9 @@ class namedMaterial {
 
     constructor(name: string) {
         this.name = name;
+        this.Ka=new Color(-1,-1,-1,1);
+        this.Kd=new Color(-1,-1,-1,1);
+        this.Ks=new Color(-1,-1,-1,1);
         this.d = 1;
     }
 
