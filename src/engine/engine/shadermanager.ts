@@ -5,7 +5,7 @@
 import Shader from './shader';
 import LightingShader from './lightingshader';
 import PrimitiveShader from './primitiveshader';
-import TextureShader from "./textureshader";
+import TextureShader from './textureshader';
 
 export default class ShaderManager {
     private readonly gl: WebGLRenderingContext;
@@ -25,17 +25,19 @@ export default class ShaderManager {
         this.shaders[shader.getName()] = shader;
     }
 
-    useShader(name: string) {
+    useShader(name: string): boolean {
         if (this.currentName === name) {
-            return;
+            return true;
         }
         const gl = this.gl;
         const shader = this.shaders[name];
         if (shader) {
             shader.use();
             this.currentName = name;
+            return true;
         } else {
             console.error("shader " + name + " not found");
+            return false;
         }
     }
 

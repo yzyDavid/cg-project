@@ -6,25 +6,29 @@ import {mat, mat4} from '../matrix';
 import {default as Engine} from './engine';
 import Scene from './scene';
 import Material from './material';
+import LightingShader from "./lightingshader";
 
 export default class LightedObject extends IncolliableObject implements Drawable {
     protected vertices: number[];
+    protected normals: number[];
     protected indices: number[];
     protected material: Material;
 
     protected bufferCreated: boolean;
-
+    protected normalBuffer: WebGLBuffer;
     protected vertexBuffer: WebGLBuffer;
+
     protected indexBuffer: WebGLBuffer;
 
     constructor(pos: Pos,
                 vertices: number[],
+                normals: number[],
                 indices: number[],
-                // colors: number[]
                 material: Material) {
         super(pos, undefined);
         this.vertices = vertices;
         this.indices = indices;
+        this.normals = normals;
         this.material = material;
         this.bufferCreated = false;
     }
@@ -34,14 +38,18 @@ export default class LightedObject extends IncolliableObject implements Drawable
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW);
 
+        this.normalBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.normalBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.normals), gl.STATIC_DRAW);
+
         this.indexBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.indices), gl.STATIC_DRAW);
 
-        console.debug("creating geometry object:");
+        console.debug("creating lighted geometry object:");
         console.debug(new Float32Array(this.vertices).length);
         console.debug(this.vertices.length);
-        // console.debug(this.colors.length);
+        console.debug(this.normals.length);
         console.debug(this.indices.length);
     }
 
@@ -58,23 +66,49 @@ export default class LightedObject extends IncolliableObject implements Drawable
             modelMatrix = mat4.identity();
         }
 
-        const shader = engine.getCurrentShader();
-        const uniformLocs = shader.getUniformLocations();
-        const attribLocs = shader.getAttribLocations();
+        // Use lighting shader.
+        const shaderManager = engine.getShaderManager();
+        if (!(shaderManager.useShader('lighting'))) {
+            shaderManager.addShader(new LightingShader(gl));
+            shaderManager.useShader('lighting');
+        }
+        const lightingShader =  <LightingShader>(engine.getCurrentShader());
 
-        const modelLoc = shader.getModelMatrixLocation();
+        const uniformLocs = lightingShader.getUniformLocations();
+        const attribLocs = lightingShader.getAttribLocations();
+
+        // Set lights and camera.
+        lightingShader.setLights(engine.getScene().getLights());
+        lightingShader.setCamera(engine.getScene().getCamera());
+
+        // Model matrix.
+        const modelLoc = lightingShader.getModelMatrixLocation();
         const modelMat = mat4.multiply(modelMatrix, mat4.identity());
         gl.uniformMatrix4fv(modelLoc, false, new Float32Array(modelMat));
 
-        gl.uniform3fv(uniformLocs["uMaterialAmbientColor"], this.material.ambientColor);
-        gl.uniform3fv(uniformLocs["uMaterialDiffuseColor"], this.material.diffuseColor);
-        gl.uniform3fv(uniformLocs["uMaterialSpecularColor"], this.material.specularColor);
-        gl.uniform1f(uniformLocs["uMaterialShininess"], this.material.shininess);
+        // Model normal matrix.
+        const modelNormalMat = modelMat;
+        mat4.invert(modelNormalMat, modelNormalMat);
+        mat4.transpose(modelNormalMat, modelNormalMat);
+        gl.uniformMatrix4fv(uniformLocs['uModelNormalMatrix'], false, new Float32Array(modelNormalMat));
 
+        // Material.
+        gl.uniform3fv(uniformLocs["uMaterialAmbientColor"], this.material.getAmbientColor());
+        gl.uniform3fv(uniformLocs["uMaterialDiffuseColor"], this.material.getDiffuseColor());
+        gl.uniform3fv(uniformLocs["uMaterialSpecularColor"], this.material.getSpecularColor());
+        gl.uniform1f(uniformLocs["uMaterialShininess"], this.material.getShininess());
+
+        // Vertex positions in MCS.
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
         gl.vertexAttribPointer(attribLocs['aVertexPos_model'], 3, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(attribLocs['aVertexPos_model']);
 
+        // Vertex normals in MCS.
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.normalBuffer);
+        gl.vertexAttribPointer(attribLocs['aVertexNormal_model'], 3, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(attribLocs['aVertexNormal_model']);
+
+        // Indices.
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 
         const vertexCount = this.indices.length;
@@ -131,11 +165,11 @@ export function makeDemoLightedCube() {
     ];
 
     const material = new Material(
-        [0, 0, 0],
-        [1.0, 0, 0],
-        [0.085514, 0.355277, 0.074845],
-        96.078431
+        [1, 0, 0],
+        [1, 0, 0],
+        [1, 1, 1],
+        30
     );
 
-    return new LightedObject([0.0, 0.0, 0.0], positions, indices, material);
+    return new LightedObject([0.0, 0.0, 0.0], positions, positions, indices, material);
 }

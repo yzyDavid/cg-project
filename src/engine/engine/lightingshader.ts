@@ -1,6 +1,8 @@
 import Shader from './shader'
 import * as lightingVertexShaderText from '../shaders/lighting.vert';
 import * as lightingFragmentShaderText from '../shaders/lighting.frag';
+import Camera from "./camera";
+import Light from "./light";
 
 export default class LightingShader extends Shader {
 
@@ -9,52 +11,39 @@ export default class LightingShader extends Shader {
         const frag = <string>(lightingFragmentShaderText as any);
         const attributes = [
             'aVertexPos_model',
+            'vVertexNormal_model',
         ];
         const uniforms = [
-            'uModel',
-            'uView',
-            'uProjection',
+            'uModelMatrix',
+            'uViewMatrix',
+            'uProjectionMatrix',
+            'uModelNormalMatrix',
+            'uCameraPos_world',
+            'uLightPos_world',
+            'uLightColor',
+            'uLightAmbientCoeff',
             'uMaterialAmbientColor',
             'uMaterialDiffuseColor',
             'uMaterialSpecularColor',
             'uMaterialShininess',
-            'uLightPos',
-            'uLightColor',
-            'uLightAmbientCoeff',
         ];
-
         super(gl, vert, frag, 'lighting', attributes, uniforms);
+        return this;
     }
 
-    getVertexPositionLocation() {
-        const r = this.getAttribLocations()['aVertexPos_model'];
-        if (!r) {
-            throw new Error();
+    // TODO: to be extended to support three lights at most.
+    setLights(lights: Light[]) {
+        const gl = this.gl;
+        if(lights[0] !== undefined && lights[0].isOn()) {
+            const uniformLocations = this.getUniformLocations();
+            gl.uniform3fv(uniformLocations["uLightPos_world"], new Float32Array(lights[0].getPosition()));
+            gl.uniform3fv(uniformLocations["uLightColor"], new Float32Array(lights[0].getColor()));
+            gl.uniform1f(uniformLocations["uLightAmbientCoeff"], lights[0].getAmbientCoeff());
         }
-        return r;
     }
 
-    getProjectionMatrixLocation(): WebGLUniformLocation {
-        const r = this.getUniformLocations()['uProjection'];
-        if (!r) {
-            throw new Error();
-        }
-        return r;
-    }
-
-    getModelMatrixLocation(): WebGLUniformLocation {
-        const r = this.getUniformLocations()['uModel'];
-        if (!r) {
-            throw new Error();
-        }
-        return r;
-    }
-
-    getViewMatrixLocation(): WebGLUniformLocation {
-        const r = this.getUniformLocations()['uView'];
-        if (!r) {
-            throw new Error();
-        }
-        return r;
+    setCamera(camera: Camera) {
+        const gl = this.gl;
+        gl.uniform3fv(this.getUniformLocations()["uCameraPos_world"], camera.getPosition());
     }
 }
