@@ -9,10 +9,13 @@ attribute vec3 aVertexNormal_model;
 varying vec3 vFragPos_world;
 varying vec3 vFragNormal_world;
 
+attribute vec2 a_TextCoord;
+varying vec2 v_TexCoord;
 void main() {
 
 	gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * vec4(aVertexPos_model, 1.0);
 
+    v_TexCoord = a_TextCoord;
     vFragPos_world = (uModelMatrix * vec4(aVertexPos_model, 1.0)).xyz;
     vFragNormal_world = normalize(mat3(uModelNormalMatrix) * aVertexNormal_model);
 }

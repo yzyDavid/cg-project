@@ -12,6 +12,7 @@ export default class LightingShader extends Shader {
         const attributes = [
             'aVertexPos_model',
             'vVertexNormal_model',
+            'a_TextCoord'
         ];
         const uniforms = [
             'uModelMatrix',
@@ -26,6 +27,7 @@ export default class LightingShader extends Shader {
             'uMaterialDiffuseColor',
             'uMaterialSpecularColor',
             'uMaterialShininess',
+            'u_Sampler'
         ];
         super(gl, vert, frag, 'lighting', attributes, uniforms);
         return this;

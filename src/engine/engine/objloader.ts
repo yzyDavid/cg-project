@@ -1,4 +1,7 @@
 import GeometryObject from './geometryobject';
+import Material from './material';
+import {Vec3} from "./public";
+import UniversalObject from './universalobject';
 import * as contentText from '../../module/cube.obj';
 
 type ImageUrl = string;
@@ -11,7 +14,7 @@ type MtlContent = string;
 const SCALE = 1;
 const REVERSE = false;
 
-export default async function queryObjAsync(objUrl: ObjUrl, textureUrl: ImageUrl): Promise<GeometryObject> {
+export default async function queryObjAsync(objUrl: ObjUrl, textureUrl: ImageUrl): Promise<UniversalObject> {
     const loader = new ObjLoader(objUrl, textureUrl);
     await loader.initAsync();
     return loader.getObj();
@@ -23,7 +26,7 @@ class ObjLoader {
     protected normals: Normal[] = [];
     protected textureVt: VT[] = [];
     protected object: Face[] = [];
-    protected material: Material[] = [];
+    protected material: namedMaterial[] = [];
     protected textureFile: string;
     protected vt: number[] = [];
     private useMaterial: number;
@@ -44,18 +47,6 @@ class ObjLoader {
     }
 
     getObj() {
-        const faceColors = [
-            [0.7, 0.7, 0.3, 1.0],    // Front face: white - modified
-            [1.0, 0.0, 0.0, 1.0],    // Back face: red
-            [0.0, 1.0, 0.0, 1.0],    // Top face: green
-            [0.0, 0.0, 1.0, 1.0],    // Bottom face: blue
-            [1.0, 1.0, 0.0, 1.0],    // Right face: yellow
-            [1.0, 0.0, 1.0, 1.0],    // Left face: purple
-        ];
-        let colors: number[] = [];
-        faceColors.forEach(v => {
-            colors = colors.concat(v, v, v, v);
-        });
         let indices: number[] = [];
         let positions: number[] = [];
         let vt: number[] = [];
@@ -74,25 +65,16 @@ class ObjLoader {
                 count++;
             }
         }
+
+        let material = this.material[this.useMaterial].changeToMaterial(30);
         console.log("material", this.material[this.useMaterial]);
-        return new GeometryObject([0.0, 0.0, 0.0], positions, indices, colors, vt, this.textureFile, true);
+        return new UniversalObject([0, 0, 0], positions, positions, indices, material, vt, this.textureFile);
+        //return new GeometryObject([0.0, 0.0, 0.0], positions, indices, colors, vt, this.textureFile, true);
     }
 
     async fetchTextAsync(url: string): Promise<string> {
         const response = await fetch(url);
         return await response.text();
-    }
-
-    fetchText(url: string) {
-        const fn = async () => {
-            return fetch(url).then((response) => {
-                return response.text();
-            }).then((text) => {
-                return text;
-            }).catch((e) => {
-                console.error("fetch text error: " + url);
-            });
-        };
     }
 
     protected async OBJDocParserAsync(content: string) {
@@ -123,15 +105,6 @@ class ObjLoader {
                     const content = await query.text();
 
                     let mtl = new MTLDoc();
-                    /*                    let content = "newmtl new\n" +
-                                            "\tNs 32\n" +
-                                            "\td 1\n" +
-                                            "\tTr 0\n" +
-                                            "\tTf 1 1 1\n" +
-                                            "\tillum 2\n" +
-                                            "\tKa 0.1255 0.1255 0.1255\n" +
-                                            "\tKd 0.1255 0.1255 0.1255\n" +
-                                            "\tKs 0.3500 0.3500 0.3500";*/
                     this.onReadMTLFile(content, mtl);
                     continue;
 
@@ -226,7 +199,6 @@ class ObjLoader {
             vertices[face.vIndices[2]].y,
             vertices[face.vIndices[2]].z];
 
-        // 计算法向量
         let normal = ObjLoader.calcNormal(v0, v1, v2);
         if (normal == null) {
             if (face.vIndices.length >= 4) {
@@ -259,7 +231,6 @@ class ObjLoader {
             this.vt.push(textureVt[v].y);
         }
 
-
         // Devide to triangles if face contains over 3 points.
         if (face.vIndices.length > 3) {
             let n = face.vIndices.length - 2;
@@ -280,7 +251,6 @@ class ObjLoader {
             face.vIndices = newVIndices;
             face.nIndices = newNIndices;
             face.tIndices = newTIndices;
-            //if(iiii<4)console.log("face.vIndices",face.vIndices);
         }
         face.numIndices = face.vIndices.length;
 
@@ -341,7 +311,7 @@ class ObjLoader {
                     if (currentMaterial != null) {
                         this.material.push(currentMaterial);
                     }
-                    currentMaterial = new Material(name);
+                    currentMaterial = new namedMaterial(name);
                     continue;
                 case 'Kd':
                     if (name == "") continue;
@@ -366,7 +336,7 @@ class ObjLoader {
 
 class MTLDoc {
     complete: boolean;
-    materials: Array<Material>;
+    materials: Array<namedMaterial>;
 
     constructor() {
         this.complete = false;
@@ -386,7 +356,7 @@ class MTLDoc {
 
 }
 
-class Material {
+class namedMaterial {
     name: string;
     Ka: Color;
     Kd: Color;
@@ -409,6 +379,11 @@ class Material {
     setKs(c: Color) {
         this.Ks = c;
     }
+
+    changeToMaterial(number: number) {
+        let m = new Material(this.Ka.changeIntoVec(), this.Kd.changeIntoVec(), this.Ks.changeIntoVec(), 30);
+        return m;
+    }
 }
 
 class Color {
@@ -422,6 +397,11 @@ class Color {
         this.g = g;
         this.b = b;
         this.a = a;
+    }
+
+    changeIntoVec() {
+        let vec3: Vec3 = [this.r, this.g, this.b];
+        return vec3;
     }
 }
 
