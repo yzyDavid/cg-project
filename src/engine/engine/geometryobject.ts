@@ -218,5 +218,5 @@ export function makeDemoCube() {
         colors = colors.concat(v, v, v, v);
     });
 
-    //return new GeometryObject([0.0, 0.0, 0.0], positions, indices, colors,[],"",false);
+    return new GeometryObject([0.0, 0.0, 0.0], positions, indices, colors,[],"",false);
 }

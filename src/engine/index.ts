@@ -15,6 +15,7 @@ import {Component} from './engine/component';
 import {makeDemoCube} from './engine/geometryobject';
 import {makeDemoLightedCube} from './engine/lightedobject';
 import {Pos, Vec3} from './engine/public';
+import UniversalObject from './engine/universalobject';
 
 import queryObjAsync from './engine/objloader';
 
@@ -23,3 +24,4 @@ export {Pos, Vec3};
 export {makeDemoCube};
 export {makeDemoLightedCube};
 export {queryObjAsync};
+export {UniversalObject};

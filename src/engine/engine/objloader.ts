@@ -12,10 +12,20 @@ type MtlContent = string;
 const SCALE = 1;
 const REVERSE = false;
 
-export default async function queryObjAsync(objUrl: ObjUrl, textureUrl: ImageUrl): Promise<UniversalObject> {
+export default async function queryObjAsync(objUrl: ObjUrl, textureUrl: ImageUrl): Promise<UniversalObject[]> {
+
     const loader = new ObjLoader(objUrl, textureUrl);
     await loader.initAsync();
     return loader.getObj();
+}
+
+class materialPart {
+    public textureFile: string;
+    public material: namedMaterial;
+    public vt: number[] = [];
+    public positions: number[] = [];
+    public indices: number[] = [];
+    public count: number = 0;
 }
 
 class ObjLoader {
@@ -34,6 +44,9 @@ class ObjLoader {
     private useMaterial: number;
     protected count: number = 0;
 
+    protected materialParts: materialPart[] = [];
+    protected currentMaterialPart: materialPart;
+
     constructor(filename: string, textureFile: string) {
         this.filename = filename;
         this.textureFile = textureFile;
@@ -50,17 +63,27 @@ class ObjLoader {
     }
 
     getObj() {
-        let material;
-        if (this.material.length==0) {
-            material = new Material([-1,-1,-1], [-1,-1,-1], [-1,-1,-1], 30);
+        let resObjs:UniversalObject[]=[];
+        for (let entry of this.materialParts) {
+            let material;
+            if (entry.material == undefined) {
+                material = new Material([-1, -1, -1], [-1, -1, -1], [-1, -1, -1], 30);
+            }
+            else {
+                //console.log("material", this.material[this.useMaterial]);
+                material = entry.material.changeToMaterial(30);
+            }
+            console.log("materialpart", this.materialParts);
+            let obj=new UniversalObject([0, 0, 0],
+                entry.positions,
+                entry.positions,
+                entry.indices,
+                material,
+                entry.vt,
+                this.textureFile);
+            resObjs.push(obj);
         }
-        else {
-            console.log("material", this.material[this.useMaterial]);
-            material = this.material[this.useMaterial].changeToMaterial(30);
-
-        }
-
-        return new UniversalObject([0, 0, 0], this.positions, this.positions, this.indices, material, this.vt, this.textureFile);
+        return resObjs;
     }
 
     async fetchTextAsync(url: string): Promise<string> {
@@ -74,6 +97,7 @@ class ObjLoader {
         let tempIndex = 0;
 
         let currentMaterialName = "";
+        let mtlused: boolean;
 
         let line;
         let sp: StringParser;
@@ -89,7 +113,6 @@ class ObjLoader {
                 case '#':
                     continue;
                 case 'mtllib':
-                    let ifmtl = true;
                     const path: string = ObjLoader.parseMtllib(sp, this.filename);
 
                     const query = await fetch(path);
@@ -116,13 +139,24 @@ class ObjLoader {
                     this.normals.push(normal);
                     continue;
                 case 'usemtl':
+                    mtlused = true;
                     currentMaterialName = ObjLoader.parseUsemtl(sp);
                     for (let i = 0; i < this.material.length; i++) {
-                        this.useMaterial = i;
-                        break;
+                        if (this.material[i].name==currentMaterialName) {
+                            this.useMaterial = i;
+                            break;
+                        }
                     }
+                    if (this.currentMaterialPart != undefined) this.materialParts.push(this.currentMaterialPart);
+                    this.currentMaterialPart = new materialPart();
+                    this.currentMaterialPart.material = this.material[this.useMaterial];
                     continue;
                 case 'f':
+                    //可以接受两种情况：1.只有mtl没有纹理，可以多种mtl 2.只有mtl没有纹理，只能有一种纹理
+                    if (!mtlused) {
+                        mtlused = true;
+                        this.currentMaterialPart = new materialPart();
+                    }
                     let face = this.parseFace(sp, currentMaterialName, this.vertices, this.textureVt, this.normals, REVERSE);
                     this.object.push(face);
                     continue; // Go to the next line
@@ -131,6 +165,7 @@ class ObjLoader {
                     this.textureVt.push(VTVertex);
             }
         }
+        if (this.currentMaterialPart != undefined) this.materialParts.push(this.currentMaterialPart);
         return true;
     }
 
@@ -213,20 +248,20 @@ class ObjLoader {
         }
 
         for (let i = 0; i < face.vIndices.length; i++) {
-            this.vt.push(textureVt[face.tIndices[i]].x);
-            this.vt.push(textureVt[face.tIndices[i]].y);
-            this.positions.push(vertices[face.vIndices[i]].x);
-            this.positions.push(vertices[face.vIndices[i]].y);
-            this.positions.push(vertices[face.vIndices[i]].z);
-            face.vIndices[i] = this.count;
-            this.count++;
+            this.currentMaterialPart.vt.push(textureVt[face.tIndices[i]].x);
+            this.currentMaterialPart.vt.push(textureVt[face.tIndices[i]].y);
+            this.currentMaterialPart.positions.push(vertices[face.vIndices[i]].x);
+            this.currentMaterialPart.positions.push(vertices[face.vIndices[i]].y);
+            this.currentMaterialPart.positions.push(vertices[face.vIndices[i]].z);
+            face.vIndices[i] = this.currentMaterialPart.count;
+            this.currentMaterialPart.count++;
         }
 
         // Devide to triangles if face contains over 3 points.
         if (face.vIndices.length > 3) {
             let n = face.vIndices.length - 2;
             for (let i = 0; i < n; i++) {
-                this.indices.push(face.vIndices[0], face.vIndices[i + 1], face.vIndices[i + 2]);
+                this.currentMaterialPart.indices.push(face.vIndices[0], face.vIndices[i + 1], face.vIndices[i + 2]);
             }
         }
         face.numIndices = face.vIndices.length;
@@ -334,7 +369,7 @@ class MTLDoc {
 }
 
 class namedMaterial {
-    name: string;
+    public name: string;
     Ka: Color;
     Kd: Color;
     Ks: Color;
@@ -342,9 +377,9 @@ class namedMaterial {
 
     constructor(name: string) {
         this.name = name;
-        this.Ka=new Color(-1,-1,-1,1);
-        this.Kd=new Color(-1,-1,-1,1);
-        this.Ks=new Color(-1,-1,-1,1);
+        this.Ka = new Color(-1, -1, -1, 1);
+        this.Kd = new Color(-1, -1, -1, 1);
+        this.Ks = new Color(-1, -1, -1, 1);
         this.d = 1;
     }
 

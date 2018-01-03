@@ -67,6 +67,7 @@ export default class UnniversalObject extends IncolliableObject implements Drawa
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, img);
             gl.uniform1i(u_Sampler, 0);
+            gl.enable(gl.BLEND);
             gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
         };
         img.src = source;
@@ -136,34 +137,33 @@ export default class UnniversalObject extends IncolliableObject implements Drawa
         gl.uniformMatrix4fv(uniformLocs['uModelNormalMatrix'], false, new Float32Array(modelNormalMat));
 
         // Material.
-        gl.uniform3fv(uniformLocs["uMaterialAmbientColor"], this.material.getAmbientColor());
-        gl.uniform3fv(uniformLocs["uMaterialDiffuseColor"], this.material.getDiffuseColor());
-        gl.uniform3fv(uniformLocs["uMaterialSpecularColor"], this.material.getSpecularColor());
-        gl.uniform1f(uniformLocs["uMaterialShininess"], this.material.getShininess());
+        gl.uniform3fv(uniformLocs["uMaterial.ambient"], this.material.getAmbientColor());
+        gl.uniform3fv(uniformLocs["uMaterial.diffuse"], this.material.getDiffuseColor());
+        gl.uniform3fv(uniformLocs["uMaterial.specular"], this.material.getSpecularColor());
+        gl.uniform1f(uniformLocs["uMaterial.shininess"], this.material.getShininess());
 
         //has material or texture infos?
-        if (this.material.getAmbientColor().indexOf(0)==-1) gl.uniform1f(uniformLocs["hasAmbientColor"], -1); else gl.uniform1f(uniformLocs["hasAmbientColor"], 1);
-        if (this.material.getDiffuseColor().indexOf(0)==-1) gl.uniform1f(uniformLocs["hasDiffuseColor"], -1); else gl.uniform1f(uniformLocs["hasDiffuseColor"], 1);
-        if (this.material.getSpecularColor().indexOf(0)==-1) gl.uniform1f(uniformLocs["hasSpecularColor"], -1);else gl.uniform1f(uniformLocs["hasSpecularColor"], 1);
+        if (this.material.getAmbientColor().indexOf(0) == -1) gl.uniform1f(uniformLocs["hasAmbientColor"], -1); else gl.uniform1f(uniformLocs["hasAmbientColor"], 1);
+        if (this.material.getDiffuseColor().indexOf(0) == -1) gl.uniform1f(uniformLocs["hasDiffuseColor"], -1); else gl.uniform1f(uniformLocs["hasDiffuseColor"], 1);
+        if (this.material.getSpecularColor().indexOf(0) == -1) gl.uniform1f(uniformLocs["hasSpecularColor"], -1); else gl.uniform1f(uniformLocs["hasSpecularColor"], 1);
 
         // Vertex positions in MCS.
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-        gl.vertexAttribPointer(attribLocs['aVertexPos_model'], 3, gl.FLOAT, false, 0, 0);
-        gl.enableVertexAttribArray(attribLocs['aVertexPos_model']);
+        gl.vertexAttribPointer(attribLocs['aVertexPos'], 3, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(attribLocs['aVertexPos']);
 
         // Vertex normals in MCS.
         gl.bindBuffer(gl.ARRAY_BUFFER, this.normalBuffer);
-        gl.vertexAttribPointer(attribLocs['aVertexNormal_model'], 3, gl.FLOAT, false, 0, 0);
-        gl.enableVertexAttribArray(attribLocs['aVertexNormal_model']);
+        gl.vertexAttribPointer(attribLocs['aVertexNormal'], 3, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(attribLocs['aVertexNormal']);
 
-        if (this.texturefile=="none")
-        {
+        if (this.texturefile == "none") {
             gl.uniform1f(uniformLocs["hasText"], -1);
         }
         else {
             //texture
             gl.uniform1f(uniformLocs["hasText"], 1);
-            const a_TexCoord = attribLocs['a_TextCoord'];
+            const a_TexCoord = attribLocs['aTextCoord'];
             const u_Sampler = attribLocs['u_Sampler'];
             this.create_texture(gl, this.texturefile, this.texture, u_Sampler);
             gl.bindBuffer(gl.ARRAY_BUFFER, this.textBuffer);
