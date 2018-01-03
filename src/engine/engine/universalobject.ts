@@ -56,6 +56,14 @@ export default class UnniversalObject extends IncolliableObject implements Drawa
         return output;
     }
 
+    saveMtl=function(){
+        let output:string="";
+        output=output+"Ka "+this.material.getAmbientColor()[0]+" "+this.material.getAmbientColor()[1]+" "+this.material.getAmbientColor()[2]+"\n";
+        output=output+"Kd "+this.material.getDiffuseColor()[0]+" "+this.material.getDiffuseColor()[1]+" "+this.material.getDiffuseColor()[2]+"\n";
+        output=output+"Ka "+this.material.getSpecularColor()[0]+" "+this.material.getSpecularColor()[1]+" "+this.material.getSpecularColor()[2]+"\n";
+        return output;
+    }
+
     create_texture = function (gl: WebGLRenderingContext, source: string, texture: WebGLTexture, u_Sampler: WebGLUniformLocation) {
         var img = new Image();
         img.onload = function () {
