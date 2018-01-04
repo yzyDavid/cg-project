@@ -6,21 +6,21 @@ import {default as Engine} from './engine';
 import Material from './material';
 import LightingShader from "./lightingshader";
 
-export default class UnniversalObject extends IncolliableObject implements Drawable {
+export default class UniversalObject extends IncolliableObject implements Drawable {
     protected vertices: number[];
     protected normals: number[];
     protected indices: number[];
     protected vt: number[];
     protected material: Material;
 
-    protected bufferCreated: boolean;
+    protected inited: boolean;
     protected normalBuffer: WebGLBuffer;
     protected vertexBuffer: WebGLBuffer;
     protected indexBuffer: WebGLBuffer;
 
     protected textBuffer: WebGLBuffer;
     protected texture: WebGLTexture;
-    protected texturefile: string;
+    protected textureImage: HTMLImageElement;
 
     constructor(pos: Pos,
                 vertices: number[],
@@ -28,18 +28,18 @@ export default class UnniversalObject extends IncolliableObject implements Drawa
                 indices: number[],
                 material: Material,
                 vt: number[],
-                texturefile: string) {
+                texture?: HTMLImageElement) {
         super(pos, undefined);
         this.vertices = vertices;
         this.indices = indices;
         this.normals = normals;
         this.material = material;
-        this.bufferCreated = false;
-        this.texturefile = texturefile;
+        this.inited = false;
+        this.textureImage = texture;
         this.vt = vt;
     }
 
-    saveObj = function (name: string) {
+    saveObj(name: string) {
         let output: string = "o " + name;
         let n = this.vertices.length;
         for (let i = 0; i < n; i = i + 3) {
@@ -58,7 +58,7 @@ export default class UnniversalObject extends IncolliableObject implements Drawa
         return output;
     }
 
-    saveMtl = function (name: string) {
+    saveMtl(name: string) {
         let output: string = "newmtl " + name;
         if (this.material.getAmbientColor().indexOf(0) == -1)
             output = output + "Ka " + this.material.getAmbientColor()[0] + " " + this.material.getAmbientColor()[1] + " " + this.material.getAmbientColor()[2] + "\n";
@@ -66,28 +66,24 @@ export default class UnniversalObject extends IncolliableObject implements Drawa
             output = output + "Kd " + this.material.getDiffuseColor()[0] + " " + this.material.getDiffuseColor()[1] + " " + this.material.getDiffuseColor()[2] + "\n";
         if (this.material.getSpecularColor().indexOf(0) == -1)
             output = output + "Ka " + this.material.getSpecularColor()[0] + " " + this.material.getSpecularColor()[1] + " " + this.material.getSpecularColor()[2] + "\n";
-        if (this.texturefile != "none") output = output + this.texturefile;
+        if (this.textureImage) output = output + this.textureImage.src;
         return output;
     }
 
-    create_texture = function (gl: WebGLRenderingContext, source: string, texture: WebGLTexture, u_Sampler: WebGLUniformLocation) {
-        var img = new Image();
-        img.onload = function () {
-            texture = gl.createTexture();
-            gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-            gl.activeTexture(gl.TEXTURE0);
-            gl.bindTexture(gl.TEXTURE_2D, texture);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, img);
-            gl.uniform1i(u_Sampler, 0);
-            gl.enable(gl.BLEND);
-            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-        };
-        img.src = source;
+    createTexture(gl: WebGLRenderingContext, u_Sampler: WebGLUniformLocation) {
+        this.texture = gl.createTexture();
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, this.texture);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, this.textureImage);
+        gl.uniform1i(u_Sampler, 0);
+        gl.enable(gl.BLEND);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     }
 
-    protected createBuffers(gl: WebGLRenderingContext) {
+    protected initDraw(gl: WebGLRenderingContext, u_Sampler: WebGLUniformLocation) {
         this.vertexBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW);
@@ -104,6 +100,8 @@ export default class UnniversalObject extends IncolliableObject implements Drawa
         gl.bindBuffer(gl.ARRAY_BUFFER, this.textBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vt), gl.STATIC_DRAW);
 
+        this.createTexture(gl, u_Sampler);
+
         console.debug("creating lighted geometry object:");
         console.debug(new Float32Array(this.vertices).length);
         console.debug(this.vertices.length);
@@ -115,11 +113,6 @@ export default class UnniversalObject extends IncolliableObject implements Drawa
     }
 
     draw(gl: WebGLRenderingContext, engine: Engine, modelMatrix?: mat): void {
-        if (!this.bufferCreated) {
-            this.createBuffers(gl);
-            this.bufferCreated = true;
-        }
-
         if (!modelMatrix) {
             modelMatrix = mat4.identity();
         }
@@ -134,6 +127,13 @@ export default class UnniversalObject extends IncolliableObject implements Drawa
 
         const uniformLocs = lightingShader.getUniformLocations();
         const attribLocs = lightingShader.getAttribLocations();
+
+        const u_Sampler = attribLocs['u_Sampler'];
+
+        if (!this.inited) {
+            this.initDraw(gl, u_Sampler);
+            this.inited = true;
+        }
 
         // Set lights and camera.
         lightingShader.setLights(engine.getScene().getLights());
@@ -156,7 +156,7 @@ export default class UnniversalObject extends IncolliableObject implements Drawa
         gl.uniform3fv(uniformLocs["uMaterial.specular"], this.material.getSpecularColor());
         gl.uniform1f(uniformLocs["uMaterial.shininess"], this.material.getShininess());
 
-        //has material or texture infos?
+        //has material or texture info?
         if (this.material.getAmbientColor().indexOf(0) == -1) gl.uniform1f(uniformLocs["hasAmbientColor"], -1); else gl.uniform1f(uniformLocs["hasAmbientColor"], 1);
         if (this.material.getDiffuseColor().indexOf(0) == -1) gl.uniform1f(uniformLocs["hasDiffuseColor"], -1); else gl.uniform1f(uniformLocs["hasDiffuseColor"], 1);
         if (this.material.getSpecularColor().indexOf(0) == -1) gl.uniform1f(uniformLocs["hasSpecularColor"], -1); else gl.uniform1f(uniformLocs["hasSpecularColor"], 1);
@@ -171,15 +171,17 @@ export default class UnniversalObject extends IncolliableObject implements Drawa
         gl.vertexAttribPointer(attribLocs['aVertexNormal'], 3, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(attribLocs['aVertexNormal']);
 
-        if (this.texturefile == "none") {
+        if (!this.textureImage) {
             gl.uniform1f(uniformLocs["hasText"], -1);
         }
         else {
             //texture
             gl.uniform1f(uniformLocs["hasText"], 1);
             const a_TexCoord = attribLocs['aTextCoord'];
-            const u_Sampler = attribLocs['u_Sampler'];
-            this.create_texture(gl, this.texturefile, this.texture, u_Sampler);
+            gl.activeTexture(gl.TEXTURE0);
+            gl.bindTexture(gl.TEXTURE_2D, this.texture);
+            gl.uniform1i(u_Sampler, 0);
+
             gl.bindBuffer(gl.ARRAY_BUFFER, this.textBuffer);
             gl.vertexAttribPointer(a_TexCoord, 2, gl.FLOAT, false, 0, 0);
             gl.enableVertexAttribArray(a_TexCoord);

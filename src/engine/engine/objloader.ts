@@ -1,8 +1,8 @@
 import Material from './material';
 import {Vec3} from "./public";
 import UniversalObject from './universalobject';
+import {loadImageAsync} from "./utils";
 
-type ImageUrl = string;
 type ObjUrl = string;
 type MtlUrl = string;
 
@@ -12,15 +12,14 @@ type MtlContent = string;
 const SCALE = 1;
 const REVERSE = false;
 
-export default async function queryObjAsync(objUrl: ObjUrl, textureUrl: ImageUrl): Promise<UniversalObject[]> {
+export default async function queryObjAsync(objUrl: ObjUrl): Promise<UniversalObject[]> {
 
-    const loader = new ObjLoader(objUrl, textureUrl);
+    const loader = new ObjLoader(objUrl);
     await loader.initAsync();
-    return loader.getObj();
+    return await loader.getObjAsync();
 }
 
 class materialPart {
-    public textureFile: string;
     public material: namedMaterial;
     public vt: number[] = [];
     public positions: number[] = [];
@@ -37,7 +36,7 @@ class ObjLoader {
     protected object: Face[] = [];
     protected material: namedMaterial[] = [];
 
-    protected textureFile: string;
+    // protected textureFile: string;
     protected vt: number[] = [];
     protected positions: number[] = [];
     protected indices: number[] = [];
@@ -47,9 +46,8 @@ class ObjLoader {
     protected materialParts: materialPart[] = [];
     protected currentMaterialPart: materialPart;
 
-    constructor(filename: string, textureFile: string) {
+    constructor(filename: string) {
         this.filename = filename;
-        this.textureFile = textureFile;
     }
 
     async initAsync() {
@@ -62,10 +60,10 @@ class ObjLoader {
         console.log(this.object);
     }
 
-    getObj() {
-        let resObjs:UniversalObject[]=[];
+    async getObjAsync(): Promise<UniversalObject[]> {
+        let resObjs: UniversalObject[] = [];
         for (let entry of this.materialParts) {
-            let material;
+            let material: Material;
             if (entry.material == undefined) {
                 material = new Material([-1, -1, -1], [-1, -1, -1], [-1, -1, -1], 30);
             }
@@ -74,13 +72,17 @@ class ObjLoader {
                 material = entry.material.changeToMaterial(30);
             }
             console.log("materialpart", this.materialParts);
-            let obj=new UniversalObject([0, 0, 0],
+
+            let obj: UniversalObject;
+            const img = await loadImageAsync(entry.material.textureFile);
+            obj = new UniversalObject([0, 0, 0],
                 entry.positions,
                 entry.positions,
                 entry.indices,
                 material,
                 entry.vt,
-                this.textureFile);
+                img
+            );
             resObjs.push(obj);
         }
         return resObjs;
@@ -142,7 +144,7 @@ class ObjLoader {
                     mtlused = true;
                     currentMaterialName = ObjLoader.parseUsemtl(sp);
                     for (let i = 0; i < this.material.length; i++) {
-                        if (this.material[i].name==currentMaterialName) {
+                        if (this.material[i].name == currentMaterialName) {
                             this.useMaterial = i;
                             break;
                         }
@@ -339,6 +341,12 @@ class ObjLoader {
                     if (name == "") continue;
                     color = MTLDoc.parseRGB(sp, name);
                     currentMaterial.setKs(color);
+                    continue;
+                default:
+                    if (command.endsWith(".jpg")) {
+                        let i = this.filename.lastIndexOf("/");
+                        if (i > 0) currentMaterial.textureFile = this.filename.substr(0, i + 1) + command;
+                    }
             }
         }
         mtl.complete = true;
@@ -370,6 +378,7 @@ class MTLDoc {
 
 class namedMaterial {
     public name: string;
+    public textureFile: string = null;
     Ka: Color;
     Kd: Color;
     Ks: Color;

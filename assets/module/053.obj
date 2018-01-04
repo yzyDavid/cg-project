@@ -1,7 +1,7 @@
 # 3ds Max Wavefront OBJ Exporter v0.94b - (c)2007 guruware
 # File Created: 14.05.2010 12:15:18
 
-mtllib 053.mtl
+#mtllib 053.mtl
 
 #
 # object archmodels87_053_001
@@ -3970,7 +3970,7 @@ vt 0.174324125051 0.804403901100 0.000000000000
 # 959 texture coords
 
 g archmodels87_053_001
-usemtl Standard_8
+#usemtl Standard_8
 s 1
 f -2999/-959 -2998/-958 -2997/-957 -2996/-956 
 f -2995/-957 -2994/-956 -2993/-959 -2992/-958 
@@ -12244,7 +12244,7 @@ vt 0.500000000000 1.000000000000 0.000000000000
 # 1491 texture coords
 
 g archmodels87_053_002
-usemtl Standard_8
+#usemtl Standard_8
 s 1
 f -3656/-1491 -3655/-1490 -3654/-1489 -3653/-1488 
 f -3652/-1487 -3651/-1486 -3650/-1485 -3649/-1484 

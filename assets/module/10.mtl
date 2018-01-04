@@ -2,6 +2,7 @@
 # File Created: 14.02.2014 19:42:21
 
 newmtl new
+wood11.jpg
 	Ns 32
 	d 1
 	Tr 0
@@ -12,6 +13,7 @@ newmtl new
 	Ks 1 1 1
 
 newmtl new2
+texture1.jpg
 	Ns 32
 	d 1
 	Tr 0
