@@ -21,6 +21,7 @@ export default class UniversalObject extends IncolliableObject implements Drawab
     protected textBuffer: WebGLBuffer;
     protected texture: WebGLTexture;
     protected textureImage: HTMLImageElement;
+    private flag: boolean;
 
     constructor(pos: Pos,
                 vertices: number[],
@@ -28,7 +29,8 @@ export default class UniversalObject extends IncolliableObject implements Drawab
                 indices: number[],
                 material: Material,
                 vt: number[],
-                texture?: HTMLImageElement) {
+                texture: HTMLImageElement,
+                flag: boolean) {
         super(pos, undefined);
         this.vertices = vertices;
         this.indices = indices;
@@ -37,6 +39,7 @@ export default class UniversalObject extends IncolliableObject implements Drawab
         this.inited = false;
         this.textureImage = texture;
         this.vt = vt;
+        this.flag = flag;
     }
 
     saveObj(name: string) {
@@ -171,7 +174,7 @@ export default class UniversalObject extends IncolliableObject implements Drawab
         gl.vertexAttribPointer(attribLocs['aVertexNormal'], 3, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(attribLocs['aVertexNormal']);
 
-        if (!this.textureImage) {
+        if (!this.flag) {
             gl.uniform1f(uniformLocs["hasText"], -1);
         }
         else {

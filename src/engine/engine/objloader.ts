@@ -74,6 +74,11 @@ class ObjLoader {
             console.log("materialpart", this.materialParts);
 
             let obj: UniversalObject;
+            let flag = true;
+            if (entry.material.textureFile == undefined) {
+                entry.material.textureFile = this.filename.substring(0, this.filename.lastIndexOf('/')) + "/lastics1.jpg";
+                flag = false;
+            }
             const img = await loadImageAsync(entry.material.textureFile);
             obj = new UniversalObject([0, 0, 0],
                 entry.positions,
@@ -81,7 +86,8 @@ class ObjLoader {
                 entry.indices,
                 material,
                 entry.vt,
-                img
+                img,
+                flag
             );
             resObjs.push(obj);
         }
@@ -125,13 +131,12 @@ class ObjLoader {
                     continue;
 
                 // TODO: 默认一个obj文件里只有一个obj，默认一个obj只有一个mtl（暂时
-                // case 'o':
-                // case 'g':   // Read Object name
-                //     let object = this.parseObjectName(sp);
-                //     this.objects.push(object);
-                //     currentObject = object;
-                //     //这是一个浅复制，可以简单地认为和object指向同一块内容
-                //     continue; // Go to the next line
+                case 'o':
+                    //case 'g':   // Read Object name
+                    if (this.currentMaterialPart != undefined)
+                        this.materialParts.push(this.currentMaterialPart);
+                    this.currentMaterialPart = new materialPart();
+                    continue; // Go to the next line
                 case 'v':   // Read vertex
                     let vertex = ObjLoader.parseVertex(sp, SCALE);
                     this.vertices.push(vertex);
@@ -149,8 +154,12 @@ class ObjLoader {
                             break;
                         }
                     }
-                    if (this.currentMaterialPart != undefined) this.materialParts.push(this.currentMaterialPart);
-                    this.currentMaterialPart = new materialPart();
+                    if (this.currentMaterialPart != undefined && this.currentMaterialPart.count != 0) {
+                        this.materialParts.push(this.currentMaterialPart);
+                        this.currentMaterialPart = new materialPart();
+                    } else if (this.currentMaterialPart == undefined) {
+                        this.currentMaterialPart = new materialPart();
+                    }
                     this.currentMaterialPart.material = this.material[this.useMaterial];
                     continue;
                 case 'f':
@@ -250,8 +259,10 @@ class ObjLoader {
         }
 
         for (let i = 0; i < face.vIndices.length; i++) {
-            this.currentMaterialPart.vt.push(textureVt[face.tIndices[i]].x);
-            this.currentMaterialPart.vt.push(textureVt[face.tIndices[i]].y);
+            if (face.tIndices.length != 0) {
+                this.currentMaterialPart.vt.push(textureVt[face.tIndices[i]].x);
+                this.currentMaterialPart.vt.push(textureVt[face.tIndices[i]].y);
+            }
             this.currentMaterialPart.positions.push(vertices[face.vIndices[i]].x);
             this.currentMaterialPart.positions.push(vertices[face.vIndices[i]].y);
             this.currentMaterialPart.positions.push(vertices[face.vIndices[i]].z);

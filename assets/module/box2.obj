@@ -1,4 +1,4 @@
-#mtllib 25_SciFi_Props.mtl
+mtllib 10.mtl
 g SciFi_Prop_25_3
 
 #begin 54 vertices
@@ -162,6 +162,7 @@ vn 1.000000 0.000000 0.000000
 #end 100 vertex normals
 
 #begin 30 faces
+usemtl new3
 #usemtl scene_material1
 f 1//1 2//2 3//3 4//4 
 #usemtl scene_material1
