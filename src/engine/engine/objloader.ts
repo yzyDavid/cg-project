@@ -1,7 +1,7 @@
 import Material from './material';
-import {Vec3} from "./public";
+import {Vec3} from './public';
 import UniversalObject from './universalobject';
-import {loadImageAsync} from "./utils";
+import {loadImageAsync} from '../utils';
 
 type ObjUrl = string;
 type MtlUrl = string;
@@ -36,7 +36,6 @@ class ObjLoader {
     protected object: Face[] = [];
     protected material: namedMaterial[] = [];
 
-    // protected textureFile: string;
     protected vt: number[] = [];
     protected positions: number[] = [];
     protected indices: number[] = [];
@@ -51,7 +50,6 @@ class ObjLoader {
     }
 
     async initAsync() {
-        // const content = <string>(contentText as any);
         const query = await fetch(this.filename);
         const content: ObjContent = await query.text();
         await this.OBJDocParserAsync(content);
@@ -68,10 +66,9 @@ class ObjLoader {
                 material = new Material([-1, -1, -1], [-1, -1, -1], [-1, -1, -1], 30);
             }
             else {
-                //console.log("material", this.material[this.useMaterial]);
                 material = entry.material.changeToMaterial(30);
             }
-            console.log("materialpart", this.materialParts);
+            console.log("materialParts", this.materialParts);
 
             let obj: UniversalObject;
             const img = await loadImageAsync(entry.material.textureFile);
@@ -88,18 +85,13 @@ class ObjLoader {
         return resObjs;
     }
 
-    async fetchTextAsync(url: string): Promise<string> {
-        const response = await fetch(url);
-        return await response.text();
-    }
-
     protected async OBJDocParserAsync(content: string) {
         let lines = content.split("\n");
         lines.push(null);
         let tempIndex = 0;
 
         let currentMaterialName = "";
-        let mtlused: boolean;
+        let mtlUsed: boolean;
 
         let line;
         let sp: StringParser;
@@ -141,7 +133,7 @@ class ObjLoader {
                     this.normals.push(normal);
                     continue;
                 case 'usemtl':
-                    mtlused = true;
+                    mtlUsed = true;
                     currentMaterialName = ObjLoader.parseUsemtl(sp);
                     for (let i = 0; i < this.material.length; i++) {
                         if (this.material[i].name == currentMaterialName) {
@@ -155,8 +147,8 @@ class ObjLoader {
                     continue;
                 case 'f':
                     //可以接受两种情况：1.只有mtl没有纹理，可以多种mtl 2.只有mtl没有纹理，只能有一种纹理
-                    if (!mtlused) {
-                        mtlused = true;
+                    if (!mtlUsed) {
+                        mtlUsed = true;
                         this.currentMaterialPart = new materialPart();
                     }
                     let face = this.parseFace(sp, currentMaterialName, this.vertices, this.textureVt, this.normals, REVERSE);

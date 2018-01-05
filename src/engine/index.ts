@@ -8,7 +8,8 @@ import GeometryObject from './engine/geometryobject';
 import Shader from './engine/shader';
 import ShaderManager from './engine/shadermanager';
 import Camera from './engine/camera';
-import Lighting from './engine/light';
+import Light from './engine/light';
+import PointLight from './engine/pointlight';
 
 import {Component} from './engine/component';
 
@@ -19,7 +20,7 @@ import UniversalObject from './engine/universalobject';
 
 import queryObjAsync from './engine/objloader';
 
-export {Engine, Scene, GeometryObject, Camera, Shader, ShaderManager, Lighting, Component};
+export {Engine, Scene, GeometryObject, Camera, Shader, ShaderManager, Light, Component, PointLight};
 export {Pos, Vec3};
 export {makeDemoCube};
 export {makeDemoLightedCube};

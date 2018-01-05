@@ -11,3 +11,9 @@ export async function loadImageAsync(sourceUrl: string): Promise<HTMLImageElemen
     await load;
     return img;
 }
+
+export async function fetchTextAsync(url: string): Promise<string> {
+    const response = await fetch(url);
+    return await response.text();
+}
+
