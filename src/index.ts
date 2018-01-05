@@ -108,7 +108,7 @@ scene.addLight(pointLight);
 // const lightedCube = makeDemoLightedCube();
 // scene.addObject(lightedCube);
 
-queryObjAsync("/assets/module/cube.obj").then(cube0 => {
+queryObjAsync("/assets/module/cl1.obj").then(cube0 => {
     for (let entry of cube0) {
         scene.addObject(entry);
     }
@@ -131,11 +131,11 @@ const timeController = engine.getTimeEventController();
 
 keyController.addListener('q', () => engine.stop());
 keyController.enable();
-timeController.addListener('cameraMove', () => {
-    pos[0] += 0.01;
-    pos[1] += 0.01;
-    camera.setPosition(pos);
-});
+// timeController.addListener('cameraMove', () => {
+//     pos[0] += 0.01;
+//     pos[1] += 0.01;
+//     camera.setPosition(pos);
+// });
 
 engine.start();
 

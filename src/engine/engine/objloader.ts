@@ -12,6 +12,13 @@ type MtlContent = string;
 const SCALE = 1;
 const REVERSE = false;
 
+const defaultVT = [
+    0, 0,
+    1, 0,
+    1, 1,
+    0, 1
+];
+
 export default async function queryObjAsync(objUrl: ObjUrl): Promise<UniversalObject[]> {
 
     const loader = new ObjLoader(objUrl);
@@ -149,7 +156,7 @@ class ObjLoader {
                     mtlused = true;
                     currentMaterialName = ObjLoader.parseUsemtl(sp);
                     for (let i = 0; i < this.material.length; i++) {
-                        if (this.material[i].name == currentMaterialName) {
+                        if (this.material[i].name.localeCompare(currentMaterialName) == 0) {
                             this.useMaterial = i;
                             break;
                         }
@@ -197,7 +204,7 @@ class ObjLoader {
     parseFace(sp: StringParser, materialName: string, vertices: Vertex[], textureVt: VT[], Normals: Normal[], reverse: boolean) {
         let face = new Face(materialName);
         // get indices
-        for (; ;) {
+        for (let i = 0; ; i++) {
             let word = sp.getWord();
             if (!word || !word.replace(/^\s+|\s+$/g, "")) break;
             let subWords;
@@ -206,12 +213,27 @@ class ObjLoader {
             if (subWords.length >= 1) {
                 let vi = parseInt(subWords[0]) < 0 ? vertices.length + parseInt(subWords[0]) : parseInt(subWords[0]) - 1;
                 face.vIndices.push(vi);
+                this.currentMaterialPart.positions.push(vertices[vi].x);
+                this.currentMaterialPart.positions.push(vertices[vi].y);
+                this.currentMaterialPart.positions.push(vertices[vi].z);
+                face.vIndices[i] = this.currentMaterialPart.count;
+                this.currentMaterialPart.count++;
             }
             if (subWords.length >= 2) {
                 if (subWords[1]) {
                     let ti = parseInt(subWords[1]) < 0 ? textureVt.length + parseInt(subWords[1]) : parseInt(subWords[1]) - 1;
                     face.tIndices.push(ti);
+                    this.currentMaterialPart.vt.push(textureVt[ti].x);
+                    this.currentMaterialPart.vt.push(textureVt[ti].y);
                 }
+                else {
+                    this.currentMaterialPart.vt.push(defaultVT[2 * i]);
+                    this.currentMaterialPart.vt.push(defaultVT[2 * i + 1]);
+                }
+            }
+            else {
+                this.currentMaterialPart.vt.push(defaultVT[2 * i]);
+                this.currentMaterialPart.vt.push(defaultVT[2 * i + 1]);
             }
             if (subWords.length >= 3) {
                 let ni = parseInt(subWords[2]) < 0 ? Normals.length + parseInt(subWords[2]) : parseInt(subWords[2]) - 1;
@@ -221,57 +243,61 @@ class ObjLoader {
             }
         }
 
-        // calc normal
-        // console.log(vertices,face.vIndices[0],face.vIndices[1],face.vIndices[2]);
-        let v0 = [
-            vertices[face.vIndices[0]].x,
-            vertices[face.vIndices[0]].y,
-            vertices[face.vIndices[0]].z];
-        let v1 = [
-            vertices[face.vIndices[1]].x,
-            vertices[face.vIndices[1]].y,
-            vertices[face.vIndices[1]].z];
-        let v2 = [
-            vertices[face.vIndices[2]].x,
-            vertices[face.vIndices[2]].y,
-            vertices[face.vIndices[2]].z];
+        // // calc normal
+        // // console.log(vertices,face.vIndices[0],face.vIndices[1],face.vIndices[2]);
+        // let v0 = [
+        //     vertices[face.vIndices[0]].x,
+        //     vertices[face.vIndices[0]].y,
+        //     vertices[face.vIndices[0]].z];
+        // let v1 = [
+        //     vertices[face.vIndices[1]].x,
+        //     vertices[face.vIndices[1]].y,
+        //     vertices[face.vIndices[1]].z];
+        // let v2 = [
+        //     vertices[face.vIndices[2]].x,
+        //     vertices[face.vIndices[2]].y,
+        //     vertices[face.vIndices[2]].z];
+        //
+        // let normal = ObjLoader.calcNormal(v0, v1, v2);
+        // if (normal == null) {
+        //     if (face.vIndices.length >= 4) {
+        //         let v3 = [
+        //             vertices[face.vIndices[3]].x,
+        //             vertices[face.vIndices[3]].y,
+        //             vertices[face.vIndices[3]].z];
+        //         normal = ObjLoader.calcNormal(v1, v2, v3);
+        //     }
+        //     if (normal == null) {
+        //         normal = new Float32Array([0.0, 1.0, 0.0]);
+        //     }
+        // }
+        // face.normal = new Normal(normal[0], normal[1], normal[2]);
+        // if (face.nIndices[0] != -1) {
+        //     if (!face.normal.parallel(Normals[face.nIndices[0]])) {
+        //         face.vIndices.reverse();
+        //         face.nIndices.reverse();
+        //         face.tIndices.reverse();
+        //     }
+        // }
 
-        let normal = ObjLoader.calcNormal(v0, v1, v2);
-        if (normal == null) {
-            if (face.vIndices.length >= 4) {
-                let v3 = [
-                    vertices[face.vIndices[3]].x,
-                    vertices[face.vIndices[3]].y,
-                    vertices[face.vIndices[3]].z];
-                normal = ObjLoader.calcNormal(v1, v2, v3);
-            }
-            if (normal == null) {
-                normal = new Float32Array([0.0, 1.0, 0.0]);
-            }
-        }
-        face.normal = new Normal(normal[0], normal[1], normal[2]);
-        if (face.nIndices[0] != -1) {
-            if (!face.normal.parallel(Normals[face.nIndices[0]])) {
-                face.vIndices.reverse();
-                face.nIndices.reverse();
-                face.tIndices.reverse();
-            }
-        }
-
-        for (let i = 0; i < face.vIndices.length; i++) {
-            if (face.tIndices.length != 0) {
-                this.currentMaterialPart.vt.push(textureVt[face.tIndices[i]].x);
-                this.currentMaterialPart.vt.push(textureVt[face.tIndices[i]].y);
-            }
-            this.currentMaterialPart.positions.push(vertices[face.vIndices[i]].x);
-            this.currentMaterialPart.positions.push(vertices[face.vIndices[i]].y);
-            this.currentMaterialPart.positions.push(vertices[face.vIndices[i]].z);
-            face.vIndices[i] = this.currentMaterialPart.count;
-            this.currentMaterialPart.count++;
-        }
+        // for (let i = 0; i < face.vIndices.length; i++) {
+        //     if (face.tIndices.length != 0) {
+        //         this.currentMaterialPart.vt.push(textureVt[face.tIndices[i]].x);
+        //         this.currentMaterialPart.vt.push(textureVt[face.tIndices[i]].y);
+        //     }
+        //     else {
+        //         this.currentMaterialPart.vt.push(defaultVT[2 * i]);
+        //         this.currentMaterialPart.vt.push(defaultVT[2 * i + 1]);
+        //     }
+        //     this.currentMaterialPart.positions.push(vertices[face.vIndices[i]].x);
+        //     this.currentMaterialPart.positions.push(vertices[face.vIndices[i]].y);
+        //     this.currentMaterialPart.positions.push(vertices[face.vIndices[i]].z);
+        //     face.vIndices[i] = this.currentMaterialPart.count;
+        //     this.currentMaterialPart.count++;
+        // }
 
         // Devide to triangles if face contains over 3 points.
-        if (face.vIndices.length > 3) {
+        if (face.vIndices.length >= 3) {
             let n = face.vIndices.length - 2;
             for (let i = 0; i < n; i++) {
                 this.currentMaterialPart.indices.push(face.vIndices[0], face.vIndices[i + 1], face.vIndices[i + 2]);
