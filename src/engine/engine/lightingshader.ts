@@ -1,11 +1,6 @@
 import Shader from './shader'
 import * as lightingVertexShaderText from '../shaders/lighting.vert';
 import * as lightingFragmentShaderText from '../shaders/lighting.frag';
-import Camera from "./camera";
-import Light from "./light";
-import PointLight from "./pointlight";
-
-export const NUM_POINT_LIGHTS = 4;
 
 export default class LightingShader extends Shader {
 
@@ -23,11 +18,15 @@ export default class LightingShader extends Shader {
             'uProjectionMatrix',
             'uModelNormalMatrix',
             'uCameraPos',
-            'uTexture',
+            'u_Sampler',
             'uMaterial.ambient',
             'uMaterial.diffuse',
             'uMaterial.specular',
             'uMaterial.shininess',
+            'hasText',
+            'hasAmbientColor',
+            'hasDiffuseColor',
+            'hasSpecularColor'
         ];
 
         for (let i = 0; i < NUM_POINT_LIGHTS; i++) {

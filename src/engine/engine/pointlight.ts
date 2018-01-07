@@ -1,5 +1,5 @@
-import Light from "./light";
-import {Pos, Vec3} from "./public";
+import Light from './light';
+import {Pos, Vec3} from './public';
 
 export default class PointLight extends Light {
     constructor(pos: Pos,
