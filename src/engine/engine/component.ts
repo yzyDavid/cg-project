@@ -30,6 +30,7 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
     protected _axis: Vec3;
     protected _angularVelocity: number;
     protected _angularAcceleration: number;
+    protected moved: boolean;
 
     protected modelMatrix: mat;
 
@@ -44,6 +45,7 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
         this.angularVelocity = 0.0;
         this.angularAcceleration = 0.0;
         this.modelMatrix = mat4.identity();
+        this.moved = false;
         this.shaderName = '';
     }
 
@@ -99,6 +101,7 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
         this.axis[1] += this.linearVelocity[1] * time;
         this.axis[2] += this.linearVelocity[2] * time;
         this.angularVelocity += this.angularAcceleration * time;
+        this.moved = !!(this.linearVelocity[0] || this.linearVelocity[1] || this.linearVelocity[2] || this.angularVelocity);
         let move = mat4.identity();
         // TODO: Add rotation
         mat4.translate(move, move, [this.linearVelocity[0] * time, this.linearVelocity[1] * time, this.linearVelocity[2] * time]);
@@ -194,7 +197,7 @@ export abstract class Colliable extends Component {
 
     update(time: number) {
         super.update(time);
-        this.aabb.update();
+        if (this.moved) this.aabb.update();
     }
 
     abstract onCollisionEnter(collider: Collider, info: Vec3): void;
