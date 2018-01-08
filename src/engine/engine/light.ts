@@ -5,8 +5,22 @@
 import {Component} from './component';
 import {Pos} from './public';
 
-export default class Light extends Component {
+export default abstract class Light extends Component {
+    private on: boolean;
+
     constructor(pos: Pos) {
-        super(pos)
+        super(pos);
+    }
+
+    isOn(): boolean {
+        return this.on;
+    }
+
+    turnOn() {
+        this.on = true;
+    }
+
+    turnOff() {
+        this.on = false;
     }
 }

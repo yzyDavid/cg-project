@@ -1,13 +1,21 @@
-uniform mat4 uModel;
-uniform mat4 uView;
-uniform mat4 uProjection;
+uniform mat4 uModelMatrix;
+uniform mat4 uViewMatrix;
+uniform mat4 uProjectionMatrix;
+uniform mat4 uModelNormalMatrix;
 
-attribute vec3 aVertexPos_model;
+attribute vec3 aVertexPos;     // In model coordinate system.
+attribute vec3 aVertexNormal;  // In model coordinate system.
+attribute vec2 aTextCoord;
 
-// varying vec3 vFragPos_world;
-// varying vec3 vFragNormal;
+varying vec3 vFragPos;
+varying vec3 vFragNormal;
+varying vec2 vTexCoord;
 
 void main() {
-	gl_Position = uProjection * uView * uModel * vec4(aVertexPos_model, 1.0);
 
+	gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * vec4(aVertexPos, 1.0);
+
+    vFragPos = (uModelMatrix * vec4(aVertexPos, 1.0)).xyz;
+    vFragNormal = normalize(mat3(uModelNormalMatrix) * aVertexNormal);
+    vTexCoord = aTextCoord;
 }

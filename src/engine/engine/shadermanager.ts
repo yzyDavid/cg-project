@@ -23,17 +23,19 @@ export default class ShaderManager {
         this.shaders[shader.getName()] = shader;
     }
 
-    useShader(name: string) {
+    useShader(name: string): boolean {
         if (this.currentName === name) {
-            return;
+            return true;
         }
         const gl = this.gl;
         const shader = this.shaders[name];
         if (shader) {
             shader.use();
             this.currentName = name;
+            return true;
         } else {
             console.error("shader " + name + " not found");
+            return false;
         }
     }
 
