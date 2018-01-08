@@ -102,6 +102,14 @@ export default class Engine {
         gl.uniformMatrix4fv(viewLoc, false, new Float32Array(viewMat));
 
         scene.forEach((obj) => {
+            // Here may be some mistakes that some object is no drawable but movable
+            if ('draw' in obj) {
+                obj.update(deltaTime);
+            }
+            obj.updateChildren(deltaTime);
+        });
+
+        scene.forEach((obj) => {
             if ('draw' in obj) {
                 const d = <Drawable>(obj as any);
                 d.draw(gl, this);
