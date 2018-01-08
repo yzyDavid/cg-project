@@ -3,7 +3,7 @@
  */
 
 import {Pos, Vec3} from './public';
-import {mat} from '../matrix';
+import {mat, default as Matrix} from '../matrix';
 import Shader from './shader';
 import Scene from './scene';
 import Engine from './engine';
@@ -23,14 +23,16 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
     //protected velocity: Vec3;
     protected shaderName: string;
 
-    protected linearVelocity: Vec3;
-    protected linearAcceleration: Vec3;
-    protected rotateAxis: Vec3;
-    protected rotateAngularVelocity: number;
-    protected rotateAngularAcceleration: number;
-    protected revolutionAxis: Vec3;
-    protected revolutionAngularVelocity: number;
-    protected revolutionAngularAcceleration: number;
+    protected _linearVelocity: Vec3;
+    protected _linearAcceleration: Vec3;
+    protected _rotateAxis: Vec3;
+    protected _rotateAngularVelocity: number;
+    protected _rotateAngularAcceleration: number;
+    protected _revolutionAxis: Vec3;
+    protected _revolutionAngularVelocity: number;
+    protected _revolutionAngularAcceleration: number;
+
+    protected modelMatrix: Matrix;
 
     constructor(position: Pos) {
         this.position = position;
@@ -92,7 +94,71 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
     }
 
     update() {
-        // TODO
+        // TODO: Use all the physical quantities to update the model matrix
+    }
+
+    get linearVelocity(): Vec3 {
+        return this._linearVelocity;
+    }
+
+    set linearVelocity(val: Vec3) {
+        this._linearVelocity = val;
+    }
+
+    get linearAcceleration(): Vec3 {
+        return this._linearAcceleration;
+    }
+
+    set linearAcceleration(val: Vec3) {
+        this._linearAcceleration = val;
+    }
+
+    get rotateAxis(): Vec3 {
+        return this._rotateAxis;
+    }
+
+    set rotateAxis(val: Vec3) {
+        this._rotateAxis = val;
+    }
+
+    get rotateAngularVelocity(): number {
+        return this._rotateAngularVelocity;
+    }
+
+    set rotateAngularVelocity(val: number) {
+        this._rotateAngularVelocity = val;
+    }
+
+    get rotateAngularAcceleration(): number {
+        return this._rotateAngularAcceleration;
+    }
+
+    set rotateAngularAcceleration(val: number) {
+        this._rotateAngularAcceleration = val;
+    }
+
+    get revolutionAxis(): Vec3 {
+        return this._revolutionAxis;
+    }
+
+    set revolutionAxis(val: Vec3) {
+        this._revolutionAxis = val;
+    }
+
+    get revolutionAngularVelocity(): number {
+        return this._revolutionAngularVelocity;
+    }
+
+    set revolutionAngularVelocity(val: number) {
+        this._revolutionAngularVelocity = val;
+    }
+
+    get revolutionAngularAcceleration(): number {
+        return this._revolutionAngularAcceleration;
+    }
+
+    set revolutionAngularAcceleration(val: number) {
+        this._revolutionAngularAcceleration = val;
     }
 
     getPosition() {
@@ -134,6 +200,11 @@ export abstract class Colliable extends Component {
 
     constructor(position: Pos, min?: Pos, max?: Pos) {
         super(position);
+    }
+
+    update() {
+        super.update();
+
     }
 
     abstract onCollisionEnter(collider: Collider, info: Vec3): void;
