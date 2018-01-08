@@ -77,8 +77,10 @@ export default class LightedObject extends IncolliableObject implements Drawable
         const uniformLocs = lightingShader.getUniformLocations();
         const attribLocs = lightingShader.getAttribLocations();
 
-        // Set lights and camera.
+        // Lights.
         lightingShader.setLights(engine.getScene().getLights());
+
+        // Camera.
         lightingShader.setCamera(engine.getScene().getCamera());
 
         // Model matrix.

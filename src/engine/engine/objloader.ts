@@ -31,6 +31,7 @@ class materialPart {
     public vt: number[] = [];
     public positions: number[] = [];
     public indices: number[] = [];
+    public normals:number[]=[];
     public count: number = 0;
 }
 
@@ -78,20 +79,14 @@ class ObjLoader {
             console.log("materialParts", this.materialParts);
 
             let obj: UniversalObject;
-            let flag = true;
-            if (entry.material.textureFile == undefined) {
-                entry.material.textureFile = this.filename.substring(0, this.filename.lastIndexOf('/')) + "/lastics1.jpg";
-                flag = false;
-            }
             const img = await loadImageAsync(entry.material.textureFile);
             obj = new UniversalObject([0, 0, 0],
                 entry.positions,
-                entry.positions,
+                entry.normals,
                 entry.indices,
                 material,
                 entry.vt,
-                img,
-                flag
+                img
             );
             resObjs.push(obj);
         }
@@ -130,12 +125,13 @@ class ObjLoader {
                     continue;
 
                 // TODO: 默认一个obj文件里只有一个obj，默认一个obj只有一个mtl（暂时
-                case 'o':
-                    //case 'g':   // Read Object name
-                    if (this.currentMaterialPart != undefined)
-                        this.materialParts.push(this.currentMaterialPart);
-                    this.currentMaterialPart = new materialPart();
-                    continue; // Go to the next line
+                // case 'o':
+                // case 'g':   // Read Object name
+                //     let object = this.parseObjectName(sp);
+                //     this.objects.push(object);
+                //     currentObject = object;
+                //     //这是一个浅复制，可以简单地认为和object指向同一块内容
+                //     continue; // Go to the next line
                 case 'v':   // Read vertex
                     let vertex = ObjLoader.parseVertex(sp, SCALE);
                     this.vertices.push(vertex);
@@ -148,17 +144,13 @@ class ObjLoader {
                     mtlUsed = true;
                     currentMaterialName = ObjLoader.parseUsemtl(sp);
                     for (let i = 0; i < this.material.length; i++) {
-                        if (this.material[i].name.localeCompare(currentMaterialName) == 0) {
+                        if (this.material[i].name == currentMaterialName) {
                             this.useMaterial = i;
                             break;
                         }
                     }
-                    if (this.currentMaterialPart != undefined && this.currentMaterialPart.count != 0) {
-                        this.materialParts.push(this.currentMaterialPart);
-                        this.currentMaterialPart = new materialPart();
-                    } else if (this.currentMaterialPart == undefined) {
-                        this.currentMaterialPart = new materialPart();
-                    }
+                    if (this.currentMaterialPart != undefined) this.materialParts.push(this.currentMaterialPart);
+                    this.currentMaterialPart = new materialPart();
                     this.currentMaterialPart.material = this.material[this.useMaterial];
                     continue;
                 case 'f':
@@ -230,64 +222,48 @@ class ObjLoader {
             if (subWords.length >= 3) {
                 let ni = parseInt(subWords[2]) < 0 ? Normals.length + parseInt(subWords[2]) : parseInt(subWords[2]) - 1;
                 face.nIndices.push(ni);
+                this.currentMaterialPart.normals.push(Normals[ni].x);
+                this.currentMaterialPart.normals.push(Normals[ni].y);
+                this.currentMaterialPart.normals.push(Normals[ni].z);
             } else {
                 face.nIndices.push(-1);
             }
         }
 
-        // // calc normal
-        // // console.log(vertices,face.vIndices[0],face.vIndices[1],face.vIndices[2]);
-        // let v0 = [
-        //     vertices[face.vIndices[0]].x,
-        //     vertices[face.vIndices[0]].y,
-        //     vertices[face.vIndices[0]].z];
-        // let v1 = [
-        //     vertices[face.vIndices[1]].x,
-        //     vertices[face.vIndices[1]].y,
-        //     vertices[face.vIndices[1]].z];
-        // let v2 = [
-        //     vertices[face.vIndices[2]].x,
-        //     vertices[face.vIndices[2]].y,
-        //     vertices[face.vIndices[2]].z];
-        //
-        // let normal = ObjLoader.calcNormal(v0, v1, v2);
-        // if (normal == null) {
-        //     if (face.vIndices.length >= 4) {
-        //         let v3 = [
-        //             vertices[face.vIndices[3]].x,
-        //             vertices[face.vIndices[3]].y,
-        //             vertices[face.vIndices[3]].z];
-        //         normal = ObjLoader.calcNormal(v1, v2, v3);
-        //     }
-        //     if (normal == null) {
-        //         normal = new Float32Array([0.0, 1.0, 0.0]);
-        //     }
-        // }
-        // face.normal = new Normal(normal[0], normal[1], normal[2]);
-        // if (face.nIndices[0] != -1) {
-        //     if (!face.normal.parallel(Normals[face.nIndices[0]])) {
-        //         face.vIndices.reverse();
-        //         face.nIndices.reverse();
-        //         face.tIndices.reverse();
-        //     }
-        // }
+        if (face.nIndices[0]==-1) {
+            let v0 = [
+                this.currentMaterialPart.positions[3 * face.vIndices[2]],
+                this.currentMaterialPart.positions[3 * face.vIndices[2] + 1],
+                this.currentMaterialPart.positions[3 * face.vIndices[2] + 2]];
+            let v1 = [
+                this.currentMaterialPart.positions[3 * face.vIndices[1]],
+                this.currentMaterialPart.positions[3 * face.vIndices[1] + 1],
+                this.currentMaterialPart.positions[3 * face.vIndices[1] + 2]];
+            let v2 = [
+                this.currentMaterialPart.positions[3 * face.vIndices[0]],
+                this.currentMaterialPart.positions[3 * face.vIndices[0] + 1],
+                this.currentMaterialPart.positions[3 * face.vIndices[0] + 2]];
 
-        // for (let i = 0; i < face.vIndices.length; i++) {
-        //     if (face.tIndices.length != 0) {
-        //         this.currentMaterialPart.vt.push(textureVt[face.tIndices[i]].x);
-        //         this.currentMaterialPart.vt.push(textureVt[face.tIndices[i]].y);
-        //     }
-        //     else {
-        //         this.currentMaterialPart.vt.push(defaultVT[2 * i]);
-        //         this.currentMaterialPart.vt.push(defaultVT[2 * i + 1]);
-        //     }
-        //     this.currentMaterialPart.positions.push(vertices[face.vIndices[i]].x);
-        //     this.currentMaterialPart.positions.push(vertices[face.vIndices[i]].y);
-        //     this.currentMaterialPart.positions.push(vertices[face.vIndices[i]].z);
-        //     face.vIndices[i] = this.currentMaterialPart.count;
-        //     this.currentMaterialPart.count++;
-        // }
-
+            let normal = ObjLoader.calcNormal(v0, v1, v2);
+            if (normal == null) {
+                if (face.vIndices.length >= 4) {
+                    let v3 = [
+                        this.currentMaterialPart.positions[3 * face.vIndices[3]],
+                        this.currentMaterialPart.positions[3 * face.vIndices[3] + 1],
+                        this.currentMaterialPart.positions[3 * face.vIndices[3] + 2]];
+                    normal = ObjLoader.calcNormal(v1, v2, v3);
+                }
+                if (normal == null) {
+                    normal = new Float32Array([0.0, 1.0, 0.0]);
+                }
+            }
+            face.normal = new Normal(normal[0], normal[1], normal[2]);
+            for (let i = 0; i < face.vIndices.length; i++) {
+                this.currentMaterialPart.normals.push(normal[0]);
+                this.currentMaterialPart.normals.push(normal[1]);
+                this.currentMaterialPart.normals.push(normal[2]);
+            }
+        }
         // Devide to triangles if face contains over 3 points.
         if (face.vIndices.length >= 3) {
             let n = face.vIndices.length - 2;
@@ -415,9 +391,9 @@ class namedMaterial {
 
     constructor(name: string) {
         this.name = name;
-        this.Ka = new Color(-1, -1, -1, 1);
-        this.Kd = new Color(-1, -1, -1, 1);
-        this.Ks = new Color(-1, -1, -1, 1);
+        this.Ka = new Color(0.2, 0.2, 0.2, 1);
+        this.Kd = new Color(0.8, 0.8, 0.8, 1);
+        this.Ks = new Color(0, 0, 0, 1);
         this.d = 1;
     }
 

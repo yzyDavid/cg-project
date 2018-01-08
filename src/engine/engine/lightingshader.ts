@@ -1,11 +1,11 @@
 import Shader from './shader'
 import * as lightingVertexShaderText from '../shaders/lighting.vert';
 import * as lightingFragmentShaderText from '../shaders/lighting.frag';
+import PointLight from "./pointlight";
 import Camera from "./camera";
 import Light from "./light";
-import PointLight from "./pointlight";
 
-export const NUM_POINT_LIGHTS = 4;
+const NUM_POINT_LIGHTS = 4;
 
 export default class LightingShader extends Shader {
 
@@ -15,7 +15,7 @@ export default class LightingShader extends Shader {
         const attributes = [
             'aVertexPos',
             'aVertexNormal',
-            'aTextCoord',
+            'aTexCoord',
         ];
         const uniforms = [
             'uModelMatrix',
@@ -23,22 +23,18 @@ export default class LightingShader extends Shader {
             'uProjectionMatrix',
             'uModelNormalMatrix',
             'uCameraPos',
-            'u_Sampler',
             'uMaterial.ambient',
             'uMaterial.diffuse',
             'uMaterial.specular',
             'uMaterial.shininess',
-            'hasText',
-            'hasAmbientColor',
-            'hasDiffuseColor',
-            'hasSpecularColor'
+            'uMaterial.useDiffuseMap',
+            'uMaterial.diffuseMap',
         ];
 
         for (let i = 0; i < NUM_POINT_LIGHTS; i++) {
             uniforms.push(pointLightAttrNamePos(i));
-            uniforms.push(pointLightAttrNameAmbient(i));
-            uniforms.push(pointLightAttrNameDiffuse(i));
-            uniforms.push(pointLightAttrNameSpecular(i));
+            uniforms.push(pointLightAttrNameColor(i));
+            uniforms.push(pointLightAttrNameAmbientCoeff(i));
         }
 
         super(gl, vert, frag, 'lighting', attributes, uniforms);
@@ -58,9 +54,8 @@ export default class LightingShader extends Shader {
                     continue;
                 const pointLight = <PointLight>light;
                 gl.uniform3fv(uniformLocations[pointLightAttrNamePos(pointLightCnt)], new Float32Array(pointLight.getPosition()));
-                gl.uniform3fv(uniformLocations[pointLightAttrNameAmbient(pointLightCnt)], new Float32Array(pointLight.getAmbient()));
-                gl.uniform3fv(uniformLocations[pointLightAttrNameDiffuse(pointLightCnt)], new Float32Array(pointLight.getDiffuse()));
-                gl.uniform3fv(uniformLocations[pointLightAttrNameSpecular(pointLightCnt)], new Float32Array(pointLight.getSpecular()));
+                gl.uniform3fv(uniformLocations[pointLightAttrNameColor(pointLightCnt)], new Float32Array(pointLight.getColor()));
+                gl.uniform1f(uniformLocations[pointLightAttrNameAmbientCoeff(pointLightCnt)], pointLight.getAmbientCoeff());
             }
         }
 
@@ -77,14 +72,11 @@ function pointLightAttrNamePos(i: number): string {
     return "uPointLights[" + i + "].position";
 }
 
-function pointLightAttrNameAmbient(i: number): string {
-    return "uPointLights[" + i + "].ambient";
+function pointLightAttrNameColor(i: number): string {
+    return "uPointLights[" + i + "].color";
 }
 
-function pointLightAttrNameDiffuse(i: number): string {
-    return "uPointLights[" + i + "].diffuse";
+function pointLightAttrNameAmbientCoeff(i: number): string {
+    return "uPointLights[" + i + "].ambientCoeff";
 }
 
-function pointLightAttrNameSpecular(i: number): string {
-    return "uPointLights[" + i + "].specular";
-}

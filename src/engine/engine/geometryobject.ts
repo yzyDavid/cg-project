@@ -52,9 +52,9 @@ export default class GeometryObject extends IncolliableObject implements Drawabl
         for (var i=0;i<n;i=i+3){
             output=output+"v "+this.vertices[i]+" "+this.vertices[i+1]+" "+this.vertices[i+2]+"\n";
         }
-        n=this.vt.length;
+        n=this.textureCoords.length;
         for (var i=0;i<n;i=i+2){
-            output=output+"vt "+this.vt[i]+" "+this.vt[i+1]+"\n";
+            output=output+"vt "+this.textureCoords[i]+" "+this.textureCoords[i+1]+"\n";
         }
         n=this.indices.length;
         for (var i=0;i<n;i=i+3){
