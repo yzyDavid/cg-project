@@ -5,12 +5,13 @@
 import './index.css';
 import * as config from './config';
 
-import {Engine, Scene, Camera} from './engine';
+import {Engine, Scene, Camera, Vec3} from './engine';
 import {makeDemoCube} from './engine';
 import {makeDemoLightedCube} from './engine';
 import {Pos} from './engine';
 import {queryObjAsync} from './engine';
 import {loadImageAsync} from './engine/utils';
+import PointLight from "./engine/engine/pointlight";
 
 const canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById('root');
 canvas.setAttribute('width', String(config.WIDTH));
@@ -29,10 +30,9 @@ camera.lookAt([0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
 const scene = new Scene(camera);
 
 // Add a light.
-const ambient: Vec3 = [0.05, 0.05, 0.05];
-const diffuse: Vec3 = [1, 1, 1];
-const specular: Vec3 = [1, 1, 1];
-const pointLight = new PointLight(pos, ambient, diffuse, specular);
+const color: Vec3 = [1, 1, 1];
+const ambientCoeff: number = 0.2;
+const pointLight = new PointLight(pos, color, ambientCoeff, true);
 scene.addLight(pointLight);
 
 // Add a demo lighted object.

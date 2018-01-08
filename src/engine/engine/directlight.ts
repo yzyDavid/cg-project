@@ -2,42 +2,41 @@ import {Pos, Vec3} from "./public";
 import Light from "./light";
 
 export default class DirectLight extends Light {
-    constructor(private direction: Vec3,
-                private ambient: Vec3,
-                private diffuse: Vec3,
-                private specular: Vec3) {
-        super([0, 0, 0]);  // Useless position.
+    private direction: Vec3;
+    private color: Vec3;
+    private ambientCoeff: number
+
+    constructor(direction: Vec3,
+                color: Vec3,
+                ambientCoeff: number,
+                turnOn: boolean) {
+        super([0, 0, 0], turnOn);  // Useless position.
+        this.direction = direction;
+        this.color = color;
+        this.ambientCoeff = ambientCoeff;
     }
 
     getDirection() {
         return this.direction;
     }
 
-    getAmbient() {
-        return this.ambient;
+    getColor() {
+        return this.color;
     }
 
-    getDiffuse() {
-        return this.diffuse;
-    }
-
-    getSpecular() {
-        return this.specular;
+    getAmbientCoeff() {
+        return this.ambientCoeff;
     }
 
     setDirection(direction: Vec3) {
         this.direction = direction;
     }
 
-    setAmbient(ambient: Vec3) {
-        this.ambient = ambient;
+    setColor(color: Vec3) {
+        this.color = this.color;
     }
 
-    setDiffuse(diffuse: Vec3) {
-        this.diffuse = diffuse;
-    }
-
-    setSpecular(specular: Vec3) {
-        this.specular = specular;
+    setAmbientCoeff(ambientCoeff: number) {
+        this.ambientCoeff = ambientCoeff;
     }
 }

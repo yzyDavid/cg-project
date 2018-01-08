@@ -378,9 +378,9 @@ class namedMaterial {
 
     constructor(name: string) {
         this.name = name;
-        this.Ka = new Color(-1, -1, -1, 1);
-        this.Kd = new Color(-1, -1, -1, 1);
-        this.Ks = new Color(-1, -1, -1, 1);
+        this.Ka = new Color(0.2, 0.2, 0.2, 1);
+        this.Kd = new Color(0.8, 0.8, 0.8, 1);
+        this.Ks = new Color(0, 0, 0, 1);
         this.d = 1;
     }
 

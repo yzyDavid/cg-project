@@ -2,34 +2,32 @@ import Light from './light';
 import {Pos, Vec3} from './public';
 
 export default class PointLight extends Light {
+    private color: Vec3;
+    private ambientCoeff: number
+
     constructor(pos: Pos,
-                private ambient: Vec3,
-                private diffuse: Vec3,
-                private specular: Vec3) {
-        super(pos);
+                color: Vec3,
+                ambientCoeff: number,
+                turnOn: boolean) {
+        super(pos, turnOn);
+        this.color = color;
+        this.ambientCoeff = ambientCoeff;
     }
 
-    getAmbient() {
-        return this.ambient;
+    getColor() {
+        return this.color;
     }
 
-    getDiffuse() {
-        return this.diffuse;
+    getAmbientCoeff() {
+        return this.ambientCoeff;
     }
 
-    getSpecular() {
-        return this.specular;
+    setColor(color: Vec3) {
+        this.color = this.color;
     }
 
-    setAmbient(ambient: Vec3) {
-        this.ambient = ambient;
+    setAmbientCoeff(ambientCoeff: number) {
+        this.ambientCoeff = ambientCoeff;
     }
 
-    setDiffuse(diffuse: Vec3) {
-        this.diffuse = diffuse;
-    }
-
-    setSpecular(specular: Vec3) {
-        this.specular = specular;
-    }
 }

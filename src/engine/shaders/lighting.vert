@@ -1,3 +1,5 @@
+#version 100
+
 uniform mat4 uModelMatrix;
 uniform mat4 uViewMatrix;
 uniform mat4 uProjectionMatrix;
@@ -5,11 +7,11 @@ uniform mat4 uModelNormalMatrix;
 
 attribute vec3 aVertexPos;     // In model coordinate system.
 attribute vec3 aVertexNormal;  // In model coordinate system.
-attribute vec2 aTextCoord;
+attribute vec2 aTexCoord;
 
 varying vec3 vFragPos;
 varying vec3 vFragNormal;
-varying vec2 vTexCoord;
+varying vec2 vFragTexCoord;
 
 void main() {
 
@@ -17,5 +19,5 @@ void main() {
 
     vFragPos = (uModelMatrix * vec4(aVertexPos, 1.0)).xyz;
     vFragNormal = normalize(mat3(uModelNormalMatrix) * aVertexNormal);
-    vTexCoord = aTextCoord;
+    vFragTexCoord = aTexCoord;
 }
