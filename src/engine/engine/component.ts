@@ -20,20 +20,31 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
     protected position: Pos;
     protected children: Component[];
     protected radius: number;
-    protected velocity: Vec3;
+    //protected velocity: Vec3;
     protected shaderName: string;
 
-    protected linearSpeed: Vec3;
+    protected linearVelocity: Vec3;
     protected linearAcceleration: Vec3;
-    protected axis: Vec3;
-    protected angularSpeed: Vec3;
-    protected angularAcceleration: Vec3;
+    protected rotateAxis: Vec3;
+    protected rotateAngularVelocity: number;
+    protected rotateAngularAcceleration: number;
+    protected revolutionAxis: Vec3;
+    protected revolutionAngularVelocity: number;
+    protected revolutionAngularAcceleration: number;
 
     constructor(position: Pos) {
         this.position = position;
         this.children = [];
         this.radius = 0.0;
-        this.velocity = [0.0, 0.0, 0.0];
+        //this.velocity = [0.0, 0.0, 0.0];
+        this.linearVelocity = [0.0, 0.0, 0.0];
+        this.linearAcceleration = [0.0, 0.0, 0.0];
+        this.rotateAxis = [0.0, 0.0, 0.0];
+        this.rotateAngularVelocity = 0.0;
+        this.rotateAngularAcceleration = 0.0;
+        this.revolutionAxis = [0.0, 0.0, 0.0];
+        this.revolutionAngularVelocity = 0.0;
+        this.revolutionAngularAcceleration = 0.0;
         this.shaderName = '';
     }
 
