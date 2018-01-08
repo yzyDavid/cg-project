@@ -9,6 +9,8 @@ import Scene from './scene';
 import Engine from './engine';
 import {AABBCollider} from "./AABBCollider";
 import {Collider} from "./Collider";
+import {mat4} from "../matrix";
+import {multiply} from "../matrix/mat4";
 
 /**
  * Drawable or interactive with the scene Object
@@ -25,14 +27,11 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
 
     protected _linearVelocity: Vec3;
     protected _linearAcceleration: Vec3;
-    protected _rotateAxis: Vec3;
-    protected _rotateAngularVelocity: number;
-    protected _rotateAngularAcceleration: number;
-    protected _revolutionAxis: Vec3;
-    protected _revolutionAngularVelocity: number;
-    protected _revolutionAngularAcceleration: number;
+    protected _axis: Vec3;
+    protected _angularVelocity: number;
+    protected _angularAcceleration: number;
 
-    protected modelMatrix: Matrix;
+    protected modelMatrix: mat;
 
     constructor(position: Pos) {
         this.position = position;
@@ -41,12 +40,10 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
         //this.velocity = [0.0, 0.0, 0.0];
         this.linearVelocity = [0.0, 0.0, 0.0];
         this.linearAcceleration = [0.0, 0.0, 0.0];
-        this.rotateAxis = [0.0, 0.0, 0.0];
-        this.rotateAngularVelocity = 0.0;
-        this.rotateAngularAcceleration = 0.0;
-        this.revolutionAxis = [0.0, 0.0, 0.0];
-        this.revolutionAngularVelocity = 0.0;
-        this.revolutionAngularAcceleration = 0.0;
+        this.axis = [0.0, 0.0, 0.0];
+        this.angularVelocity = 0.0;
+        this.angularAcceleration = 0.0;
+        this.modelMatrix = mat4.identity();
         this.shaderName = '';
     }
 
@@ -93,8 +90,20 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
         });
     }
 
-    update() {
+    update(time: number) {
         // TODO: Use all the physical quantities to update the model matrix
+        this.linearVelocity[0] += this.linearAcceleration[0] * time;
+        this.linearVelocity[1] += this.linearAcceleration[1] * time;
+        this.linearVelocity[2] += this.linearAcceleration[2] * time;
+        this.axis[0] += this.linearVelocity[0] * time;
+        this.axis[1] += this.linearVelocity[1] * time;
+        this.axis[2] += this.linearVelocity[2] * time;
+        this.angularVelocity += this.angularAcceleration * time;
+        let move = mat4.identity();
+        // TODO: Add rotation
+        mat4.translate(move, move, [this.linearVelocity[0] * time, this.linearVelocity[1] * time, this.linearVelocity[2] * time]);
+        // TODO: Update position, using position * move
+        this.modelMatrix = mat4.multiply(move, this.modelMatrix);
     }
 
     get linearVelocity(): Vec3 {
@@ -113,52 +122,28 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
         this._linearAcceleration = val;
     }
 
-    get rotateAxis(): Vec3 {
-        return this._rotateAxis;
+    get axis(): Vec3 {
+        return this._axis;
     }
 
-    set rotateAxis(val: Vec3) {
-        this._rotateAxis = val;
+    set axis(val: Vec3) {
+        this._axis = val;
     }
 
-    get rotateAngularVelocity(): number {
-        return this._rotateAngularVelocity;
+    get angularVelocity(): number {
+        return this._angularVelocity;
     }
 
-    set rotateAngularVelocity(val: number) {
-        this._rotateAngularVelocity = val;
+    set angularVelocity(val: number) {
+        this._angularVelocity = val;
     }
 
-    get rotateAngularAcceleration(): number {
-        return this._rotateAngularAcceleration;
+    get angularAcceleration(): number {
+        return this._angularAcceleration;
     }
 
-    set rotateAngularAcceleration(val: number) {
-        this._rotateAngularAcceleration = val;
-    }
-
-    get revolutionAxis(): Vec3 {
-        return this._revolutionAxis;
-    }
-
-    set revolutionAxis(val: Vec3) {
-        this._revolutionAxis = val;
-    }
-
-    get revolutionAngularVelocity(): number {
-        return this._revolutionAngularVelocity;
-    }
-
-    set revolutionAngularVelocity(val: number) {
-        this._revolutionAngularVelocity = val;
-    }
-
-    get revolutionAngularAcceleration(): number {
-        return this._revolutionAngularAcceleration;
-    }
-
-    set revolutionAngularAcceleration(val: number) {
-        this._revolutionAngularAcceleration = val;
+    set angularAcceleration(val: number) {
+        this._angularAcceleration = val;
     }
 
     getPosition() {
@@ -200,11 +185,16 @@ export abstract class Colliable extends Component {
 
     constructor(position: Pos, min?: Pos, max?: Pos) {
         super(position);
+        if (!min) {
+            this.aabb = new AABBCollider(position, [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]);
+        } else {
+            this.aabb = new AABBCollider(position, min, max);
+        }
     }
 
-    update() {
-        super.update();
-
+    update(time: number) {
+        super.update(time);
+        this.aabb.update();
     }
 
     abstract onCollisionEnter(collider: Collider, info: Vec3): void;
