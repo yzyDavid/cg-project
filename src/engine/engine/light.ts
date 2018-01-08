@@ -2,7 +2,7 @@
  * created by Zhenyun Yu.
  */
 
-import {Component} from "./component";
+import {Component} from './component';
 import {Pos} from './public';
 
 export default abstract class Light extends Component {
