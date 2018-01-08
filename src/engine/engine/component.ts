@@ -92,7 +92,7 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
         });
     }
 
-    update(time: number) {
+    update(time: number, matrix: mat = mat4.identity()) {
         // TODO: Use all the physical quantities to update the model matrix
         this.linearVelocity[0] += this.linearAcceleration[0] * time;
         this.linearVelocity[1] += this.linearAcceleration[1] * time;
@@ -107,6 +107,16 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
         mat4.translate(move, move, [this.linearVelocity[0] * time, this.linearVelocity[1] * time, this.linearVelocity[2] * time]);
         // TODO: Update position, using position * move
         this.modelMatrix = mat4.multiply(move, this.modelMatrix);
+    }
+
+    updateChildren(time: number, matrix: mat = mat4.identity()) {
+        matrix = mat4.multiply(this.modelMatrix, matrix);
+        this.forEach((obj) => {
+            if ('draw' in obj) {
+                obj.update(time, matrix);
+            }
+            obj.updateChildren(time, matrix);
+        })
     }
 
     get linearVelocity(): Vec3 {
@@ -195,14 +205,32 @@ export abstract class Colliable extends Component {
         }
     }
 
-    update(time: number) {
+    update(time: number, matrix: mat = mat4.identity()) {
         super.update(time);
-        if (this.moved) this.aabb.update();
+        if (this.moved) {
+            this.aabb.linearVelocity = this.linearVelocity;
+            this.aabb.angularVelocity = this.angularVelocity;
+            this.aabb.update(time, matrix);
+        }
     }
 
-    abstract onCollisionEnter(collider: Collider, info: Vec3): void;
+    private revoke() {
+        // TODO: revoke the update operation
+        this.linearVelocity = [0.0, 0.0, 0.0];
+        this.linearAcceleration = [0.0, 0.0, 0.0];
+        this.axis = [0.0, 0.0, 0.0];
+        this.angularVelocity = 0.0;
+        this.angularAcceleration = 0.0;
+        this.moved = false;
+    }
 
-    abstract onCollisionExit(collider: Collider): void;
+    onCollisionEnter(collider: Collider, info: Vec3) {
+        this.revoke()
+    }
+
+    onCollisionExit(collider: Collider) {
+
+    }
 }
 
 export abstract class Incolliable extends Component {
@@ -215,14 +243,6 @@ export abstract class Incolliable extends Component {
 export class Barrier extends Colliable {
     constructor(position: Pos) {
         super(position);
-    }
-
-    onCollisionEnter(collider: Collider, info: Vec3) {
-
-    }
-
-    onCollisionExit(collider: Collider) {
-
     }
 }
 
