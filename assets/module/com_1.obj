@@ -1,7 +1,7 @@
 # 3ds Max Wavefront OBJ Exporter v0.97b - (c)2007 guruware
 # File Created: 02.05.2011 10:18:36
 
-#mtllib OBJ.mtl
+mtllib 10.mtl
 
 #
 # object Apple_iMac_27___leg
@@ -7904,7 +7904,7 @@ vt 0.742165 0.298585 0.759456
 # 3946 texture coords
 
 g Apple_iMac_27___leg
-#usemtl rubber
+usemtl new
 s 1
 f -3946/-3946 -3945/-3945 -3944/-3944 -3943/-3943
 f -3942/-3942 -3946/-3946 -3943/-3943 -3941/-3941

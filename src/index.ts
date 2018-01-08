@@ -37,7 +37,7 @@ scene.addLight(pointLight);
 
 // Add a demo lighted object.
 
-queryObjAsync("/assets/module/cube.obj").then(cube0 => {
+queryObjAsync("/assets/module/te_240.obj").then(cube0 => {
     for (let entry of cube0) {
         scene.addObject(entry);
     }
