@@ -1,7 +1,7 @@
-import {Pos, Vec3} from "./public";
-import {Collider} from "./Collider";
-import {Colliable, Component} from "./component";
-import {mat, mat4} from "../matrix";
+import {Pos, Vec3} from './public';
+import {Collider} from './collider';
+import {Colliable, Component} from './component';
+import {mat, mat4} from '../matrix';
 
 export class AABBCollider extends Collider {
     private static allColliders: AABBCollider[];

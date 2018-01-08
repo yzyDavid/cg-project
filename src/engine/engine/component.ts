@@ -7,10 +7,9 @@ import {mat, default as Matrix} from '../matrix';
 import Shader from './shader';
 import Scene from './scene';
 import Engine from './engine';
-import {AABBCollider} from "./AABBCollider";
-import {Collider} from "./Collider";
-import {mat4} from "../matrix";
-import {multiply} from "../matrix/mat4";
+import {AABBCollider} from './AABBCollider';
+import {Collider} from './collider';
+import {mat4} from '../matrix';
 
 /**
  * Drawable or interactive with the scene Object
