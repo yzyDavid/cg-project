@@ -70,6 +70,10 @@ module.exports = {
             {
                 from: 'assets',
                 to: 'assets'
+            },
+            {
+                from: 'root',
+                to: ''
             }
         ])
     ]
