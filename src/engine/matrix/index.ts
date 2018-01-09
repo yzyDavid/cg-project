@@ -16,7 +16,9 @@ export type vec = number[];
 export const EPSILON = 0.000001;
 
 import * as mat4 from './mat4';
+import * as vec3 from './vec3';
 
 export {
-    mat4
+    mat4,
+    vec3
 };

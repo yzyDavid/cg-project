@@ -3,10 +3,13 @@
  */
 
 import {Pos, Vec3} from './public';
-import {mat} from '../matrix';
+import {mat, default as Matrix} from '../matrix';
 import Shader from './shader';
 import Scene from './scene';
 import Engine from './engine';
+import {AABBCollider} from './AABBCollider';
+import {Collider} from './collider';
+import {mat4, vec3} from '../matrix';
 
 /**
  * Drawable or interactive with the scene Object
@@ -18,14 +21,30 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
     protected position: Pos;
     protected children: Component[];
     protected radius: number;
-    protected velocity: Vec3;
+    //protected velocity: Vec3;
     protected shaderName: string;
+
+    protected _linearVelocity: Vec3;
+    protected _linearAcceleration: Vec3;
+    protected _axis: Vec3;
+    protected _angularVelocity: number;
+    protected _angularAcceleration: number;
+    protected moved: boolean;
+
+    protected modelMatrix: mat;
 
     constructor(position: Pos) {
         this.position = position;
         this.children = [];
         this.radius = 0.0;
-        this.velocity = [0.0, 0.0, 0.0];
+        //this.velocity = [0.0, 0.0, 0.0];
+        this.linearVelocity = [0.0, 0.0, 0.0];
+        this.linearAcceleration = [0.0, 0.0, 0.0];
+        this.axis = [0.0, 0.0, 0.0];
+        this.angularVelocity = 0.0;
+        this.angularAcceleration = 0.0;
+        this.modelMatrix = mat4.identity();
+        this.moved = false;
         this.shaderName = '';
     }
 
@@ -72,8 +91,87 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
         });
     }
 
-    update() {
-        // TODO
+    update(time: number, matrix: mat = mat4.identity()) {
+        // TODO: Use all the physical quantities to update the model matrix
+        this.linearVelocity[0] += this.linearAcceleration[0] * time;
+        this.linearVelocity[1] += this.linearAcceleration[1] * time;
+        this.linearVelocity[2] += this.linearAcceleration[2] * time;
+        this.angularVelocity += this.angularAcceleration * time;
+        this.moved = !!(this.linearVelocity[0] || this.linearVelocity[1] || this.linearVelocity[2] || this.angularVelocity);
+        let move = mat4.identity();
+        // finished: Add rotation
+        mat4.rotate(move, this.angularVelocity * time, this.axis);
+        mat4.translate(move, move, [this.linearVelocity[0] * time, this.linearVelocity[1] * time, this.linearVelocity[2] * time]);
+        // finished: Update position, using position * move
+        this.position = <Pos>vec3.transformMat4(this.position, move);
+        this.modelMatrix = mat4.multiply(this.modelMatrix, move);
+    }
+
+    updateChildren(time: number, matrix: mat = mat4.identity()) {
+        matrix = mat4.multiply(this.modelMatrix, matrix);
+        this.forEach((obj) => {
+            if ('draw' in obj) {
+                obj.update(time, matrix);
+            }
+            obj.updateChildren(time, matrix);
+        })
+    }
+
+    // Would better be used only in initialize
+    translate(move: Vec3) {
+        // finished: Update position
+        let tmp = mat4.identity();
+        mat4.translate(tmp, tmp, move);
+        this.position = <Pos>vec3.transformMat4(this.position, tmp);
+        this.modelMatrix = mat4.multiply(this.modelMatrix, tmp);
+    }
+
+    rotate(axis: Vec3, angular: number) {
+        // finished: Update position
+        // finished: Add rotation
+        let tmp = mat4.rotate(mat4.identity(), angular, axis);
+        this.position = <Pos>vec3.transformMat4(this.position, tmp);
+        this.modelMatrix = mat4.multiply(this.modelMatrix, tmp);
+    }
+
+    get linearVelocity(): Vec3 {
+        return this._linearVelocity;
+    }
+
+    set linearVelocity(val: Vec3) {
+        this._linearVelocity = val;
+    }
+
+    get linearAcceleration(): Vec3 {
+        return this._linearAcceleration;
+    }
+
+    set linearAcceleration(val: Vec3) {
+        this._linearAcceleration = val;
+    }
+
+    get axis(): Vec3 {
+        return this._axis;
+    }
+
+    set axis(val: Vec3) {
+        this._axis = val;
+    }
+
+    get angularVelocity(): number {
+        return this._angularVelocity;
+    }
+
+    set angularVelocity(val: number) {
+        this._angularVelocity = val;
+    }
+
+    get angularAcceleration(): number {
+        return this._angularAcceleration;
+    }
+
+    set angularAcceleration(val: number) {
+        this._angularAcceleration = val;
     }
 
     getPosition() {
@@ -111,8 +209,63 @@ export class Model {
 }
 
 export abstract class Colliable extends Component {
-    constructor(position: Pos) {
+    protected aabb: AABBCollider;
+
+    constructor(position: Pos, min?: Pos, max?: Pos) {
         super(position);
+        if (!min) {
+            this.aabb = new AABBCollider(position, [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]);
+        } else {
+            this.aabb = new AABBCollider(position, min, max);
+        }
+    }
+
+    update(time: number, matrix: mat = mat4.identity()) {
+        super.update(time, matrix);
+        if (this.moved) {
+            this.aabb.linearVelocity = this.linearVelocity;
+            this.aabb.angularVelocity = this.angularVelocity;
+            this.aabb.update(time, this.modelMatrix);
+        }
+    }
+
+    translate(move: Vec3) {
+        super.translate(move);
+        // Here we simply do not consider about collision, since it is initializing
+        this.aabb.updateBox(this.modelMatrix);
+    }
+
+    rotate(axis: Vec3, angular: number) {
+        super.rotate(axis, angular);
+        this.aabb.updateBox(this.modelMatrix);
+    }
+
+    private revoke(time: number) {
+        // TODO: revoke the update operation
+        let tmp = mat4.identity();
+        mat4.translate(tmp, tmp, [this.linearVelocity[0] * time, this.linearVelocity[1] * time, this.linearVelocity[2] * time]);
+        mat4.invert(tmp, tmp);
+        let remove = tmp;
+        tmp = mat4.rotate(mat4.identity(), this.angularVelocity * time, this.axis);
+        mat4.invert(tmp, tmp);
+        remove = mat4.multiply(remove, tmp);
+        this.position = <Pos>vec3.transformMat4(this.position, remove);
+        this.modelMatrix = mat4.multiply(this.modelMatrix, remove);
+        this.aabb.updateBox(this.modelMatrix);
+        this.linearVelocity = [0.0, 0.0, 0.0];
+        this.linearAcceleration = [0.0, 0.0, 0.0];
+        this.axis = [0.0, 0.0, 0.0];
+        this.angularVelocity = 0.0;
+        this.angularAcceleration = 0.0;
+        this.moved = false;
+    }
+
+    onCollisionEnter(collider: Collider, info: Vec3, time: number) {
+        this.revoke(time)
+    }
+
+    onCollisionExit(collider: Collider) {
+
     }
 }
 
