@@ -1,8 +1,7 @@
 import {Component} from "./component";
 import {Pos} from "./public";
 
-export class Collider extends Component {
+export class Collider {
     constructor(pos: Pos) {
-        super(pos)
     }
 }
