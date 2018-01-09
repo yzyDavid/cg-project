@@ -79,7 +79,7 @@ export class AABBCollider extends Collider {
 
     updateBox(matrix: mat) {
         //throw new Error("Method not implement.");
-        // TODO: Use matrix operation to update pos0 to pos7, and use pos0 to pos7 to update min and max
+        // finished: Use matrix operation to update pos0 to pos7, and use pos0 to pos7 to update min and max
         let tmp0 = vec3.transformMat4(this.pos0, matrix);
         let tmp1 = vec3.transformMat4(this.pos1, matrix);
         let tmp2 = vec3.transformMat4(this.pos2, matrix);
@@ -88,6 +88,11 @@ export class AABBCollider extends Collider {
         let tmp5 = vec3.transformMat4(this.pos5, matrix);
         let tmp6 = vec3.transformMat4(this.pos6, matrix);
         let tmp7 = vec3.transformMat4(this.pos7, matrix);
-        //this.min[0] =
+        this.min[0] = Math.min(tmp0[0], tmp1[0], tmp2[0], tmp3[0], tmp4[0], tmp5[0], tmp6[0], tmp7[0]);
+        this.min[1] = Math.min(tmp0[1], tmp1[1], tmp2[1], tmp3[1], tmp4[1], tmp5[1], tmp6[1], tmp7[1]);
+        this.min[2] = Math.min(tmp0[2], tmp1[2], tmp2[2], tmp3[2], tmp4[2], tmp5[2], tmp6[2], tmp7[2]);
+        this.max[0] = Math.max(tmp0[0], tmp1[0], tmp2[0], tmp3[0], tmp4[0], tmp5[0], tmp6[0], tmp7[0]);
+        this.max[1] = Math.max(tmp0[1], tmp1[1], tmp2[1], tmp3[1], tmp4[1], tmp5[1], tmp6[1], tmp7[1]);
+        this.max[2] = Math.max(tmp0[2], tmp1[2], tmp2[2], tmp3[2], tmp4[2], tmp5[2], tmp6[2], tmp7[2]);
     }
 }
