@@ -96,9 +96,6 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
         this.linearVelocity[0] += this.linearAcceleration[0] * time;
         this.linearVelocity[1] += this.linearAcceleration[1] * time;
         this.linearVelocity[2] += this.linearAcceleration[2] * time;
-        this.axis[0] += this.linearVelocity[0] * time;
-        this.axis[1] += this.linearVelocity[1] * time;
-        this.axis[2] += this.linearVelocity[2] * time;
         this.angularVelocity += this.angularAcceleration * time;
         this.moved = !!(this.linearVelocity[0] || this.linearVelocity[1] || this.linearVelocity[2] || this.angularVelocity);
         let move = mat4.identity();
