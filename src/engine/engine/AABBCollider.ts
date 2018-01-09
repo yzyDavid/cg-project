@@ -1,7 +1,7 @@
 import {Pos, Vec3} from './public';
 import {Collider} from './collider';
 import {Colliable, Component} from './component';
-import {mat, mat4} from '../matrix';
+import {mat, mat4, vec3} from '../matrix';
 
 export class AABBCollider extends Collider {
     private static allColliders: AABBCollider[];
@@ -80,5 +80,14 @@ export class AABBCollider extends Collider {
     updateBox(matrix: mat) {
         //throw new Error("Method not implement.");
         // TODO: Use matrix operation to update pos0 to pos7, and use pos0 to pos7 to update min and max
+        let tmp0 = vec3.transformMat4(this.pos0, matrix);
+        let tmp1 = vec3.transformMat4(this.pos1, matrix);
+        let tmp2 = vec3.transformMat4(this.pos2, matrix);
+        let tmp3 = vec3.transformMat4(this.pos3, matrix);
+        let tmp4 = vec3.transformMat4(this.pos4, matrix);
+        let tmp5 = vec3.transformMat4(this.pos5, matrix);
+        let tmp6 = vec3.transformMat4(this.pos6, matrix);
+        let tmp7 = vec3.transformMat4(this.pos7, matrix);
+        //this.min[0] =
     }
 }

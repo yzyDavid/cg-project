@@ -9,7 +9,7 @@ import Scene from './scene';
 import Engine from './engine';
 import {AABBCollider} from './AABBCollider';
 import {Collider} from './collider';
-import {mat4} from '../matrix';
+import {mat4, vec3} from '../matrix';
 
 /**
  * Drawable or interactive with the scene Object
@@ -103,8 +103,10 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
         this.moved = !!(this.linearVelocity[0] || this.linearVelocity[1] || this.linearVelocity[2] || this.angularVelocity);
         let move = mat4.identity();
         // TODO: Add rotation
+        
         mat4.translate(move, move, [this.linearVelocity[0] * time, this.linearVelocity[1] * time, this.linearVelocity[2] * time]);
-        // TODO: Update position, using position * move
+        // finished: Update position, using position * move
+        this.position = <Pos>vec3.transformMat4(this.position, move);
         this.modelMatrix = mat4.multiply(move, this.modelMatrix);
     }
 
