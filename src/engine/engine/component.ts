@@ -102,12 +102,12 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
         this.angularVelocity += this.angularAcceleration * time;
         this.moved = !!(this.linearVelocity[0] || this.linearVelocity[1] || this.linearVelocity[2] || this.angularVelocity);
         let move = mat4.identity();
-        // TODO: Add rotation
-        
+        // finished: Add rotation
+        mat4.rotate(move, this.angularVelocity * time, this.axis);
         mat4.translate(move, move, [this.linearVelocity[0] * time, this.linearVelocity[1] * time, this.linearVelocity[2] * time]);
         // finished: Update position, using position * move
         this.position = <Pos>vec3.transformMat4(this.position, move);
-        this.modelMatrix = mat4.multiply(move, this.modelMatrix);
+        this.modelMatrix = mat4.multiply(this.modelMatrix, move);
     }
 
     updateChildren(time: number, matrix: mat = mat4.identity()) {
@@ -122,16 +122,19 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
 
     // Would better be used only in initialize
     translate(move: Vec3) {
-        // TODO: Update position
+        // finished: Update position
         let tmp = mat4.identity();
         mat4.translate(tmp, tmp, move);
-        this.modelMatrix = mat4.multiply(tmp, this.modelMatrix);
+        this.position = <Pos>vec3.transformMat4(this.position, tmp);
+        this.modelMatrix = mat4.multiply(this.modelMatrix, tmp);
     }
 
     rotate(axis: Vec3, angular: number) {
-        // TODO: Update position
-        let tmp = mat4.identity();
-        // TODO: Add rotation
+        // finished: Update position
+        // finished: Add rotation
+        let tmp = mat4.rotate(mat4.identity(), angular, axis);
+        this.position = <Pos>vec3.transformMat4(this.position, tmp);
+        this.modelMatrix = mat4.multiply(this.modelMatrix, tmp);
     }
 
     get linearVelocity(): Vec3 {
@@ -242,6 +245,16 @@ export abstract class Colliable extends Component {
 
     private revoke(time: number) {
         // TODO: revoke the update operation
+        let tmp = mat4.identity();
+        mat4.translate(tmp, tmp, [this.linearVelocity[0] * time, this.linearVelocity[1] * time, this.linearVelocity[2] * time]);
+        mat4.invert(tmp, tmp);
+        let remove = tmp;
+        tmp = mat4.rotate(mat4.identity(), this.angularVelocity * time, this.axis);
+        mat4.invert(tmp, tmp);
+        remove = mat4.multiply(remove, tmp);
+        this.position = <Pos>vec3.transformMat4(this.position, remove);
+        this.modelMatrix = mat4.multiply(this.modelMatrix, remove);
+        this.aabb.updateBox(this.modelMatrix);
         this.linearVelocity = [0.0, 0.0, 0.0];
         this.linearAcceleration = [0.0, 0.0, 0.0];
         this.axis = [0.0, 0.0, 0.0];
