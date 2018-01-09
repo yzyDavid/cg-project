@@ -118,6 +118,20 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
         })
     }
 
+    // Would better be used only in initialize
+    translate(move: Vec3) {
+        // TODO: Update position
+        let tmp = mat4.identity();
+        mat4.translate(tmp, tmp, move);
+        this.modelMatrix = mat4.multiply(tmp, this.modelMatrix);
+    }
+
+    rotate(axis: Vec3, angular: number) {
+        // TODO: Update position
+        let tmp = mat4.identity();
+        // TODO: Add rotation
+    }
+
     get linearVelocity(): Vec3 {
         return this._linearVelocity;
     }
@@ -205,15 +219,26 @@ export abstract class Colliable extends Component {
     }
 
     update(time: number, matrix: mat = mat4.identity()) {
-        super.update(time);
+        super.update(time, matrix);
         if (this.moved) {
             this.aabb.linearVelocity = this.linearVelocity;
             this.aabb.angularVelocity = this.angularVelocity;
-            this.aabb.update(time, matrix);
+            this.aabb.update(time, this.modelMatrix);
         }
     }
 
-    private revoke() {
+    translate(move: Vec3) {
+        super.translate(move);
+        // Here we simply do not consider about collision, since it is initializing
+        this.aabb.updateBox(this.modelMatrix);
+    }
+
+    rotate(axis: Vec3, angular: number) {
+        super.rotate(axis, angular);
+        this.aabb.updateBox(this.modelMatrix);
+    }
+
+    private revoke(time: number) {
         // TODO: revoke the update operation
         this.linearVelocity = [0.0, 0.0, 0.0];
         this.linearAcceleration = [0.0, 0.0, 0.0];
@@ -223,8 +248,8 @@ export abstract class Colliable extends Component {
         this.moved = false;
     }
 
-    onCollisionEnter(collider: Collider, info: Vec3) {
-        this.revoke()
+    onCollisionEnter(collider: Collider, info: Vec3, time: number) {
+        this.revoke(time)
     }
 
     onCollisionExit(collider: Collider) {

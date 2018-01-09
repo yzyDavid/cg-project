@@ -45,7 +45,7 @@ export class AABBCollider extends Collider {
                 if (isCollision && !isOnCollision) {
                     this.onCollision.push(x);
                     let info = this.getCollisionInfo(x);
-                    this.object.onCollisionEnter(x, info);
+                    this.object.onCollisionEnter(x, info, time);
                 }
                 if (!isCollision && isOnCollision) {
                     this.onCollision.splice(index, 1);
