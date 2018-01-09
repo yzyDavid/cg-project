@@ -10,7 +10,7 @@ export default class DirectLight extends Light {
                 color: Vec3,
                 ambientCoeff: number,
                 turnOn: boolean) {
-        super([0, 0, 0], turnOn);  // Useless position.
+        super([0, 0, 0], turnOn);  // Useless.
         this.direction = direction;
         this.color = color;
         this.ambientCoeff = ambientCoeff;
