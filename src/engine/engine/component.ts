@@ -43,7 +43,9 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
         this.axis = [0.0, 0.0, 0.0];
         this.angularVelocity = 0.0;
         this.angularAcceleration = 0.0;
-        this.modelMatrix = mat4.identity();
+        let move = mat4.identity();
+        mat4.translate(move, move, position);
+        this.modelMatrix = vec3.transformMat4(this.position, move);
         this.moved = false;
         this.shaderName = '';
     }
