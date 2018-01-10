@@ -111,6 +111,7 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
         this.modelMatrix = mat4.multiply(this.modelMatrix, move);
     }
 
+    // matrix is the product of the model matrix of the parent components
     updateChildren(time: number, matrix: mat = mat4.identity()) {
         matrix = mat4.multiply(this.modelMatrix, matrix);
         this.forEach((obj) => {
@@ -122,6 +123,11 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
     }
 
     // Would better be used only in initialize
+    /**
+     * Update position with translation when initialize
+     *
+     * @param {Vec3} move movement
+     */
     translate(move: Vec3) {
         // finished: Update position
         let tmp = mat4.identity();
@@ -130,6 +136,12 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
         this.modelMatrix = mat4.multiply(this.modelMatrix, tmp);
     }
 
+    /**
+     * Update position with rotation when initialize
+     *
+     * @param {Vec3} axis
+     * @param {number} angular
+     */
     rotate(axis: Vec3, angular: number) {
         // finished: Update position
         // finished: Add rotation
@@ -138,6 +150,7 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
         this.modelMatrix = mat4.multiply(this.modelMatrix, tmp);
     }
 
+    // Use getter and setter to modify the physical quantities
     get linearVelocity(): Vec3 {
         return this._linearVelocity;
     }
@@ -228,7 +241,7 @@ export abstract class Colliable extends Component {
     update(time: number, matrix: mat = mat4.identity()) {
         super.update(time, matrix);
         if (this.moved) {
-            this.aabb.update(time, this.modelMatrix);
+            this.aabb.update(time, mat4.multiply(this.modelMatrix, matrix));
         }
     }
 
