@@ -218,13 +218,12 @@ export abstract class Colliable extends Component {
         } else {
             this.aabb = new AABBCollider(position, min, max);
         }
+        this.aabb.object = this;
     }
 
     update(time: number, matrix: mat = mat4.identity()) {
         super.update(time, matrix);
         if (this.moved) {
-            this.aabb.linearVelocity = this.linearVelocity;
-            this.aabb.angularVelocity = this.angularVelocity;
             this.aabb.update(time, this.modelMatrix);
         }
     }
