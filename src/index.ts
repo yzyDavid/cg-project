@@ -12,6 +12,7 @@ import {Pos} from './engine';
 import {queryObjAsync} from './engine';
 import {loadImageAsync} from './engine/utils';
 import PointLight from "./engine/engine/pointlight";
+import DirectLight from "./engine/engine/directlight";
 
 const canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById('root');
 canvas.setAttribute('width', String(config.WIDTH));
@@ -29,15 +30,19 @@ camera.lookAt([0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
 // Create scene.
 const scene = new Scene(camera);
 
-// Add a light.
+// Add a point light.
 const color: Vec3 = [1, 1, 1];
 const ambientCoeff: number = 0.2;
 const pointLight = new PointLight(pos, color, ambientCoeff, true);
-scene.addLight(pointLight);
+// scene.addLight(pointLight);
 
-// Add a demo lighted object.
+// Add a direct light.
+const direction: Vec3 = [0, 0, -1];
+const directLight = new DirectLight(direction, color, ambientCoeff, true);
+scene.addLight(directLight);
+scene.addLight(directLight);
 
-queryObjAsync("/assets/module/te_240.obj").then(cube0 => {
+queryObjAsync("/assets/module/cube.obj").then(cube0 => {
     for (let entry of cube0) {
         scene.addObject(entry);
     }

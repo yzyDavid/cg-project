@@ -51,12 +51,6 @@ export default class Scene implements EnumerableChildren<Component> {
     }
 
     addLight(light: Light) {
-        if (this.lights.length >= 3) {
-            console.log("lights overflow, at most 3 lights");
-            throw new Error();
-        }
-
-        console.log("a new light added");
         this.lights.push(light);
     }
 

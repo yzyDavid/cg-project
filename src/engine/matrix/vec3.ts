@@ -15,7 +15,7 @@ import {mat, vec, EPSILON} from './index';
  * @param {Mat4} m
  * @returns {Vec3}
  */
-export function transformMat4(a: vec, m: mat) {
+export function transformMat4(a: vec, m: mat): vec {
     const out = new Array(3);
 
     let x = a[0], y = a[1], z = a[2];
