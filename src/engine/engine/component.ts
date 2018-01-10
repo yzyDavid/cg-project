@@ -83,7 +83,8 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
     }
 
     // may be designed not properly.
-    drawChildren(gl: WebGLRenderingContext, engine?: Engine, modelMatrix?: mat): void {
+    drawChildren(gl: WebGLRenderingContext, engine?: Engine, modelMatrix: mat = mat4.identity()): void {
+        modelMatrix = mat4.multiply(this.modelMatrix, modelMatrix);
         this.forEach((obj) => {
             if ('draw' in obj) {
                 const d = <Drawable>(obj as any);
@@ -93,6 +94,7 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
         });
     }
 
+    // Here matrix is used only for colliable object to update its AABB box
     update(time: number, matrix: mat = mat4.identity()) {
         // TODO: Use all the physical quantities to update the model matrix
         this.linearVelocity[0] += this.linearAcceleration[0] * time;
