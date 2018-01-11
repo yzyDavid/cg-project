@@ -237,7 +237,7 @@ export abstract class Colliable extends Component {
         this.aabb.update(time, mat4.multiply(this.modelMatrix, matrix));
     }
 
-    private revoke(time: number) {
+    private revoke() {
         // TODO: revoke the update operation
         let remove = mat4.identity();
         mat4.invert(remove, this.lastMove);
@@ -251,8 +251,8 @@ export abstract class Colliable extends Component {
         this.angularAcceleration = 0.0;
     }
 
-    onCollisionEnter(collider: Collider, info: Vec3, time: number) {
-        this.revoke(time)
+    onCollisionEnter(collider: Collider, info: Vec3) {
+        this.revoke()
     }
 
     onCollisionExit(collider: Collider) {
