@@ -120,8 +120,8 @@ export default class UniversalObject extends IncolliableObject implements Drawab
         }
 
         if (!modelMatrix) {
-            modelMatrix = mat4.identity();
-        }
+            modelMatrix = this.modelMatrix;
+        } else modelMatrix = mat4.multiply(this.modelMatrix, modelMatrix);
 
         // Switch to lighting shader.
         const shaderManager = engine.getShaderManager();

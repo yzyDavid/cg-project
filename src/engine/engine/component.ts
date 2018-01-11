@@ -46,7 +46,7 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
         this.angularAcceleration = 0.0;
         this.move = mat4.identity();
         mat4.translate(this.move, this.move, position);
-        this.modelMatrix = vec3.transformMat4(this.position, this.move);
+        this.modelMatrix = this.move;
         this.move = mat4.identity();
         this.lastMove = mat4.identity();
         this.shaderName = '';
@@ -104,13 +104,14 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
         this.linearVelocity[2] += this.linearAcceleration[2] * time;
         this.angularVelocity += this.angularAcceleration * time;
         // finished: Add rotation
-        mat4.rotate(this.move, this.angularVelocity * time, this.axis);
+        if (this.axis[0] != 0 || this.axis[1] != 0 || this.axis[2] != 0)
+            this.move = mat4.rotate(this.move, this.angularVelocity * time, this.axis);
         mat4.translate(this.move, this.move, [this.linearVelocity[0] * time, this.linearVelocity[1] * time, this.linearVelocity[2] * time]);
         this.lastMove = this.move;
-        this.move = mat4.identity();
         // finished: Update position, using position * move
         this.position = <Pos>vec3.transformMat4(this.position, this.move);
         this.modelMatrix = mat4.multiply(this.modelMatrix, this.move);
+        this.move = mat4.identity();
     }
 
     // matrix is the product of the model matrix of the parent components
