@@ -19,6 +19,7 @@ export class AABBCollider extends Collider {
     public pos6: Pos;
     public pos7: Pos;
     public object: Colliable;
+    private added: boolean;
 
     constructor(pos: Pos, min: Pos, max: Pos) {
         super(pos);
@@ -32,7 +33,8 @@ export class AABBCollider extends Collider {
         this.pos5 = [max[0], min[1], max[2]];
         this.pos6 = [max[0], max[1], min[2]];
         this.pos7 = max;
-        AABBCollider.allColliders.push(this)
+        //AABBCollider.allColliders.push(this)
+        this.added = false;
     }
 
     update(time: number, matrix: mat) {
@@ -80,6 +82,10 @@ export class AABBCollider extends Collider {
     updateBox(matrix: mat) {
         //throw new Error("Method not implement.");
         // finished: Use matrix operation to update pos0 to pos7, and use pos0 to pos7 to update min and max
+        if (!this.added) {
+            AABBCollider.allColliders.push(this);
+            this.added = true;
+        }
         let tmp0 = vec3.transformMat4(this.pos0, matrix);
         let tmp1 = vec3.transformMat4(this.pos1, matrix);
         let tmp2 = vec3.transformMat4(this.pos2, matrix);

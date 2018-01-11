@@ -29,9 +29,10 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
     protected _axis: Vec3;
     protected _angularVelocity: number;
     protected _angularAcceleration: number;
-    protected moved: boolean;
 
     protected modelMatrix: mat;
+    protected move: mat;
+    protected lastMove: mat;
 
     constructor(position: Pos) {
         this.position = position;
@@ -43,10 +44,11 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
         this.axis = [0.0, 0.0, 0.0];
         this.angularVelocity = 0.0;
         this.angularAcceleration = 0.0;
-        let move = mat4.identity();
-        mat4.translate(move, move, position);
-        this.modelMatrix = vec3.transformMat4(this.position, move);
-        this.moved = false;
+        this.move = mat4.identity();
+        mat4.translate(this.move, this.move, position);
+        this.modelMatrix = vec3.transformMat4(this.position, this.move);
+        this.move = mat4.identity();
+        this.lastMove = mat4.identity();
         this.shaderName = '';
     }
 
@@ -101,14 +103,14 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
         this.linearVelocity[1] += this.linearAcceleration[1] * time;
         this.linearVelocity[2] += this.linearAcceleration[2] * time;
         this.angularVelocity += this.angularAcceleration * time;
-        this.moved = !!(this.linearVelocity[0] || this.linearVelocity[1] || this.linearVelocity[2] || this.angularVelocity);
-        let move = mat4.identity();
         // finished: Add rotation
-        mat4.rotate(move, this.angularVelocity * time, this.axis);
-        mat4.translate(move, move, [this.linearVelocity[0] * time, this.linearVelocity[1] * time, this.linearVelocity[2] * time]);
+        mat4.rotate(this.move, this.angularVelocity * time, this.axis);
+        mat4.translate(this.move, this.move, [this.linearVelocity[0] * time, this.linearVelocity[1] * time, this.linearVelocity[2] * time]);
+        this.lastMove = this.move;
+        this.move = mat4.identity();
         // finished: Update position, using position * move
-        this.position = <Pos>vec3.transformMat4(this.position, move);
-        this.modelMatrix = mat4.multiply(this.modelMatrix, move);
+        this.position = <Pos>vec3.transformMat4(this.position, this.move);
+        this.modelMatrix = mat4.multiply(this.modelMatrix, this.move);
     }
 
     // matrix is the product of the model matrix of the parent components
@@ -129,11 +131,7 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
      * @param {Vec3} move movement
      */
     translate(move: Vec3) {
-        // finished: Update position
-        let tmp = mat4.identity();
-        mat4.translate(tmp, tmp, move);
-        this.position = <Pos>vec3.transformMat4(this.position, tmp);
-        this.modelMatrix = mat4.multiply(this.modelMatrix, tmp);
+        mat4.translate(this.move, this.move, move);
     }
 
     /**
@@ -143,11 +141,7 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
      * @param {number} angular
      */
     rotate(axis: Vec3, angular: number) {
-        // finished: Update position
-        // finished: Add rotation
-        let tmp = mat4.rotate(mat4.identity(), angular, axis);
-        this.position = <Pos>vec3.transformMat4(this.position, tmp);
-        this.modelMatrix = mat4.multiply(this.modelMatrix, tmp);
+        this.move = mat4.rotate(this.move, angular, axis);
     }
 
     // Use getter and setter to modify the physical quantities
@@ -240,31 +234,13 @@ export abstract class Colliable extends Component {
 
     update(time: number, matrix: mat = mat4.identity()) {
         super.update(time, matrix);
-        if (this.moved) {
-            this.aabb.update(time, mat4.multiply(this.modelMatrix, matrix));
-        }
-    }
-
-    translate(move: Vec3) {
-        super.translate(move);
-        // Here we simply do not consider about collision, since it is initializing
-        this.aabb.updateBox(this.modelMatrix);
-    }
-
-    rotate(axis: Vec3, angular: number) {
-        super.rotate(axis, angular);
-        this.aabb.updateBox(this.modelMatrix);
+        this.aabb.update(time, mat4.multiply(this.modelMatrix, matrix));
     }
 
     private revoke(time: number) {
         // TODO: revoke the update operation
-        let tmp = mat4.identity();
-        mat4.translate(tmp, tmp, [this.linearVelocity[0] * time, this.linearVelocity[1] * time, this.linearVelocity[2] * time]);
-        mat4.invert(tmp, tmp);
-        let remove = tmp;
-        tmp = mat4.rotate(mat4.identity(), this.angularVelocity * time, this.axis);
-        mat4.invert(tmp, tmp);
-        remove = mat4.multiply(remove, tmp);
+        let remove = mat4.identity();
+        mat4.invert(remove, this.lastMove);
         this.position = <Pos>vec3.transformMat4(this.position, remove);
         this.modelMatrix = mat4.multiply(this.modelMatrix, remove);
         this.aabb.updateBox(this.modelMatrix);
@@ -273,7 +249,6 @@ export abstract class Colliable extends Component {
         this.axis = [0.0, 0.0, 0.0];
         this.angularVelocity = 0.0;
         this.angularAcceleration = 0.0;
-        this.moved = false;
     }
 
     onCollisionEnter(collider: Collider, info: Vec3, time: number) {
