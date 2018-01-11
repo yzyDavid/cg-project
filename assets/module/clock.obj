@@ -1,13 +1,4 @@
-# clock.obj Blender3D v245 OBJ File: clock.blend
-# www.blender3d.org
-#
-# Created by Robert Pastierovic
-#
-# This file is distributed under Free Art License, see http://artlibre.org/licence/lal/en for more informations
-# and under CC-BY Creative Commons Attribution 3.0 Unported license, see http://creativecommons.org/licenses/by/3.0/
-# at your choice
-# 
-o Font.003_Mesh.001
+mtllib material.mtl
 v -13.350725 1.857691 1.294220
 v -13.230730 1.857691 1.204724
 v -13.117358 1.857691 1.103807
@@ -2746,7 +2737,7 @@ v -1.642748 1.790654 -2.512307
 v 5.841926 1.790654 7.562427
 v 5.189350 1.790654 8.047216
 v -2.295316 1.790654 -2.027504
-usemtl red
+usemtl cotton5
 s off
 f 1118 1119 1120 1121
 f 1122 1125 1124 1123
@@ -2763,7 +2754,7 @@ v 6.877219 1.794152 -10.258514
 v -1.364864 1.794153 2.458574
 v -2.162885 1.794153 1.941360
 v 6.079195 1.794152 -10.775726
-usemtl red
+usemtl cotton5
 s off
 f 1126 1127 1128 1129
 f 1130 1133 1132 1131
@@ -6114,7 +6105,7 @@ v -0.315438 1.520570 -0.034887
 v -0.315438 1.520570 -0.034887
 v -0.315438 1.520570 -0.034887
 v -0.315438 1.520570 -0.034887
-usemtl smoked_glas
+usemtl white
 s off
 f 2486 2454 2455
 f 2486 2455 2456

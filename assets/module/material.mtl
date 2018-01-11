@@ -1,3 +1,4 @@
+#origin ones
 newmtl metal
 Ka 0.2 0 0.9
 Kd 0.8 0.8 0.9
@@ -17,3 +18,76 @@ newmtl leather
 Ka 0.3 0.3 0.3
 Kd 0.3 0.3 0.3
 Ks 1 1 1
+
+#with textures
+newmtl wood2
+Ka 0.6 0 0.9
+Kd 0.6 0 0.9
+Ks 0.8 0.8 0.8
+wood2.jpg
+
+newmtl paint
+Ka 0.6 0.6 0.6
+Kd 0.6 0.6 0.6
+Ks 0.8 0.8 0.8
+paint1.jpg
+
+newmtl metal2
+Ka 0.2 0 0.9
+Kd 0.8 0.8 0.9
+Ks 1 1 1
+metal2.jpg
+
+newmtl wood5
+Ka 0.6 0 0.9
+Kd 0.6 0 0.9
+Ks 0.8 0.8 0.8
+wood5.jpg
+
+newmtl plastics2
+Ka 0.6 0.6 0.6
+Kd 0.6 0.6 0.6
+Ks 1 1 1
+plastics2.jpg
+
+newmtl metal1
+Ka 0.2 0 0.9
+Kd 0.8 0.8 0.9
+Ks 1 1 1
+metal1.jpg
+
+newmtl leather1
+Ka 0.3 0.3 0.3
+Kd 0.3 0.3 0.3
+Ks 1 1 1
+leather1.jpg
+
+newmtl black
+Ka 0 0 0
+Kd 0 0 0
+Ks 1 1 1
+pure3.jpg
+
+newmtl white
+Ka 0 0 0
+Kd 0 0 0
+Ks 1 1 1
+pure2.jpg
+
+newmtl cotton5
+Ka 0 0 0
+Kd 0 0 0
+Ks 1 1 1
+cotton5.jpg
+
+newmtl cotton1
+Ka 0.6 0.6 0.6
+Kd 0.6 0.6 0.6
+Ks 0.8 0.8 0.8
+cotton1.jpg
+
+newmtl picture1
+Ka 0.8 0.8 0.8
+Kd 0.8 0.8 0.8
+Ks 0.1 0.1 0.1
+picture2.jpg
