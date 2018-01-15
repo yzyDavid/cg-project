@@ -87,6 +87,8 @@ export class AABBCollider extends Collider {
             AABBCollider.allColliders.push(this);
             this.added = true;
         }
+        console.log("min", this.min);
+        console.log("max", this.max);
         let tmp0 = vec3.transformMat4(this.pos0, matrix);
         let tmp1 = vec3.transformMat4(this.pos1, matrix);
         let tmp2 = vec3.transformMat4(this.pos2, matrix);

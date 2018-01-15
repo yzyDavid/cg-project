@@ -2,7 +2,7 @@ import Material from './material';
 import {Pos, Vec3} from './public';
 import UniversalObject from './universalobject';
 import {loadImageAsync} from '../utils';
-import Colliableobject from "./colliableobject";
+import ColliableObject from "./colliableobject";
 
 type ObjUrl = string;
 type MtlUrl = string;
@@ -27,7 +27,7 @@ export default async function queryObjAsync(objUrl: ObjUrl, scale: number): Prom
     return await loader.getObjAsync();
 }
 
-export async function queryColliableObjAsync(objUrl: ObjUrl, scale: number): Promise<Colliableobject[]> {
+export async function queryColliableObjAsync(objUrl: ObjUrl, scale: number): Promise<ColliableObject> {
 
     const loader = new ObjLoader(objUrl, scale);
     await loader.initAsync();
@@ -103,8 +103,17 @@ class ObjLoader {
         return resObjs;
     }
 
-    async getColliableObjAsync(): Promise<Colliableobject[]> {
-        let resObjs: Colliableobject[] = [];
+    async getColliableObjAsync(): Promise<ColliableObject> {
+
+        let min: Pos = [1000, 1000, 1000], max: Pos = [-1000, -1000, -1000];
+        for (let entry of this.materialParts) {
+            // TODO: should not be magic number
+            for (let i = 0; i < entry.positions.length; i++) {
+                if (min[i % 3] > entry.positions[i]) min[i % 3] = entry.positions[i];
+                if (max[i % 3] < entry.positions[i]) max[i % 3] = entry.positions[i];
+            }
+        }
+        let resObjs: ColliableObject = new ColliableObject([0, 0, 0], min, max);
         for (let entry of this.materialParts) {
             let material: Material;
             if (entry.material == undefined) {
@@ -115,18 +124,10 @@ class ObjLoader {
             }
             console.log("materialParts", this.materialParts);
 
-            // TODO: should not be magic number
-            let min: Pos = [1000, 1000, 1000], max: Pos = [-1000, -1000, -1000];
-            for (let i = 0; i < entry.positions.length; i++) {
-                if (min[i % 3] > entry.positions[i]) min[i % 3] = entry.positions[i];
-                if (max[i % 3] < entry.positions[i]) max[i % 3] = entry.positions[i];
-            }
 
-            let obj: Colliableobject;
+            let obj: UniversalObject;
             const img = await loadImageAsync(entry.material.textureFile);
-            obj = new Colliableobject([0, 0, 0],
-                min,
-                max,
+            obj = new UniversalObject([0, 0, 0],
                 entry.positions,
                 entry.normals,
                 entry.indices,
@@ -134,7 +135,7 @@ class ObjLoader {
                 entry.vt,
                 img
             );
-            resObjs.push(obj);
+            resObjs.addChild(obj);
         }
         return resObjs;
     }

@@ -45,7 +45,6 @@ scene.addLight(pointLight);
 const direction: Vec3 = [0, 0, -1];
 const directLight = new DirectLight(direction, color, ambientCoeff, true);
 
-/*
 queryObjAsync("/assets/module/cube.obj", 6).then(cube0 => {
     for (let entry of cube0) {
         scene.addObject(entry);
@@ -144,25 +143,19 @@ queryObjAsync("/assets/module/lamp.obj", 3).then(cube0 => {
     }
 });
 
-*/
 //茶几
-queryColliableObjAsync("/assets/module/smalltable.obj", 3).then(cube0 => {
-    for (let entry of cube0) {
-        scene.addObject(entry);
-        entry.translate([-1.2, -8.5, 5]);
-        entry.rotate([0, 1, 0], Math.PI * 0.5);
-    }
+queryColliableObjAsync("/assets/module/smalltable.obj", 3).then(entry => {
+    scene.addObject(entry);
+    entry.translate([-1.2, -8.5, 5]);
+    entry.rotate([0, 1, 0], Math.PI * 0.5);
 });
 
 //茶壶
-queryColliableObjAsync("/assets/module/teapot.obj", 0.01).then(cube0 => {
-    for (let entry of cube0) {
-        scene.addObject(entry);
-        entry.translate([-1.2, -6.74, 6]);
-        entry.rotate([0, 1, 0], Math.PI * 0.5);
-    }
+queryColliableObjAsync("/assets/module/teapot.obj", 0.01).then(entry => {
+    scene.addObject(entry);
+    entry.translate([-1.2, -6.74, 6]);
+    entry.rotate([0, 1, 0], Math.PI * 0.5);
 });
-/*
 //沙发
 queryObjAsync("/assets/module/sofa.obj", 3.6).then(cube0 => {
     for (let entry of cube0) {
@@ -181,7 +174,6 @@ queryObjAsync("/assets/module/ceilingFan.obj", 0.06).then(cube0 => {
     }
 });
 
-*/
 // Create engine.
 const conf = {
     width: config.WIDTH,

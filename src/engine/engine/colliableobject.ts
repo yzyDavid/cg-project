@@ -26,24 +26,11 @@ export default class Colliableobject extends Colliable implements Drawable {
 
     constructor(pos: Pos,
                 min: Pos,
-                max:Pos,
-                vertices: number[],
-                normals: number[],
-                indices: number[],
-                material: Material,
-                vt: number[],
-                texture?: HTMLImageElement) {
+                max:Pos
+                ) {
         super(pos, min, max);
-        this.vertices = vertices;
-        this.normals = normals;
-        this.indices = indices;
-        this.material = material;
-        this.textureCoords = vt;
-        this.textureImage = texture;
-        this.inited = false;
 
-        console.debug("create a new universal object successfully:");
-        console.debug(this.textureCoords);
+        console.debug("create a new colliable object successfully:");
     }
 
     saveObj(name: string) {
@@ -117,6 +104,7 @@ export default class Colliableobject extends Colliable implements Drawable {
     }
 
     draw(gl: WebGLRenderingContext, engine: Engine, modelMatrix?: mat): void {
+        /*
         // Init
         if (!this.inited) {
             this.initDraw(gl);
@@ -192,6 +180,7 @@ export default class Colliableobject extends Colliable implements Drawable {
 
         const vertexCount = this.indices.length;
         gl.drawElements(gl.TRIANGLES, vertexCount, gl.UNSIGNED_SHORT, 0);
+        */
     }
 
     onCollisionEnter(collider: Collider, info: Vec3) {
