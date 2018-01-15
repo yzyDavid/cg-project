@@ -46,11 +46,11 @@ export default class LightedObject extends IncolliableObject implements Drawable
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.indices), gl.STATIC_DRAW);
 
-        console.debug("creating lighted geometry object:");
-        console.debug(new Float32Array(this.vertices).length);
-        console.debug(this.vertices.length);
-        console.debug(this.normals.length);
-        console.debug(this.indices.length);
+        // console.debug("creating lighted geometry object:");
+        // console.debug(new Float32Array(this.vertices).length);
+        // console.debug(this.vertices.length);
+        // console.debug(this.normals.length);
+        // console.debug(this.indices.length);
     }
 
     protected deleteBuffers() {

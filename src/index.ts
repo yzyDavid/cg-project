@@ -13,8 +13,8 @@ import {queryObjAsync} from './engine';
 import {loadImageAsync} from './engine/utils';
 import PointLight from "./engine/engine/pointlight";
 import DirectLight from "./engine/engine/directlight";
-
 import initButtons from './button';
+import initLightControl from './lightcontrol';
 
 const canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById('root');
 canvas.setAttribute('width', String(config.WIDTH));
@@ -27,20 +27,17 @@ const fov = 45 * Math.PI / 180;
 const aspect = config.WIDTH / config.HEIGHT;
 const near = 0.1;
 const far = 100.0;
-const pos: Pos = [5, 0, -9];
+const pos: Pos = [0, 2, 3];
 const camera = new Camera(pos, fov, aspect, near, far);
-camera.lookAt([-6, 0, 12], [0.0, 1.0, 0.0]);
+camera.lookAt([0, -2, 0], [0.0, 1.0, 0.0]);
 
 // Create scene.
 const scene = new Scene(camera);
 
 // Add point lights.
-const white: Vec3 = [1, 1, 1];
-const ambientCoeff: number = 0.2;
 const pointLights: PointLight[] = [
-    new PointLight([3.0, 2.0, 5.0], white, 0.2, true),
-    new PointLight([3.0, 2.0, 5.0], white, 0, false),
-    new PointLight([3.0, 2.0, 5.0], white, 0, false),
+    new PointLight([3.0, 2.0, 5.0], [1, 1, 1], 0.2, true),
+    new PointLight([3.0, 2.0, 5.0], [1, 1, 1], 0, false),
 ]
 for (let i = 0; i < pointLights.length; i++) {
     scene.addLight(pointLights[i]);
@@ -48,13 +45,43 @@ for (let i = 0; i < pointLights.length; i++) {
 
 // Add direct lights.
 const directLights: DirectLight[] = [
-    new DirectLight([0, -1, 0], white, 0, false),
-    new DirectLight([0, -1, 0], white, 0, false),
-    new DirectLight([0, -1, 0], white, 0, false),
+    new DirectLight([0, -1, 0], [1, 1, 1], 0, true),
+    new DirectLight([0, -1, 0], [1, 1, 1], 0, false),
 ]
 for (let i = 0; i < directLights.length; i++) {
     scene.addLight(directLights[i]);
 }
+
+queryObjAsync("/assets/module/cube.obj", 6).then(cube0 => {
+    for (let entry of cube0) {
+        scene.addObject(entry);
+        entry.translate([0, -2.5, 0]);
+    }
+});
+
+//桌子
+queryObjAsync("/assets/module/table.obj", 3.2).then(cube0 => {
+    for (let entry of cube0) {
+        scene.addObject(entry);
+        entry.translate([-0.85, -8.5, -7.5]);
+    }
+});
+
+//椅子
+queryObjAsync("/assets/module/chair.obj", 4.4).then(cube0 => {
+    for (let entry of cube0) {
+        scene.addObject(entry);
+        entry.translate([-2.2, -8.5, -9.7]);
+    }
+});
+
+//门
+queryObjAsync("/assets/module/door.obj", 0.035).then(cube0 => {
+    for (let entry of cube0) {
+        scene.addObject(entry);
+        entry.translate([1, -8.47, 12]);
+    }
+});
 
 //垃圾桶
 queryObjAsync("/assets/module/poubelleInox.obj", 0.024).then(cube0 => {
@@ -172,10 +199,12 @@ const timeController = engine.getTimeEventController();
 
 keyController.addListener('q', () => engine.stop());
 keyController.enable();
-timeController.addListener('cameraMove', () => {
-    pos[0] += 0.01;
-    pos[1] += 0.01;
-    camera.setPosition(pos);
-});
+// timeController.addListener('cameraMove', () => {
+//     pos[0] += 0.01;
+//     pos[1] += 0.01;
+//     camera.setPosition(pos);
+// });
 
 engine.start();
+
+initLightControl(pointLights, directLights);

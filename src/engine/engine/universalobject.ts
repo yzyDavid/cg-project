@@ -38,8 +38,7 @@ export default class UniversalObject extends IncolliableObject implements Drawab
         this.textureImage = texture;
         this.inited = false;
 
-        console.debug("create a new universal object successfully:");
-        console.debug(this.textureCoords);
+        // console.debug("create a new universal object successfully");
     }
 
     saveObj(name: string) {
@@ -101,12 +100,12 @@ export default class UniversalObject extends IncolliableObject implements Drawab
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.indices), gl.STATIC_DRAW);
 
-        console.debug("creating lighted geometry object:");
-        console.debug(new Float32Array(this.vertices).length);
-        console.debug(this.vertices.length);
-        console.debug(this.normals.length);
-        console.debug(this.textureCoords.length);
-        console.debug(this.indices.length);
+        // console.debug("creating universal object:");
+        // console.debug(new Float32Array(this.vertices).length);
+        // console.debug(this.vertices.length);
+        // console.debug(this.normals.length);
+        // console.debug(this.textureCoords.length);
+        // console.debug(this.indices.length);
     }
 
     protected deleteBuffers() {
