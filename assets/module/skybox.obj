@@ -1,24 +1,31 @@
-# Blender v2.60 (sub 0) OBJ File: ''
-# www.blender.org
-mtllib cube.mtl
-o Cube
+mtllib material.mtl
 v 1.000000 -1.000000 -1.000000
 v 1.000000 -1.000000 1.000000
 v -1.000000 -1.000000 1.000000
 v -1.000000 -1.000000 -1.000000
 v 1.000000 1.000000 -1.000000
-v 1.000000 1.000000 1.000001
+v 1.000000 1.000000 1.000000
 v -1.000000 1.000000 1.000000
 v -1.000000 1.000000 -1.000000
 vt 0.0 0.0
 vt 0.0 1.0
 vt 1.0 0.0
 vt 1.0 1.0
-usemtl Material
-f 1/1 2/2 3/3 4/4
-f 5/1 8/2 7/3 6/4
-f 2/1 6/2 7/3 3/4
-f 3/1 7/2 8/3 4/4
-f 5/1 1/2 4/3 8/4
-usemtl Material.001
-f 1/1 5/2 6/3 2/4
+usemtl down
+#down
+f 1 4 3 2
+usemtl front
+#forward
+f 2 3 7 6
+usemtl left
+#left
+f 3 4 8 7
+usemtl back
+#back
+f 1 5 8 4
+usemtl right
+#right
+f 1 2 6 5
+usemtl up
+#up
+f 5 8 7 6

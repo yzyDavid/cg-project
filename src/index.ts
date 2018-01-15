@@ -6,14 +6,14 @@ import './index.css';
 import * as config from './config';
 
 import {Engine, Scene, Camera, Vec3} from './engine';
-import {makeDemoCube} from './engine';
-import {makeDemoLightedCube} from './engine';
 import {Pos} from './engine';
 import {queryObjAsync} from './engine';
-import {loadImageAsync} from './engine/utils';
 import PointLight from "./engine/engine/pointlight";
 import DirectLight from "./engine/engine/directlight";
+import {addObjSaver} from "./engine";
+
 import initButtons from './button';
+import saveScreenshot from './screenshot';
 import initLightControl from './lightcontrol';
 
 const canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById('root');
@@ -27,12 +27,12 @@ const fov = 45 * Math.PI / 180;
 const aspect = config.WIDTH / config.HEIGHT;
 const near = 0.1;
 const far = 100.0;
-const pos: Pos = [0, 2, 3];
+const pos: Pos = [0, 0, 0];
 const camera = new Camera(pos, fov, aspect, near, far);
-camera.lookAt([0, -2, 0], [0.0, 1.0, 0.0]);
+camera.lookAt([0, -6, 15], [0.0, 1.0, 0.0]);
 
 // Create scene.
-const scene = new Scene(camera);
+export const scene = new Scene(camera);
 
 // Add point lights.
 const pointLights: PointLight[] = [
@@ -51,6 +51,13 @@ const directLights: DirectLight[] = [
 for (let i = 0; i < directLights.length; i++) {
     scene.addLight(directLights[i]);
 }
+
+queryObjAsync("assets/module/skybox.obj", 50).then(objects => {
+    for (let entry of objects) {
+        scene.addObject(entry);
+        entry.translate([0, 41.45, 0]);
+    }
+});
 
 queryObjAsync("/assets/module/cube.obj", 6).then(cube0 => {
     for (let entry of cube0) {
@@ -198,13 +205,17 @@ const keyController = engine.getKeyEventController();
 const timeController = engine.getTimeEventController();
 
 keyController.addListener('q', () => engine.stop());
+keyController.addListener('w', () => engine.start());
 keyController.enable();
-// timeController.addListener('cameraMove', () => {
-//     pos[0] += 0.01;
-//     pos[1] += 0.01;
-//     camera.setPosition(pos);
-// });
+timeController.addListener('cameraMove', () => {
+    //pos[0] += 0.002;
+    pos[1] -= 0.01;
+    //pos[2] +=0.01;
+    camera.setPosition(pos);
+});
 
 engine.start();
 
 initLightControl(pointLights, directLights);
+
+document.getElementById('screenshot-button').onclick = saveScreenshot;
