@@ -6,9 +6,13 @@
     <noscript>you need to enable JavaScript to use this page.</noscript>
 </head>
 <body id="main-body">
-<canvas id="root" width="1920" height="1080">
-    you need to use a browser supporting canvas to use this page.
-</canvas>
+
+<div class="canvas-div-center">
+    <canvas id="root" width="1920" height="1080">
+        you need to use a browser supporting canvas to use this page.
+    </canvas>
+</div>
+
 <div id="button-frame" class="panel panel-primary">
     <div class="panel-heading">
         <h3 class="panel-title">Control Panel</h3>
@@ -184,6 +188,16 @@
                         <input id="line-light-2-env" type="range" max="1" min="0" step="any" class="form-control">
                     </label>
                 </div>
+            </div>
+        </div>
+
+        <!-- save-obj -->
+        <div id="save-obj" class="col-md-2 panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title">保存 OBJ 文件</h3>
+            </div>
+            <div class="panel-body">
+                <button id="save-obj-button" class="form-control btn btn-primary">保存</button>
             </div>
         </div>
     </div>
