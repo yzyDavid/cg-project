@@ -9,5 +9,53 @@
 <canvas id="root" width="1920" height="1080">
     you need to use a browser supporting canvas to use this page.
 </canvas>
+<div id="button-frame" class="panel panel-primary">
+    <div class="panel-heading">
+        <h3 class="panel-title">Control Panel</h3>
+    </div>
+    <div class="panel-body">
+        <div id="point-light-1" class="col-md-2 panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title">1号点光源</h3>
+            </div>
+            <div class="panel-body">
+                <div>
+                    <h4><span class="label label-default">位置</span></h4>
+                </div>
+                <div>
+                    <label for="point-light-1-x" class="col-md-4">
+                        <input id="point-light-1-x" type="number" class="form-control">
+                    </label>
+                    <label for="point-light-1-y" class="col-md-4">
+                        <input id="point-light-1-y" type="number" class="form-control">
+                    </label>
+                    <label for="point-light-1-z" class="col-md-4">
+                        <input id="point-light-1-z" type="number" class="form-control">
+                    </label>
+                </div>
+                <div>
+                    <h4><span class="label label-danger">R</span></h4>
+                    <label for="point-light-1-r">
+                        <input id="point-light-1-r" type="range" class="form-control">
+                    </label>
+                    <h4><span class="label label-success">G</span></h4>
+                    <label for="point-light-1-g">
+                        <input id="point-light-1-g" type="range" class="form-control">
+                    </label>
+                    <h4><span class="label label-primary">B</span></h4>
+                    <label for="point-light-1-b">
+                        <input id="point-light-1-b" type="range" class="form-control">
+                    </label>
+                </div>
+                <div>
+                    <h4><span class="label label-info">环境光系数</span></h4>
+                    <label for="point-light-1-env">
+                        <input id="point-light-1-env" type="range" class="form-control">
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>
