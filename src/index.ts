@@ -15,6 +15,7 @@ import PointLight from "./engine/engine/pointlight";
 import DirectLight from "./engine/engine/directlight";
 
 import initButtons from './button';
+import saveScreenshot from './screenshot';
 
 const canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById('root');
 canvas.setAttribute('width', String(config.WIDTH));
@@ -190,6 +191,7 @@ const keyController = engine.getKeyEventController();
 const timeController = engine.getTimeEventController();
 
 keyController.addListener('q', () => engine.stop());
+keyController.addListener('w', () => engine.start());
 keyController.enable();
 timeController.addListener('cameraMove', () => {
     //pos[0] += 0.002;
@@ -199,3 +201,5 @@ timeController.addListener('cameraMove', () => {
 });
 
 engine.start();
+
+document.getElementById('screenshot-button').onclick = saveScreenshot;
