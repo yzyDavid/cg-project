@@ -8,15 +8,19 @@ export default class ColliableObject extends Colliable {
 
     constructor(pos: Pos, min: Pos, max: Pos) {
         super(pos, min, max);
+        this.enterCallback = () => {
+            console.log("collision");
+        }
+        this.exitCallback = () => {
+            console.log("collision end");
+        }
     }
 
     onCollisionEnter(collider: Collider, info: Vec3) {
-        console.log("collision");
         this.enterCallback();
     }
 
     onCollisionExit(collider: Collider) {
-        console.log("collision end");
         this.exitCallback();
     }
 
