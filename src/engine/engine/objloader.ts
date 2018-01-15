@@ -1,7 +1,8 @@
 import Material from './material';
-import {Vec3} from './public';
+import {Pos, Vec3} from './public';
 import UniversalObject from './universalobject';
 import {loadImageAsync} from '../utils';
+import Colliableobject from "./colliableobject";
 
 type ObjUrl = string;
 type MtlUrl = string;
@@ -19,11 +20,18 @@ const defaultVT = [
     0, 1
 ];
 
-export default async function queryObjAsync(objUrl: ObjUrl,scale:number): Promise<UniversalObject[]> {
+export default async function queryObjAsync(objUrl: ObjUrl, scale: number): Promise<UniversalObject[]> {
 
-    const loader = new ObjLoader(objUrl,scale);
+    const loader = new ObjLoader(objUrl, scale);
     await loader.initAsync();
     return await loader.getObjAsync();
+}
+
+export async function queryColliableObjAsync(objUrl: ObjUrl, scale: number): Promise<Colliableobject[]> {
+
+    const loader = new ObjLoader(objUrl, scale);
+    await loader.initAsync();
+    return await loader.getColliableObjAsync();
 }
 
 class materialPart {
@@ -31,13 +39,13 @@ class materialPart {
     public vt: number[] = [];
     public positions: number[] = [];
     public indices: number[] = [];
-    public normals:number[]=[];
+    public normals: number[] = [];
     public count: number = 0;
 }
 
 class ObjLoader {
     protected filename: string;
-    protected scale:number;
+    protected scale: number;
 
     protected vertices: Vertex[] = [];
     protected normals: Normal[] = [];
@@ -54,9 +62,9 @@ class ObjLoader {
     protected materialParts: materialPart[] = [];
     protected currentMaterialPart: materialPart;
 
-    constructor(filename: string,scale:number) {
+    constructor(filename: string, scale: number) {
         this.filename = filename;
-        this.scale=scale;
+        this.scale = scale;
     }
 
     async initAsync() {
@@ -83,6 +91,42 @@ class ObjLoader {
             let obj: UniversalObject;
             const img = await loadImageAsync(entry.material.textureFile);
             obj = new UniversalObject([0, 0, 0],
+                entry.positions,
+                entry.normals,
+                entry.indices,
+                material,
+                entry.vt,
+                img
+            );
+            resObjs.push(obj);
+        }
+        return resObjs;
+    }
+
+    async getColliableObjAsync(): Promise<Colliableobject[]> {
+        let resObjs: Colliableobject[] = [];
+        for (let entry of this.materialParts) {
+            let material: Material;
+            if (entry.material == undefined) {
+                material = new Material([-1, -1, -1], [-1, -1, -1], [-1, -1, -1], 30);
+            }
+            else {
+                material = entry.material.changeToMaterial(30);
+            }
+            console.log("materialParts", this.materialParts);
+
+            // TODO: should not be magic number
+            let min: Pos = [1000, 1000, 1000], max: Pos = [-1000, -1000, -1000];
+            for (let i = 0; i < entry.positions.length; i++) {
+                if (min[i % 3] > entry.positions[i % 3]) min[i % 3] = entry.positions[i % 3];
+                if (max[i % 3] < entry.positions[i % 3]) max[i % 3] = entry.positions[i % 3];
+            }
+
+            let obj: Colliableobject;
+            const img = await loadImageAsync(entry.material.textureFile);
+            obj = new Colliableobject([0, 0, 0],
+                min,
+                max,
                 entry.positions,
                 entry.normals,
                 entry.indices,
@@ -232,7 +276,7 @@ class ObjLoader {
             }
         }
 
-        if (face.nIndices[0]==-1) {
+        if (face.nIndices[0] == -1) {
             let v0 = [
                 this.currentMaterialPart.positions[3 * face.vIndices[2]],
                 this.currentMaterialPart.positions[3 * face.vIndices[2] + 1],
