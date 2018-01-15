@@ -30,17 +30,27 @@ camera.lookAt([0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
 // Create scene.
 const scene = new Scene(camera);
 
-// Add a point light.
-const color: Vec3 = [1, 1, 1];
+// Add point lights.
+const white: Vec3 = [1, 1, 1];
 const ambientCoeff: number = 0.2;
-const pointLight = new PointLight(pos, color, ambientCoeff, true);
-// scene.addLight(pointLight);
+const pointLights: PointLight[] = [
+    new PointLight([3.0, 2.0, 5.0], white, 0.2, true),
+    new PointLight([3.0, 2.0, 5.0], white, 0, false),
+    new PointLight([3.0, 2.0, 5.0], white, 0, false),
+]
+for (let i = 0; i < pointLights.length; i++) {
+    scene.addLight(pointLights[i]);
+}
 
-// Add a direct light.
-const direction: Vec3 = [0, 0, -1];
-const directLight = new DirectLight(direction, color, ambientCoeff, true);
-scene.addLight(directLight);
-scene.addLight(directLight);
+// Add direct lights.
+const directLights: DirectLight[] = [
+    new DirectLight([0, -1, 0], white, 0, false),
+    new DirectLight([0, -1, 0], white, 0, false),
+    new DirectLight([0, -1, 0], white, 0, false),
+]
+for (let i = 0; i < directLights.length; i++) {
+    scene.addLight(directLights[i]);
+}
 
 queryObjAsync("/assets/module/cube.obj").then(cube0 => {
     for (let entry of cube0) {
@@ -64,6 +74,10 @@ timeController.addListener('cameraMove', () => {
     pos[0] += 0.01;
     pos[1] += 0.01;
     camera.setPosition(pos);
+    const color = pointLights[0].getColor();
+    // pointLights[0].setColor([color[0] - 0.02, color[1] - 0.02, color[2] - 0.02]);
 });
+
+keyController.addListener('q', () => engine.stop());
 
 engine.start();
