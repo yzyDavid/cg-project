@@ -4,7 +4,7 @@ import {Colliable, Component} from './component';
 import {mat, mat4, vec3} from '../matrix';
 
 export class AABBCollider extends Collider {
-    private static allColliders: AABBCollider[];
+    private static allColliders: AABBCollider[] = [];
 
     private onCollision: AABBCollider[];
 
@@ -25,16 +25,17 @@ export class AABBCollider extends Collider {
         super(pos);
         this.min = min;
         this.max = max;
-        this.pos0 = min;
+        this.pos0 = [min[0], min[1], min[2]];
         this.pos1 = [min[0], min[1], max[2]];
         this.pos2 = [min[0], max[1], min[2]];
         this.pos3 = [min[0], max[1], max[2]];
         this.pos4 = [max[0], min[1], min[2]];
         this.pos5 = [max[0], min[1], max[2]];
         this.pos6 = [max[0], max[1], min[2]];
-        this.pos7 = max;
+        this.pos7 = [max[0], max[1], max[2]];
         //AABBCollider.allColliders.push(this)
         this.added = false;
+        this.onCollision = [];
     }
 
     update(time: number, matrix: mat) {
@@ -48,10 +49,15 @@ export class AABBCollider extends Collider {
                     this.onCollision.push(x);
                     let info = this.getCollisionInfo(x);
                     this.object.onCollisionEnter(x, info);
+                    x.onCollision.push(this);
+                    x.object.onCollisionEnter(this, info);
                 }
                 if (!isCollision && isOnCollision) {
                     this.onCollision.splice(index, 1);
                     this.object.onCollisionExit(x);
+                    index = x.onCollision.indexOf(this);
+                    x.onCollision.splice(index, 1);
+                    x.object.onCollisionExit(this);
                 }
             }
         }

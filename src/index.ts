@@ -13,6 +13,8 @@ import DirectLight from "./engine/engine/directlight";
 import {addObjSaver} from "./engine";
 
 import initButtons from './button';
+import {queryColliableObjAsync} from "./engine/engine/objloader";
+import saveScreenshot from './screenshot';
 
 const canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById('root');
 canvas.setAttribute('width', String(config.WIDTH));
@@ -158,21 +160,17 @@ queryObjAsync("/assets/module/doorframe.obj", 0.035).then(cube0 => {
 // });
 //
 // //茶几
-// queryObjAsync("/assets/module/smalltable.obj", 3).then(cube0 => {
-//     for (let entry of cube0) {
+// queryColliableObjAsync("/assets/module/smalltable.obj", 3).then(entry => {
 //         scene.addObject(entry);
 //         entry.translate([-1.2, -8.5, 5]);
 //         entry.rotate([0, 1, 0], Math.PI * 0.5);
-//     }
 // });
 //
 // //茶壶
-// queryObjAsync("/assets/module/teapot.obj", 0.01).then(cube0 => {
-//     for (let entry of cube0) {
+// queryColliableObjAsync("/assets/module/teapot.obj", 0.01).then(entry => {
 //         scene.addObject(entry);
 //         entry.translate([-1.2, -6.74, 6]);
 //         entry.rotate([0, 1, 0], Math.PI * 0.5);
-//     }
 // });
 //
 // //沙发
@@ -205,6 +203,7 @@ const keyController = engine.getKeyEventController();
 const timeController = engine.getTimeEventController();
 
 keyController.addListener('q', () => engine.stop());
+keyController.addListener('w', () => engine.start());
 keyController.enable();
 timeController.addListener('cameraMove', () => {
     //pos[0] += 0.002;
@@ -214,3 +213,5 @@ timeController.addListener('cameraMove', () => {
 });
 
 engine.start();
+
+document.getElementById('screenshot-button').onclick = saveScreenshot;

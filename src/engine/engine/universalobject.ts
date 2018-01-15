@@ -42,7 +42,7 @@ export default class UniversalObject extends IncolliableObject implements Drawab
         console.debug(this.textureCoords);
     }
 
-    saveObj(name: String) {
+    saveObj(name: string) {
         let output: string = "o " + name + "\n";
         let n = this.vertices.length;
         for (let i = 0; i < n; i = i + 3) {
@@ -60,7 +60,7 @@ export default class UniversalObject extends IncolliableObject implements Drawab
         return output;
     }
 
-    saveMtl(name: String) {
+    saveMtl(name: string) {
         let output: string = "newmtl " + name + "\n";
         if (this.material.getAmbientColor().indexOf(0) == -1)
             output = output + "Ka " + this.material.getAmbientColor()[0] + " " + this.material.getAmbientColor()[1] + " " + this.material.getAmbientColor()[2] + "\n";
@@ -68,7 +68,7 @@ export default class UniversalObject extends IncolliableObject implements Drawab
             output = output + "Kd " + this.material.getDiffuseColor()[0] + " " + this.material.getDiffuseColor()[1] + " " + this.material.getDiffuseColor()[2] + "\n";
         if (this.material.getSpecularColor().indexOf(0) == -1)
             output = output + "Ka " + this.material.getSpecularColor()[0] + " " + this.material.getSpecularColor()[1] + " " + this.material.getSpecularColor()[2] + "\n";
-        if (this.textureImage) output = output + this.textureImage.src;
+        if (this.textureImage) output = output + this.textureImage.src + '\n';
         return output;
     }
 
