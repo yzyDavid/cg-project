@@ -42,8 +42,8 @@ export default class UniversalObject extends IncolliableObject implements Drawab
         console.debug(this.textureCoords);
     }
 
-    saveObj(name: string) {
-        let output: string = "o " + name;
+    saveObj(name: String) {
+        let output: string = "o " + name + "\n";
         let n = this.vertices.length;
         for (let i = 0; i < n; i = i + 3) {
             output = output + "v " + this.vertices[i] + " " + this.vertices[i + 1] + " " + this.vertices[i + 2] + "\n";
@@ -53,16 +53,15 @@ export default class UniversalObject extends IncolliableObject implements Drawab
             output = output + "vt " + this.textureCoords[i] + " " + this.textureCoords[i + 1] + "\n";
         }
         n = this.indices.length;
-        output = output + "usemtl " + ".mtl\n";
+        output = output + "usemtl " + name + ".mtl\n";
         for (let i = 0; i < n; i = i + 3) {
             output = output + "f " + this.indices[i] + "/" + this.indices[i] + " " + this.indices[i + 1] + "/" + this.indices[i + 1] + " " + this.indices[i + 2] + "/" + this.indices[i + 2] + " " + "\n";
         }
-        this.saveMtl(name);
         return output;
     }
 
-    saveMtl(name: string) {
-        let output: string = "newmtl " + name;
+    saveMtl(name: String) {
+        let output: string = "newmtl " + name + "\n";
         if (this.material.getAmbientColor().indexOf(0) == -1)
             output = output + "Ka " + this.material.getAmbientColor()[0] + " " + this.material.getAmbientColor()[1] + " " + this.material.getAmbientColor()[2] + "\n";
         if (this.material.getDiffuseColor().indexOf(0) == -1)
