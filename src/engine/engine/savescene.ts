@@ -12,21 +12,22 @@ export function addObjSaver() {
             if ('saveObj' in obj) {
                 const universalObj = <UniversalObject>(obj as any);
                 istr = index + "";
-                objStr = objStr + universalObj.saveObj(istr);
-                mtlStr = mtlStr + universalObj.saveMtl(istr);
+                objStr = universalObj.saveObj(istr);
+                mtlStr = universalObj.saveMtl(istr);
                 index++;
+                const anchor = document.createElement('a');
+                anchor.download = istr + '.obj';
+                const blob = new Blob([objStr], {type: 'text/plain'});
+                anchor.href = URL.createObjectURL(blob);
+                anchor.click();
+
+                const anchor2 = document.createElement('a');
+                anchor2.download = istr + '.mtl';
+                const blob2 = new Blob([mtlStr], {type: 'text/plain'});
+                anchor2.href = URL.createObjectURL(blob2);
+                anchor2.click();
             }
         });
-        const anchor = document.createElement('a');
-        anchor.download = 'scene.obj';
-        const blob = new Blob([objStr], {type: 'text/plain'});
-        anchor.href = URL.createObjectURL(blob);
-        anchor.click();
 
-        const anchor2 = document.createElement('a');
-        anchor2.download = 'scene.mtl';
-        const blob2 = new Blob([mtlStr], {type: 'text/plain'});
-        anchor2.href = URL.createObjectURL(blob2);
-        anchor2.click();
     };
 }

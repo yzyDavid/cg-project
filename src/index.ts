@@ -66,7 +66,7 @@ queryObjAsync("/assets/module/cube.obj", 6).then(cube0 => {
         entry.translate([0, -2.5, 0]);
     }
 });
-
+//
 // //桌子
 // queryObjAsync("/assets/module/table.obj", 3.2).then(cube0 => {
 //     for (let entry of cube0) {
@@ -83,22 +83,22 @@ queryObjAsync("/assets/module/cube.obj", 6).then(cube0 => {
 //     }
 // });
 //
-//门
-queryObjAsync("/assets/module/door.obj", 0.035).then(cube0 => {
-    for (let entry of cube0) {
-        scene.addObject(entry);
-        entry.translate([1, -8.47, 12]);
-    }
-});
-
-//门框
-queryObjAsync("/assets/module/doorframe.obj", 0.035).then(cube0 => {
-    for (let entry of cube0) {
-        scene.addObject(entry);
-        entry.translate([1, -8.47, 12]);
-    }
-});
-
+// //门
+// queryObjAsync("/assets/module/door.obj", 0.035).then(cube0 => {
+//     for (let entry of cube0) {
+//         scene.addObject(entry);
+//         entry.translate([1, -8.47, 12]);
+//     }
+// });
+//
+// //门框
+// queryObjAsync("/assets/module/doorframe.obj", 0.035).then(cube0 => {
+//     for (let entry of cube0) {
+//         scene.addObject(entry);
+//         entry.translate([1, -8.47, 12]);
+//     }
+// });
+//
 //
 // //垃圾桶
 // queryObjAsync("/assets/module/poubelleInox.obj", 0.024).then(cube0 => {
@@ -214,12 +214,12 @@ const timeController = engine.getTimeEventController();
 keyController.addListener('q', () => engine.stop());
 keyController.addListener('w', () => engine.start());
 keyController.enable();
-timeController.addListener('cameraMove', () => {
-    //pos[0] += 0.002;
-    pos[1] -= 0.01;
-    //pos[2] +=0.01;
-    camera.setPosition(pos);
-});
+// timeController.addListener('cameraMove', () => {
+//     //pos[0] += 0.002;
+//     pos[1] -= 0.01;
+//     //pos[2] +=0.01;
+//     camera.setPosition(pos);
+// });
 
 engine.start();
 
