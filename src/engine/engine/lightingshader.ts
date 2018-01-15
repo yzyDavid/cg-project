@@ -59,6 +59,8 @@ export default class LightingShader extends Shader {
 
         for (let i = 0, len = lights.length; i < len; i++) {
             const light = lights[i];
+            if (!light.isOn())
+                continue;
             if (light instanceof PointLight) {
                 if (pointLightCnt >= NUM_POINT_LIGHTS)
                     continue;

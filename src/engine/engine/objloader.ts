@@ -71,9 +71,9 @@ class ObjLoader {
         const query = await fetch(this.filename);
         const content: ObjContent = await query.text();
         await this.OBJDocParserAsync(content);
-        console.log(this.normals);
-        console.log(this.vertices);
-        console.log(this.object);
+        // console.log(this.normals);
+        // console.log(this.vertices);
+        // console.log(this.object);
     }
 
     async getObjAsync(): Promise<UniversalObject[]> {
@@ -86,7 +86,7 @@ class ObjLoader {
             else {
                 material = entry.material.changeToMaterial(30);
             }
-            console.log("materialParts", entry);
+            // console.log("materialParts", entry);
 
             let obj: UniversalObject;
             const img = await loadImageAsync(entry.material.textureFile);
@@ -153,7 +153,7 @@ class ObjLoader {
         sp = new StringParser();
 
         while ((line = lines[tempIndex++]) != null) {
-            console.debug(line);
+            // console.debug(line);
             sp.init(line);
             let command = sp.getWord();
             if (command == null) continue;
@@ -428,9 +428,9 @@ class namedMaterial {
 
     constructor(name: string) {
         this.name = name;
-        this.Ka = new Color(-1, -1, -1, 1);
-        this.Kd = new Color(-1, -1, -1, 1);
-        this.Ks = new Color(-1, -1, -1, 1);
+        this.Ka = new Color(0.2, 0.2, 0.2, 1);
+        this.Kd = new Color(0.8, 0.8, 0.8, 1);
+        this.Ks = new Color(0, 0, 0, 1);
         this.d = 1;
     }
 

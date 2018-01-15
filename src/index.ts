@@ -15,6 +15,7 @@ import {addObjSaver} from "./engine";
 import initButtons from './button';
 import {queryColliableObjAsync} from "./engine/engine/objloader";
 import saveScreenshot from './screenshot';
+import initLightControl from './lightcontrol';
 
 const canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById('root');
 canvas.setAttribute('width', String(config.WIDTH));
@@ -34,15 +35,23 @@ camera.lookAt([0, -6, 15], [0.0, 1.0, 0.0]);
 // Create scene.
 export const scene = new Scene(camera);
 
-// Add a point light.
-const color: Vec3 = [1, 1, 1];
-const ambientCoeff: number = 0.2;
-const pointLight = new PointLight(pos, color, ambientCoeff, true);
-scene.addLight(pointLight);
+// Add point lights.
+const pointLights: PointLight[] = [
+    new PointLight([3.0, 2.0, 5.0], [1, 1, 1], 0.2, true),
+    new PointLight([3.0, 2.0, 5.0], [1, 1, 1], 0, false),
+]
+for (let i = 0; i < pointLights.length; i++) {
+    scene.addLight(pointLights[i]);
+}
 
-// Add a direct light.
-const direction: Vec3 = [0, 0, -1];
-const directLight = new DirectLight(direction, color, ambientCoeff, true);
+// Add direct lights.
+const directLights: DirectLight[] = [
+    new DirectLight([0, -1, 0], [1, 1, 1], 0, true),
+    new DirectLight([0, -1, 0], [1, 1, 1], 0, false),
+]
+for (let i = 0; i < directLights.length; i++) {
+    scene.addLight(directLights[i]);
+}
 
 queryObjAsync("assets/module/skybox.obj", 50).then(objects => {
     for (let entry of objects) {
@@ -213,5 +222,7 @@ timeController.addListener('cameraMove', () => {
 });
 
 engine.start();
+
+initLightControl(pointLights, directLights);
 
 document.getElementById('screenshot-button').onclick = saveScreenshot;
