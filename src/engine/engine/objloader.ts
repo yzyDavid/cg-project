@@ -513,20 +513,6 @@ class Normal {
         this.z = z;
     }
 
-    parallel = function (n2: Normal) {
-        let v1 = new Float32Array(3);
-        v1[0] = this.x;
-        v1[1] = this.y;
-        v1[2] = this.z;
-        let v2 = new Float32Array(3);
-        v2[0] = n2.x;
-        v2[0] = n2.y;
-        v2[2] = n2.z;
-        let V1 = new Vector3(v1);
-        let V2 = new Vector3(v2);
-        return V1.parallel(V2);
-    }
-
 }
 
 class StringParser {
