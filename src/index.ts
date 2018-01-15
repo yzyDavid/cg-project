@@ -14,9 +14,13 @@ import {loadImageAsync} from './engine/utils';
 import PointLight from "./engine/engine/pointlight";
 import DirectLight from "./engine/engine/directlight";
 
+import initButtons from './button';
+
 const canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById('root');
 canvas.setAttribute('width', String(config.WIDTH));
 canvas.setAttribute('height', String(config.HEIGHT));
+
+Promise.resolve(() => initButtons()).then();
 
 // Initialize camera.
 const fov = 45 * Math.PI / 180;
