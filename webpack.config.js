@@ -50,6 +50,30 @@ module.exports = {
                 ]
             },
             {
+                test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
+                use: {
+                    loader: "file-loader"
+                }
+            },
+            {
+                test: /\.(woff|woff2)$/,
+                use: {
+                    loader: "url-loader?prefix=font/&limit=5000"
+                }
+            },
+            {
+                test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
+                use: {
+                    loader: "url-loader?limit=10000&mimetype=application/octet-stream"
+                }
+            },
+            {
+                test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
+                use: {
+                    loader: "url-loader?limit=10000&mimetype=image/svg+xml"
+                }
+            },
+            {
                 test: /\.png$/,
                 use: {
                     loader: 'url-loader?limit=10000&name=img/[name].[ext]'
