@@ -118,9 +118,9 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
     updateChildren(time: number, matrix: mat = mat4.identity()) {
         matrix = mat4.multiply(this.modelMatrix, matrix);
         this.forEach((obj) => {
-            if ('draw' in obj) {
-                obj.update(time, matrix);
-            }
+            //if ('draw' in obj) {
+            obj.update(time, matrix);
+            //}
             obj.updateChildren(time, matrix);
         })
     }
@@ -238,8 +238,8 @@ export abstract class Colliable extends Component {
         this.aabb.update(time, mat4.multiply(this.modelMatrix, matrix));
     }
 
-    private revoke() {
-        // TODO: revoke the update operation
+    protected revoke() {
+        // finished: revoke the update operation
         let remove = mat4.identity();
         mat4.invert(remove, this.lastMove);
         this.position = <Pos>vec3.transformMat4(this.position, remove);

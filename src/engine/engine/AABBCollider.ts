@@ -49,10 +49,15 @@ export class AABBCollider extends Collider {
                     this.onCollision.push(x);
                     let info = this.getCollisionInfo(x);
                     this.object.onCollisionEnter(x, info);
+                    x.onCollision.push(this);
+                    x.object.onCollisionEnter(this, info);
                 }
                 if (!isCollision && isOnCollision) {
                     this.onCollision.splice(index, 1);
                     this.object.onCollisionExit(x);
+                    index = x.onCollision.indexOf(this);
+                    x.onCollision.splice(index, 1);
+                    x.object.onCollisionExit(this);
                 }
             }
         }
