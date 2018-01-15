@@ -118,8 +118,8 @@ class ObjLoader {
             // TODO: should not be magic number
             let min: Pos = [1000, 1000, 1000], max: Pos = [-1000, -1000, -1000];
             for (let i = 0; i < entry.positions.length; i++) {
-                if (min[i % 3] > entry.positions[i % 3]) min[i % 3] = entry.positions[i % 3];
-                if (max[i % 3] < entry.positions[i % 3]) max[i % 3] = entry.positions[i % 3];
+                if (min[i % 3] > entry.positions[i]) min[i % 3] = entry.positions[i];
+                if (max[i % 3] < entry.positions[i]) max[i % 3] = entry.positions[i];
             }
 
             let obj: Colliableobject;
