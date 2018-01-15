@@ -10,10 +10,10 @@ export default class ColliableObject extends Colliable {
         super(pos, min, max);
         this.enterCallback = () => {
             console.log("collision");
-        }
+        };
         this.exitCallback = () => {
             console.log("collision end");
-        }
+        };
     }
 
     onCollisionEnter(collider: Collider, info: Vec3) {
