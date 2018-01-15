@@ -80,13 +80,13 @@ class ObjLoader {
         let resObjs: UniversalObject[] = [];
         for (let entry of this.materialParts) {
             let material: Material;
-            if (entry.material == undefined) {
-                material = new Material([-1, -1, -1], [-1, -1, -1], [-1, -1, -1], 30);
+            if (entry.material.Kd.r < 0) {
+                material = new Material([-1, -1, -1], [-1, -1, -1], [-1, -1, -1], -1);
             }
             else {
                 material = entry.material.changeToMaterial(30);
             }
-            console.log("materialParts", this.materialParts);
+            console.log("materialParts", entry);
 
             let obj: UniversalObject;
             const img = await loadImageAsync(entry.material.textureFile);
@@ -170,15 +170,6 @@ class ObjLoader {
                     let mtl = new MTLDoc();
                     this.onReadMTLFile(content, mtl);
                     continue;
-
-                // TODO: 默认一个obj文件里只有一个obj，默认一个obj只有一个mtl（暂时
-                // case 'o':
-                // case 'g':   // Read Object name
-                //     let object = this.parseObjectName(sp);
-                //     this.objects.push(object);
-                //     currentObject = object;
-                //     //这是一个浅复制，可以简单地认为和object指向同一块内容
-                //     continue; // Go to the next line
                 case 'v':   // Read vertex
                     let vertex = ObjLoader.parseVertex(sp, this.scale);
                     this.vertices.push(vertex);
@@ -201,7 +192,6 @@ class ObjLoader {
                     this.currentMaterialPart.material = this.material[this.useMaterial];
                     continue;
                 case 'f':
-                    //可以接受两种情况：1.只有mtl没有纹理，可以多种mtl 2.只有mtl没有纹理，只能有一种纹理
                     if (!mtlUsed) {
                         mtlUsed = true;
                         this.currentMaterialPart = new materialPart();
@@ -438,9 +428,9 @@ class namedMaterial {
 
     constructor(name: string) {
         this.name = name;
-        this.Ka = new Color(0.2, 0.2, 0.2, 1);
-        this.Kd = new Color(0.8, 0.8, 0.8, 1);
-        this.Ks = new Color(0, 0, 0, 1);
+        this.Ka = new Color(-1, -1, -1, 1);
+        this.Kd = new Color(-1, -1, -1, 1);
+        this.Ks = new Color(-1, -1, -1, 1);
         this.d = 1;
     }
 

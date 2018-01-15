@@ -12,6 +12,7 @@ import Light from './engine/light';
 import PointLight from './engine/pointlight';
 
 import {Component} from './engine/component';
+import {addObjSaver} from "./engine/savescene";
 
 import {makeDemoCube} from './engine/geometryobject';
 import {makeDemoLightedCube} from './engine/lightedobject';
@@ -26,3 +27,4 @@ export {makeDemoCube};
 export {makeDemoLightedCube};
 export {queryObjAsync};
 export {UniversalObject};
+export {addObjSaver};

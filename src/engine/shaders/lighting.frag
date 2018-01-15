@@ -73,8 +73,7 @@ void main() {
             result += CalDirectLight(uDirectLights[i], vFragPos, vFragNormal, cameraDir);
         }
     }
-
-	gl_FragColor = vec4(result, 1.0);
+    if (uMaterial.shininess<0.0) gl_FragColor=texture2D(uMaterial.diffuseMap, vFragTexCoord); else gl_FragColor = vec4(result, 1.0);
 }
 
 vec3 CalPointLight(PointLight light, vec3 fragPos, vec3 fragNormal, vec3 cameraDir) {
