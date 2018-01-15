@@ -103,9 +103,9 @@ export default class Engine {
 
         scene.forEach((obj) => {
             // Here may be some mistakes that some object is no drawable but movable
-            if ('draw' in obj) {
+            //if ('draw' in obj) {
                 obj.update(deltaTime);
-            }
+            //}
             obj.updateChildren(deltaTime);
         });
 
