@@ -91,3 +91,21 @@ Ka 0.8 0.8 0.8
 Kd 0.8 0.8 0.8
 Ks 0.1 0.1 0.1
 picture2.jpg
+
+newmtl back
+back.jpg
+
+newmtl front
+front.jpg
+
+newmtl left
+left.jpg
+
+newmtl right
+right.jpg
+
+newmtl up
+top.jpg
+
+newmtl down
+down.jpg

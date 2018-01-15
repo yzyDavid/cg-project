@@ -23,9 +23,9 @@ const fov = 45 * Math.PI / 180;
 const aspect = config.WIDTH / config.HEIGHT;
 const near = 0.1;
 const far = 100.0;
-const pos: Pos = [5, 0, -9];
+const pos: Pos = [0, 0, 0];
 const camera = new Camera(pos, fov, aspect, near, far);
-camera.lookAt([-6, 0, 12], [0.0, 1.0, 0.0]);
+camera.lookAt([0, -6, 15], [0.0, 1.0, 0.0]);
 
 // Create scene.
 const scene = new Scene(camera);
@@ -39,6 +39,13 @@ scene.addLight(pointLight);
 // Add a direct light.
 const direction: Vec3 = [0, 0, -1];
 const directLight = new DirectLight(direction, color, ambientCoeff, true);
+
+queryObjAsync("assets/module/skybox.obj", 50).then(objects => {
+    for (let entry of objects) {
+        scene.addObject(entry);
+        entry.translate([0, 41.45, 0]);
+    }
+});
 
 queryObjAsync("/assets/module/cube.obj", 6).then(cube0 => {
     for (let entry of cube0) {
@@ -63,13 +70,13 @@ queryObjAsync("/assets/module/chair.obj", 4.4).then(cube0 => {
     }
 });
 
-//门
-queryObjAsync("/assets/module/door.obj", 0.035).then(cube0 => {
-    for (let entry of cube0) {
-        scene.addObject(entry);
-        entry.translate([1, -8.47, 12]);
-    }
-});
+// //门
+// queryObjAsync("/assets/module/door.obj", 0.035).then(cube0 => {
+//     for (let entry of cube0) {
+//         scene.addObject(entry);
+//         entry.translate([1, -8.47, 12]);
+//     }
+// });
 
 //垃圾桶
 queryObjAsync("/assets/module/poubelleInox.obj", 0.024).then(cube0 => {
@@ -171,7 +178,6 @@ queryObjAsync("/assets/module/ceilingFan.obj", 0.06).then(cube0 => {
     for (let entry of cube0) {
         scene.addObject(entry);
         entry.translate([-2, 1.5, 0]);
-        //entry.rotate([0,1,0],Math.PI*0.5);
     }
 });
 
