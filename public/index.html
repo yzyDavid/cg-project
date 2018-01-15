@@ -14,6 +14,8 @@
         <h3 class="panel-title">Control Panel</h3>
     </div>
     <div class="panel-body">
+
+        <!-- point-light-1 -->
         <div id="point-light-1" class="col-md-2 panel panel-info">
             <div class="panel-heading">
                 <h3 class="panel-title">1号点光源</h3>
@@ -36,21 +38,150 @@
                 <div>
                     <h4><span class="label label-danger">R</span></h4>
                     <label for="point-light-1-r">
-                        <input id="point-light-1-r" type="range" class="form-control">
+                        <input id="point-light-1-r" type="range" max="255" min="0" step="1" class="form-control">
                     </label>
                     <h4><span class="label label-success">G</span></h4>
                     <label for="point-light-1-g">
-                        <input id="point-light-1-g" type="range" class="form-control">
+                        <input id="point-light-1-g" type="range" max="255" min="0" step="1" class="form-control">
                     </label>
                     <h4><span class="label label-primary">B</span></h4>
                     <label for="point-light-1-b">
-                        <input id="point-light-1-b" type="range" class="form-control">
+                        <input id="point-light-1-b" type="range" max="255" min="0" step="1" class="form-control">
                     </label>
                 </div>
                 <div>
                     <h4><span class="label label-info">环境光系数</span></h4>
                     <label for="point-light-1-env">
-                        <input id="point-light-1-env" type="range" class="form-control">
+                        <input id="point-light-1-env" type="range" max="1" min="0" step="any" class="form-control">
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- point-light-2 -->
+        <div id="point-light-2" class="col-md-2 panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title">2号点光源</h3>
+            </div>
+            <div class="panel-body">
+                <div>
+                    <h4><span class="label label-default">位置</span></h4>
+                </div>
+                <div>
+                    <label for="point-light-2-x" class="col-md-4">
+                        <input id="point-light-2-x" type="number" class="form-control">
+                    </label>
+                    <label for="point-light-2-y" class="col-md-4">
+                        <input id="point-light-2-y" type="number" class="form-control">
+                    </label>
+                    <label for="point-light-2-z" class="col-md-4">
+                        <input id="point-light-2-z" type="number" class="form-control">
+                    </label>
+                </div>
+                <div>
+                    <h4><span class="label label-danger">R</span></h4>
+                    <label for="point-light-2-r">
+                        <input id="point-light-2-r" type="range" max="255" min="0" step="1" class="form-control">
+                    </label>
+                    <h4><span class="label label-success">G</span></h4>
+                    <label for="point-light-2-g">
+                        <input id="point-light-2-g" type="range" max="255" min="0" step="1" class="form-control">
+                    </label>
+                    <h4><span class="label label-primary">B</span></h4>
+                    <label for="point-light-2-b">
+                        <input id="point-light-2-b" type="range" max="255" min="0" step="1" class="form-control">
+                    </label>
+                </div>
+                <div>
+                    <h4><span class="label label-info">环境光系数</span></h4>
+                    <label for="point-light-2-env">
+                        <input id="point-light-2-env" type="range" max="1" min="0" step="any" class="form-control">
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- line-light-1 -->
+        <div id="line-light-1" class="col-md-2 panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title">1号线光源</h3>
+            </div>
+            <div class="panel-body">
+                <div>
+                    <h4><span class="label label-default">方向</span></h4>
+                </div>
+                <div>
+                    <label for="line-light-1-x" class="col-md-4">
+                        <input id="line-light-1-x" type="number" class="form-control">
+                    </label>
+                    <label for="line-light-1-y" class="col-md-4">
+                        <input id="line-light-1-y" type="number" class="form-control">
+                    </label>
+                    <label for="line-light-1-z" class="col-md-4">
+                        <input id="line-light-1-z" type="number" class="form-control">
+                    </label>
+                </div>
+                <div>
+                    <h4><span class="label label-danger">R</span></h4>
+                    <label for="line-light-1-r">
+                        <input id="line-light-1-r" type="range" max="255" min="0" step="1" class="form-control">
+                    </label>
+                    <h4><span class="label label-success">G</span></h4>
+                    <label for="line-light-1-g">
+                        <input id="line-light-1-g" type="range" max="255" min="0" step="1" class="form-control">
+                    </label>
+                    <h4><span class="label label-primary">B</span></h4>
+                    <label for="line-light-1-b">
+                        <input id="line-light-1-b" type="range" max="255" min="0" step="1" class="form-control">
+                    </label>
+                </div>
+                <div>
+                    <h4><span class="label label-info">环境光系数</span></h4>
+                    <label for="line-light-1-env">
+                        <input id="line-light-1-env" type="range" max="1" min="0" step="any" class="form-control">
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- line-light-2 -->
+        <div id="line-light-2" class="col-md-2 panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title">2号线光源</h3>
+            </div>
+            <div class="panel-body">
+                <div>
+                    <h4><span class="label label-default">方向</span></h4>
+                </div>
+                <div>
+                    <label for="line-light-2-x" class="col-md-4">
+                        <input id="line-light-2-x" type="number" class="form-control">
+                    </label>
+                    <label for="line-light-2-y" class="col-md-4">
+                        <input id="line-light-2-y" type="number" class="form-control">
+                    </label>
+                    <label for="line-light-2-z" class="col-md-4">
+                        <input id="line-light-2-z" type="number" class="form-control">
+                    </label>
+                </div>
+                <div>
+                    <h4><span class="label label-danger">R</span></h4>
+                    <label for="line-light-2-r">
+                        <input id="line-light-2-r" type="range" max="255" min="0" step="1" class="form-control">
+                    </label>
+                    <h4><span class="label label-success">G</span></h4>
+                    <label for="line-light-2-g">
+                        <input id="line-light-2-g" type="range" max="255" min="0" step="1" class="form-control">
+                    </label>
+                    <h4><span class="label label-primary">B</span></h4>
+                    <label for="line-light-2-b">
+                        <input id="line-light-2-b" type="range" max="255" min="0" step="1" class="form-control">
+                    </label>
+                </div>
+                <div>
+                    <h4><span class="label label-info">环境光系数</span></h4>
+                    <label for="line-light-2-env">
+                        <input id="line-light-2-env" type="range" max="1" min="0" step="any" class="form-control">
                     </label>
                 </div>
             </div>
