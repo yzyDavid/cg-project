@@ -19,9 +19,9 @@ const defaultVT = [
     0, 1
 ];
 
-export default async function queryObjAsync(objUrl: ObjUrl): Promise<UniversalObject[]> {
+export default async function queryObjAsync(objUrl: ObjUrl,scale:number): Promise<UniversalObject[]> {
 
-    const loader = new ObjLoader(objUrl);
+    const loader = new ObjLoader(objUrl,scale);
     await loader.initAsync();
     return await loader.getObjAsync();
 }
@@ -37,6 +37,7 @@ class materialPart {
 
 class ObjLoader {
     protected filename: string;
+    protected scale:number;
 
     protected vertices: Vertex[] = [];
     protected normals: Normal[] = [];
@@ -53,8 +54,9 @@ class ObjLoader {
     protected materialParts: materialPart[] = [];
     protected currentMaterialPart: materialPart;
 
-    constructor(filename: string) {
+    constructor(filename: string,scale:number) {
         this.filename = filename;
+        this.scale=scale;
     }
 
     async initAsync() {
@@ -133,7 +135,7 @@ class ObjLoader {
                 //     //这是一个浅复制，可以简单地认为和object指向同一块内容
                 //     continue; // Go to the next line
                 case 'v':   // Read vertex
-                    let vertex = ObjLoader.parseVertex(sp, SCALE);
+                    let vertex = ObjLoader.parseVertex(sp, this.scale);
                     this.vertices.push(vertex);
                     continue; // Go to the next line
                 case 'vn':   // Read normal
@@ -163,7 +165,7 @@ class ObjLoader {
                     this.object.push(face);
                     continue; // Go to the next line
                 case 'vt':
-                    let VTVertex = ObjLoader.parseVertex(sp, SCALE);
+                    let VTVertex = ObjLoader.parseVertex(sp, this.scale);
                     this.textureVt.push(VTVertex);
             }
         }
