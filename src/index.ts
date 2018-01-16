@@ -34,7 +34,7 @@ const aspect = config.WIDTH / config.HEIGHT;
 const near = 0.1;
 const far = 100.0;
 const pos: Pos = [0, 0, 0];
-const look: Vec3 = [0, -6, 15];
+const look: Vec3 = [0, 0, 1];
 let up: Vec3 = [0.0, 1.0, 0.0];
 let viewX: Vec3 = <Vec3>vec3.normalize(vec3.cross(look, up));
 let viewZ: Vec3 = <Vec3>vec3.normalize(look);
@@ -288,7 +288,7 @@ keyController.addListener('s', () => {
     camera.update(0);
     camera.lookAt(look, up);
 });
-keyController.addListener('a', () => {
+keyController.addListener('d', () => {
     if (!camera.xPosMovable && viewX[0] < 0) return;
     if (!camera.xNegMovable && viewX[0] > 0) return;
     if (!camera.yPosMovable && viewX[1] < 0) return;
@@ -305,7 +305,7 @@ keyController.addListener('a', () => {
     camera.update(0);
     camera.lookAt(look, up);
 });
-keyController.addListener('d', () => {
+keyController.addListener('a', () => {
     if (!camera.xPosMovable && viewX[0] > 0) return;
     if (!camera.xNegMovable && viewX[0] < 0) return;
     if (!camera.yPosMovable && viewX[1] > 0) return;
@@ -346,8 +346,27 @@ keyController.enable();
 
 
 mouseController.addListener('move', 'mousemove', (e: MouseEvent) => {
-    console.log('x', e.movementX);
-    console.log('y', e.movementY);
+    if (e.clientX - document.getElementById("root").offsetLeft < 0
+        || e.clientX - document.getElementById("root").offsetLeft > document.getElementById("root").offsetWidth) return;
+    if (e.clientY > document.getElementById("root").offsetHeight) return;
+
+    let x = e.clientX - document.getElementById("root").offsetLeft;
+    let y = e.clientY;
+    let angularX = (540 - x) / 1080 * Math.PI * 2;
+    let angularY = (y - 360) / 720 * Math.PI;
+    let move = mat4.identity();
+    move = mat4.rotate(move, angularX, [0, 1, 0]);
+    move = mat4.rotate(move, angularY, [1, 0, 0]);
+    viewZ = <Vec3>vec3.transformMat4([0, 0, 1], move);
+    up = <Vec3>vec3.transformMat4([0, 1, 0], move);
+    viewX = <Vec3>vec3.transformMat4([1, 0, 0], move);
+    viewY = up;
+    look[0] = pos[0] + viewZ[0];
+    look[1] = pos[1] + viewZ[1];
+    look[2] = pos[2] + viewZ[2];
+    camera.lookAt(look, up);
+
+    /*
     let x = e.movementX, y = e.movementY;
     let angularX = -x / 1080 * Math.PI;
     let angularY = -y / 1080 * Math.PI / 2;
@@ -362,6 +381,7 @@ mouseController.addListener('move', 'mousemove', (e: MouseEvent) => {
     look[1] = pos[1] + viewZ[1];
     look[2] = pos[2] + viewZ[2];
     camera.lookAt(look, up);
+    */
 });
 mouseController.enable();
 
@@ -369,10 +389,10 @@ camera.setEnterListener((c: Collider, info: Vec3) => {
 
     if (info[0] == 1) camera.xNegMovable = false;
     if (info[0] == -1) camera.xPosMovable = false;
-    if (info[1] == 1) camera.yPosMovable = false;
-    if (info[1] == -1) camera.yNegMovable = false;
-    if (info[2] == 1) camera.zPosMovable = false;
-    if (info[2] == -1) camera.zNegMovable = false;
+    if (info[1] == 1) camera.yNegMovable= false;
+    if (info[1] == -1) camera.yPosMovable = false;
+    if (info[2] == 1) camera.zNegMovable = false;
+    if (info[2] == -1) camera.zPosMovable = false;
 
     /*
         let x = camera.lastMove[12], y = camera.lastMove[13], z = camera.lastMove[14];
