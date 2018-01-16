@@ -17,6 +17,8 @@ export default class Camera extends ColliableObject {
 
     public xPosMovable: boolean;
     public xNegMovable: boolean;
+    public yPosMovable: boolean;
+    public yNegMovable: boolean;
     public zPosMovable: boolean;
     public zNegMovable: boolean;
 
@@ -29,6 +31,8 @@ export default class Camera extends ColliableObject {
         this.lookAt([0, 0, -1], [0, 1, 0]);
         this.xPosMovable = true;
         this.xNegMovable = true;
+        this.yPosMovable = true;
+        this.yNegMovable = true;
         this.zPosMovable = true;
         this.zNegMovable = true;
     }

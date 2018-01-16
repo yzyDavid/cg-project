@@ -253,7 +253,12 @@ const mouseController = engine.getMouseEventController();
 keyController.addListener('q', () => engine.stop());
 keyController.addListener('e', () => engine.start());
 keyController.addListener('w', () => {
-    if (!camera.zPosMovable) return;
+    if (!camera.xPosMovable && viewZ[0] > 0) return;
+    if (!camera.xNegMovable && viewZ[0] < 0) return;
+    if (!camera.yPosMovable && viewZ[1] > 0) return;
+    if (!camera.yNegMovable && viewZ[1] < 0) return;
+    if (!camera.zPosMovable && viewZ[2] > 0) return;
+    if (!camera.zNegMovable && viewZ[2] < 0) return;
     pos[0] += 0.1 * viewZ[0];
     pos[1] += 0.1 * viewZ[1];
     pos[2] += 0.1 * viewZ[2];
@@ -267,7 +272,12 @@ keyController.addListener('w', () => {
     camera.lookAt(look, up);
 });
 keyController.addListener('s', () => {
-    if (!camera.zNegMovable) return;
+    if (!camera.xPosMovable && viewZ[0] < 0) return;
+    if (!camera.xNegMovable && viewZ[0] > 0) return;
+    if (!camera.yPosMovable && viewZ[1] < 0) return;
+    if (!camera.yNegMovable && viewZ[1] > 0) return;
+    if (!camera.zPosMovable && viewZ[2] < 0) return;
+    if (!camera.zNegMovable && viewZ[2] > 0) return;
     pos[0] -= 0.1 * viewZ[0];
     pos[1] -= 0.1 * viewZ[1];
     pos[2] -= 0.1 * viewZ[2];
@@ -279,7 +289,12 @@ keyController.addListener('s', () => {
     camera.lookAt(look, up);
 });
 keyController.addListener('a', () => {
-    if (!camera.xNegMovable) return;
+    if (!camera.xPosMovable && viewX[0] < 0) return;
+    if (!camera.xNegMovable && viewX[0] > 0) return;
+    if (!camera.yPosMovable && viewX[1] < 0) return;
+    if (!camera.yNegMovable && viewX[1] > 0) return;
+    if (!camera.zPosMovable && viewX[2] < 0) return;
+    if (!camera.zNegMovable && viewX[2] > 0) return;
     pos[0] -= 0.1 * viewX[0];
     pos[1] -= 0.1 * viewX[1];
     pos[2] -= 0.1 * viewX[2];
@@ -291,7 +306,12 @@ keyController.addListener('a', () => {
     camera.lookAt(look, up);
 });
 keyController.addListener('d', () => {
-    if (!camera.xPosMovable) return;
+    if (!camera.xPosMovable && viewX[0] > 0) return;
+    if (!camera.xNegMovable && viewX[0] < 0) return;
+    if (!camera.yPosMovable && viewX[1] > 0) return;
+    if (!camera.yNegMovable && viewX[1] < 0) return;
+    if (!camera.zPosMovable && viewX[2] > 0) return;
+    if (!camera.zNegMovable && viewX[2] < 0) return;
     pos[0] += 0.1 * viewX[0];
     pos[1] += 0.1 * viewX[1];
     pos[2] += 0.1 * viewX[2];
@@ -346,27 +366,39 @@ mouseController.addListener('move', 'mousemove', (e: MouseEvent) => {
 mouseController.enable();
 
 camera.setEnterListener((c: Collider, info: Vec3) => {
-    let x = camera.lastMove[12], y = camera.lastMove[13], z = camera.lastMove[14];
-    let zDir = vec3.cross(viewZ, [x, y, z]);
-    if (Math.abs(zDir[0]) > EPSILON || Math.abs(zDir[1]) > EPSILON || Math.abs(zDir[2]) > EPSILON) {
-        if (x * viewX[0] > EPSILON || y * viewX[1] > EPSILON || z * viewX[2] > EPSILON) {
-            camera.xPosMovable = false;
+
+    if (info[0] == 1) camera.xNegMovable = false;
+    if (info[0] == -1) camera.xPosMovable = false;
+    if (info[1] == 1) camera.yPosMovable = false;
+    if (info[1] == -1) camera.yNegMovable = false;
+    if (info[2] == 1) camera.zPosMovable = false;
+    if (info[2] == -1) camera.zNegMovable = false;
+
+    /*
+        let x = camera.lastMove[12], y = camera.lastMove[13], z = camera.lastMove[14];
+        let zDir = vec3.cross(viewZ, [x, y, z]);
+        if (Math.abs(zDir[0]) > EPSILON || Math.abs(zDir[1]) > EPSILON || Math.abs(zDir[2]) > EPSILON) {
+            if (x * viewX[0] > EPSILON || y * viewX[1] > EPSILON || z * viewX[2] > EPSILON) {
+                camera.xPosMovable = false;
+            } else {
+                camera.xNegMovable = false;
+            }
         } else {
-            camera.xNegMovable = false;
+            if (x * viewZ[0] > EPSILON || y * viewZ[1] > EPSILON || z * viewZ[2] > EPSILON) {
+                camera.zPosMovable = false;
+            } else {
+                camera.zNegMovable = false;
+            }
         }
-    } else {
-        if (x * viewZ[0] > EPSILON || y * viewZ[1] > EPSILON || z * viewZ[2] > EPSILON) {
-            camera.zPosMovable = false;
-        } else {
-            camera.zNegMovable = false;
-        }
-    }
+        */
     console.log("collision");
 });
 
 camera.setExitListener(() => {
     camera.xPosMovable = true;
     camera.xNegMovable = true;
+    camera.yPosMovable = true;
+    camera.yNegMovable = true;
     camera.zPosMovable = true;
     camera.zNegMovable = true;
     console.log("collision end");

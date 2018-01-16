@@ -70,6 +70,8 @@ export class AABBCollider extends Collider {
     }
 
     private static getAxisInfo(minA: number, maxA: number, minB: number, maxB: number) {
+        if (minA >= minB && maxA <= maxB) return 0;
+        if (minB >= minA && maxB <= maxA) return 0;
         if (minA >= minB && minA <= maxB) return 1;
         if (minB >= minA && minB <= maxA) return -1;
         return 0;
