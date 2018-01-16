@@ -23,7 +23,7 @@ export default class Camera extends ColliableObject {
     public zNegMovable: boolean;
 
     constructor(pos: Pos, fieldOfView: number, aspect: number, near: number, far: number) {
-        super(pos, [-1, -1, -1], [1, 1, 1]);
+        super(pos, [-0.5, -0.5, -0.5], [0.5, 0.5, 0.5]);
         this.fieldOfView = fieldOfView;
         this.aspect = aspect;
         this.near = near;

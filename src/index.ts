@@ -17,9 +17,7 @@ import initButtons from './button';
 import {queryColliableObjAsync} from "./engine/engine/objloader";
 import saveScreenshot from './screenshot';
 import initLightControl from './lightcontrol';
-import {cross} from "./engine/matrix/vec3";
 import {Collider} from "./engine/engine/collider";
-import ColliableObject from "./engine/engine/colliableobject";
 import {Barrier} from "./engine/engine/component";
 
 const canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById('root');
@@ -79,8 +77,6 @@ queryObjAsync("/assets/module/cube.obj", 6).then(cube0 => {
     scene.addObject(new Barrier([0, 0, 0], [6, -8.5, -12], [6.1, 3.5, 12]));
     scene.addObject(new Barrier([0, 0, 0], [-6.1, -8.5, -12], [-6, 3.5, 12]));
     scene.addObject(new Barrier([0, 0, 0], [-6, -8.5, -12.1], [6, 3.5, -12]));
-    //scene.addObject(new Barrier([0, 0, 0], [-6, -8.5, 12], [6, 3.5, 12.1]));
-
     scene.addObject(new Barrier([0, 0, 0], [-6, -8.5, 12], [-1.8, 3.5, 12.1]));
     scene.addObject(new Barrier([0, 0, 0], [1.1, -8.5, 12], [6, 3.5, 12.1]));
     scene.addObject(new Barrier([0, 0, 0], [-1.8, 1.4, 12], [1.1, 3.5, 12.1]));
@@ -267,8 +263,6 @@ keyController.addListener('w', () => {
     look[2] += 0.1 * viewZ[2];
     camera.translate([0.1 * viewZ[0], 0.1 * viewZ[1], 0.1 * viewZ[2]]);
     camera.update(0);
-    //console.log("min", camera.aabb.min);
-    //console.log("max", camera.aabb.max);
     camera.lookAt(look, up);
 });
 keyController.addListener('s', () => {
@@ -337,13 +331,6 @@ keyController.addListener('r', () => {
     camera.lookAt(look, up);
 });
 keyController.enable();
-// timeController.addListener('cameraMove', () => {
-//     //pos[0] += 0.002;
-//     //pos[1] -= 0.01;
-//     //pos[2] +=0.01;
-//     camera.setPosition(pos);
-// });
-
 
 mouseController.addListener('move', 'mousemove', (e: MouseEvent) => {
     if (e.clientX - document.getElementById("root").offsetLeft < 0
@@ -366,22 +353,6 @@ mouseController.addListener('move', 'mousemove', (e: MouseEvent) => {
     look[2] = pos[2] + viewZ[2];
     camera.lookAt(look, up);
 
-    /*
-    let x = e.movementX, y = e.movementY;
-    let angularX = -x / 1080 * Math.PI;
-    let angularY = -y / 1080 * Math.PI / 2;
-    let move = mat4.identity();
-    move = mat4.rotate(move, angularX, viewY);
-    move = mat4.rotate(move, angularY, viewX);
-    viewZ = <Vec3>vec3.transformMat4(viewZ, move);
-    up = <Vec3>vec3.transformMat4(up, move);
-    viewX = <Vec3>vec3.normalize(vec3.cross(viewZ, up));
-    viewY = <Vec3>vec3.cross(viewX, viewZ);
-    look[0] = pos[0] + viewZ[0];
-    look[1] = pos[1] + viewZ[1];
-    look[2] = pos[2] + viewZ[2];
-    camera.lookAt(look, up);
-    */
 });
 mouseController.enable();
 
@@ -389,28 +360,11 @@ camera.setEnterListener((c: Collider, info: Vec3) => {
 
     if (info[0] == 1) camera.xNegMovable = false;
     if (info[0] == -1) camera.xPosMovable = false;
-    if (info[1] == 1) camera.yNegMovable= false;
+    if (info[1] == 1) camera.yNegMovable = false;
     if (info[1] == -1) camera.yPosMovable = false;
     if (info[2] == 1) camera.zNegMovable = false;
     if (info[2] == -1) camera.zPosMovable = false;
 
-    /*
-        let x = camera.lastMove[12], y = camera.lastMove[13], z = camera.lastMove[14];
-        let zDir = vec3.cross(viewZ, [x, y, z]);
-        if (Math.abs(zDir[0]) > EPSILON || Math.abs(zDir[1]) > EPSILON || Math.abs(zDir[2]) > EPSILON) {
-            if (x * viewX[0] > EPSILON || y * viewX[1] > EPSILON || z * viewX[2] > EPSILON) {
-                camera.xPosMovable = false;
-            } else {
-                camera.xNegMovable = false;
-            }
-        } else {
-            if (x * viewZ[0] > EPSILON || y * viewZ[1] > EPSILON || z * viewZ[2] > EPSILON) {
-                camera.zPosMovable = false;
-            } else {
-                camera.zNegMovable = false;
-            }
-        }
-        */
     console.log("collision");
 });
 
