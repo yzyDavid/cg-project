@@ -43,6 +43,7 @@ export default class UniversalObject extends IncolliableObject implements Drawab
 
     saveObj(name: string) {
         let output: string = "o " + name + "\n";
+        output = output + "mtllib " + name + ".mtl\n";
         let n = this.vertices.length;
         for (let i = 0; i < n; i = i + 3) {
             output = output + "v " + this.vertices[i] + " " + this.vertices[i + 1] + " " + this.vertices[i + 2] + "\n";
@@ -52,9 +53,9 @@ export default class UniversalObject extends IncolliableObject implements Drawab
             output = output + "vt " + this.textureCoords[i] + " " + this.textureCoords[i + 1] + "\n";
         }
         n = this.indices.length;
-        output = output + "usemtl " + name + ".mtl\n";
+        output = output + "usemtl " + name + "\n";
         for (let i = 0; i < n; i = i + 3) {
-            output = output + "f " + this.indices[i] + "/" + this.indices[i] + " " + this.indices[i + 1] + "/" + this.indices[i + 1] + " " + this.indices[i + 2] + "/" + this.indices[i + 2] + " " + "\n";
+            output = output + "f " + (this.indices[i] + 1) + "/" + (this.indices[i] + 1) + " " + (this.indices[i + 1] + 1) + "/" + (this.indices[i + 1] + 1) + " " + (this.indices[i + 2] + 1) + "/" + (this.indices[i + 2] + 1) + " " + "\n";
         }
         return output;
     }
