@@ -19,7 +19,6 @@ import saveScreenshot from './screenshot';
 import initLightControl from './lightcontrol';
 import {cross} from "./engine/matrix/vec3";
 import {Collider} from "./engine/engine/collider";
-import {AABBCollider} from "./engine/engine/AABBCollider";
 
 const canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById('root');
 canvas.setAttribute('width', String(config.WIDTH));
@@ -208,6 +207,7 @@ const engine = new Engine(scene, canvas, conf);
 
 const keyController = engine.getKeyEventController();
 const timeController = engine.getTimeEventController();
+const mouseController = engine.getMouseEventController();
 
 keyController.addListener('q', () => engine.stop());
 keyController.addListener('r', () => engine.start());
@@ -223,7 +223,6 @@ keyController.addListener('w', () => {
     camera.update(0);
     //console.log("min", camera.aabb.min);
     //console.log("max", camera.aabb.max);
-    console.log("camera", camera.getPosition());
     camera.lookAt(look, up);
 });
 keyController.addListener('s', () => {
@@ -236,7 +235,6 @@ keyController.addListener('s', () => {
     look[2] -= 0.1 * viewZ[2];
     camera.translate([-0.1 * viewZ[0], -0.1 * viewZ[1], -0.1 * viewZ[2]]);
     camera.update(0);
-    console.log("camera", camera.getPosition());
     camera.lookAt(look, up);
 });
 keyController.addListener('a', () => {
@@ -249,7 +247,6 @@ keyController.addListener('a', () => {
     look[2] -= 0.1 * viewX[2];
     camera.translate([-0.1 * viewX[0], -0.1 * viewX[1], -0.1 * viewX[2]]);
     camera.update(0);
-    console.log("camera", camera.getPosition());
     camera.lookAt(look, up);
 });
 keyController.addListener('d', () => {
@@ -262,7 +259,6 @@ keyController.addListener('d', () => {
     look[2] += 0.1 * viewX[2];
     camera.translate([0.1 * viewX[0], 0.1 * viewX[1], 0.1 * viewX[2]]);
     camera.update(0);
-    console.log("camera", camera.getPosition());
     camera.lookAt(look, up);
 });
 keyController.enable();
@@ -271,6 +267,11 @@ timeController.addListener('cameraMove', () => {
     //pos[1] -= 0.01;
     //pos[2] +=0.01;
     camera.setPosition(pos);
+});
+
+mouseController.addListener("move", "mousemove", (e: MouseEvent) => {
+    console.log("x", e.clientX);
+    console.log("y", e.clientY);
 });
 
 camera.setEnterListener((c: Collider, info: Vec3) => {

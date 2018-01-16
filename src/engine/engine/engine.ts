@@ -9,6 +9,7 @@ import TimeEventController from './timeevent';
 import Scene from './scene';
 import {mat4} from '../matrix'
 import {Drawable} from './component';
+import MouseEventController from "./mouseevent";
 
 export default class Engine {
     private config: any;
@@ -16,6 +17,7 @@ export default class Engine {
     private canvas: HTMLCanvasElement;
     private keyEventController: KeyEventController;
     private timeEventController: TimeEventController;
+    private mouseEventController: MouseEventController;
     private shaderManager: ShaderManager;
     private gl: WebGLRenderingContext;
     private startTime: number;
@@ -46,6 +48,7 @@ export default class Engine {
         this.gl = gl;
         this.keyEventController = new KeyEventController();
         this.timeEventController = new TimeEventController();
+        this.mouseEventController = new MouseEventController();
         this.shaderManager = new ShaderManager(gl);
         console.info("engine constructed");
     }
@@ -104,7 +107,7 @@ export default class Engine {
         scene.forEach((obj) => {
             // Here may be some mistakes that some object is no drawable but movable
             //if ('draw' in obj) {
-                obj.update(deltaTime);
+            obj.update(deltaTime);
             //}
             obj.updateChildren(deltaTime);
         });
@@ -140,6 +143,10 @@ export default class Engine {
 
     getTimeEventController() {
         return this.timeEventController;
+    }
+
+    getMouseEventController() {
+        return this.mouseEventController;
     }
 }
 

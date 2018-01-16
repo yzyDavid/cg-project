@@ -23,6 +23,7 @@ export default class MouseEventController {
 
     constructor() {
         this.enabled = false;
+        this.callbacks = {};
         this.listeners = {};
         for (let e in mouseEventTypes) {
             this.listeners[e] = (event: MouseEvent) => {
