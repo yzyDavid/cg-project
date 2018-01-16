@@ -20,6 +20,7 @@ import initLightControl from './lightcontrol';
 import {cross} from "./engine/matrix/vec3";
 import {Collider} from "./engine/engine/collider";
 import ColliableObject from "./engine/engine/colliableobject";
+import {Barrier} from "./engine/engine/component";
 
 const canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById('root');
 canvas.setAttribute('width', String(config.WIDTH));
@@ -70,33 +71,47 @@ queryObjAsync("assets/module/skybox.obj", 50).then(objects => {
     }
 });
 
-queryColliableObjAsync("/assets/module/cube.obj", 6).then(entry => {
-    scene.addObject(entry);
-    entry.translate([0, -2.5, 0]);
+queryObjAsync("/assets/module/cube.obj", 6).then(cube0 => {
+    for (let entry of cube0) {
+        scene.addObject(entry);
+        entry.translate([0, -2.5, 0]);
+    }
+    scene.addObject(new Barrier([0, 0, 0], [6, -8.5, -12], [6.1, 3.5, 12]));
+    scene.addObject(new Barrier([0, 0, 0], [-6.1, -8.5, -12], [-6, 3.5, 12]));
+    scene.addObject(new Barrier([0, 0, 0], [-6, -8.5, -12.1], [6, 3.5, -12]));
+    //scene.addObject(new Barrier([0, 0, 0], [-6, -8.5, 12], [6, 3.5, 12.1]));
+
+    scene.addObject(new Barrier([0, 0, 0], [-6, -8.5, 12], [-1.8, 3.5, 12.1]));
+    scene.addObject(new Barrier([0, 0, 0], [1.1, -8.5, 12], [6, 3.5, 12.1]));
+    scene.addObject(new Barrier([0, 0, 0], [-1.8, 1.4, 12], [1.1, 3.5, 12.1]));
+    scene.addObject(new Barrier([0, 0, 0], [-6, -8.6, -12], [6, -8.5, 12]));
+    scene.addObject(new Barrier([0, 0, 0], [-6, 3.5, -12], [6, 3.6, 12]));
+    console.log("length", cube0.length);
 });
-//
-// //桌子
-// queryObjAsync("/assets/module/table.obj", 3.2).then(cube0 => {
-//     for (let entry of cube0) {
-//         scene.addObject(entry);
-//         entry.translate([-0.85, -8.5, -7.5]);
-//     }
-// });
-//
-// //椅子
-// queryObjAsync("/assets/module/chair.obj", 4.4).then(cube0 => {
-//     for (let entry of cube0) {
-//         scene.addObject(entry);
-//         entry.translate([-2.2, -8.5, -9.7]);
-//     }
-// });
-//
+
+//桌子
+queryObjAsync("/assets/module/table.obj", 3.2).then(cube0 => {
+    for (let entry of cube0) {
+        scene.addObject(entry);
+        entry.translate([-0.85, -8.5, -7.5]);
+    }
+});
+
+//椅子
+queryObjAsync("/assets/module/chair.obj", 4.4).then(cube0 => {
+    for (let entry of cube0) {
+        scene.addObject(entry);
+        entry.translate([-2.2, -8.5, -9.7]);
+    }
+});
+
 //门
 queryColliableObjAsync("/assets/module/door.obj", 0.035).then(entry => {
     scene.addObject(entry);
     entry.translate([1, -8.47, 12]);
     keyController.addListener('o', () => {
-        console.log(entry.angular);
+        console.log("max", entry.aabb.max);
+        console.log("min", entry.aabb.min);
         if (Math.abs(entry.angular) > EPSILON) return;
         if (!door) {
             entry.angular = Math.PI / 2;
@@ -123,104 +138,104 @@ queryObjAsync("/assets/module/doorframe.obj", 0.035).then(cube0 => {
 });
 
 
-// //垃圾桶
-// queryObjAsync("/assets/module/poubelleInox.obj", 0.024).then(cube0 => {
-//     for (let entry of cube0) {
-//         scene.addObject(entry);
-//         entry.translate([3.7, -7, -8]);
-//     }
-// });
-//
-// //电脑+柜
-// queryObjAsync("/assets/module/TVCenter.obj", 0.05).then(cube0 => {
-//     for (let entry of cube0) {
-//         scene.addObject(entry);
-//         entry.translate([-5, -4.8, -2]);
-//         entry.rotate([0, 1, 0], Math.PI * 0.5);
-//     }
-// });
-//
-// //电视柜
-// queryObjAsync("/assets/module/shelf.obj", 4).then(cube0 => {
-//     for (let entry of cube0) {
-//         scene.addObject(entry);
-//         entry.translate([5, -8.5, 5]);
-//         entry.rotate([0, 1, 0], Math.PI * 0.5);
-//     }
-// });
-//
-// //TV
-// queryObjAsync("/assets/module/tv.obj", 0.05).then(cube0 => {
-//     for (let entry of cube0) {
-//         scene.addObject(entry);
-//         entry.translate([6, -2, 6]);
-//         entry.rotate([0, 1, 0], -Math.PI * 0.5);
-//     }
-// });
-//
-// //窗户
-// queryObjAsync("/assets/module/window.obj", 0.033).then(cube0 => {
-//     for (let entry of cube0) {
-//         scene.addObject(entry);
-//         entry.translate([-2.8, -3.2, -12]);
-//     }
-// });
-//
-// //台灯
-// queryObjAsync("/assets/module/deskLamp.obj", 0.028).then(cube0 => {
-//     for (let entry of cube0) {
-//         scene.addObject(entry);
-//         entry.translate([0.8, -6.2, -8]);
-//     }
-// });
-// //时钟
-// queryObjAsync("/assets/module/clock.obj", 0.045).then(cube0 => {
-//     for (let entry of cube0) {
-//         scene.addObject(entry);
-//
-//         entry.translate([2, -1, -12]);
-//         entry.rotate([1, 0, 0], Math.PI * 0.5);
-//     }
-// });
-//
-// //落地灯
-// queryObjAsync("/assets/module/lamp.obj", 3).then(cube0 => {
-//     for (let entry of cube0) {
-//         scene.addObject(entry);
-//         entry.translate([5.5, -8.5, 0]);
-//     }
-// });
-//
-// //茶几
-// queryColliableObjAsync("/assets/module/smalltable.obj", 3).then(entry => {
-//         scene.addObject(entry);
-//         entry.translate([-1.2, -8.5, 5]);
-//         entry.rotate([0, 1, 0], Math.PI * 0.5);
-// });
-//
-// //茶壶
-// queryColliableObjAsync("/assets/module/teapot.obj", 0.01).then(entry => {
-//         scene.addObject(entry);
-//         entry.translate([-1.2, -6.74, 6]);
-//         entry.rotate([0, 1, 0], Math.PI * 0.5);
-// });
-//
-// //沙发
-// queryObjAsync("/assets/module/sofa.obj", 3.6).then(cube0 => {
-//     for (let entry of cube0) {
-//         scene.addObject(entry);
-//         entry.translate([-4.4, -8.5, 5]);
-//         entry.rotate([0, 1, 0], Math.PI * 0.5);
-//     }
-// });
-//
-// //电风扇
-// queryObjAsync("/assets/module/ceilingFan.obj", 0.06).then(cube0 => {
-//     for (let entry of cube0) {
-//         scene.addObject(entry);
-//         entry.translate([-2, 1.5, 0]);
-//     }
-// });
+//垃圾桶
+queryObjAsync("/assets/module/poubelleInox.obj", 0.024).then(cube0 => {
+    for (let entry of cube0) {
+        scene.addObject(entry);
+        entry.translate([3.7, -7, -8]);
+    }
+});
+
+//电脑+柜
+queryObjAsync("/assets/module/TVCenter.obj", 0.05).then(cube0 => {
+    for (let entry of cube0) {
+        scene.addObject(entry);
+        entry.translate([-5, -4.8, -2]);
+        entry.rotate([0, 1, 0], Math.PI * 0.5);
+    }
+});
+
+//电视柜
+queryObjAsync("/assets/module/shelf.obj", 4).then(cube0 => {
+    for (let entry of cube0) {
+        scene.addObject(entry);
+        entry.translate([5, -8.5, 5]);
+        entry.rotate([0, 1, 0], Math.PI * 0.5);
+    }
+});
+
+//TV
+queryObjAsync("/assets/module/tv.obj", 0.05).then(cube0 => {
+    for (let entry of cube0) {
+        scene.addObject(entry);
+        entry.translate([6, -2, 6]);
+        entry.rotate([0, 1, 0], -Math.PI * 0.5);
+    }
+});
+
+//窗户
+queryObjAsync("/assets/module/window.obj", 0.033).then(cube0 => {
+    for (let entry of cube0) {
+        scene.addObject(entry);
+        entry.translate([-2.8, -3.2, -12]);
+    }
+});
+
+//台灯
+queryObjAsync("/assets/module/deskLamp.obj", 0.028).then(cube0 => {
+    for (let entry of cube0) {
+        scene.addObject(entry);
+        entry.translate([0.8, -6.2, -8]);
+    }
+});
+//时钟
+queryObjAsync("/assets/module/clock.obj", 0.045).then(cube0 => {
+    for (let entry of cube0) {
+       scene.addObject(entry);
+
+         entry.translate([2, -1, -12]);
+        entry.rotate([1, 0, 0], Math.PI * 0.5);
+    }
+});
+
+//落地灯
+queryObjAsync("/assets/module/lamp.obj", 3).then(cube0 => {
+    for (let entry of cube0) {
+        scene.addObject(entry);
+        entry.translate([5.5, -8.5, 0]);
+    }
+});
+
+//茶几
+queryColliableObjAsync("/assets/module/smalltable.obj", 3).then(entry => {
+        scene.addObject(entry);
+        entry.translate([-1.2, -8.5, 5]);
+        entry.rotate([0, 1, 0], Math.PI * 0.5);
+});
+
+//茶壶
+queryColliableObjAsync("/assets/module/teapot.obj", 0.01).then(entry => {
+       scene.addObject(entry);
+        entry.translate([-1.2, -6.74, 6]);
+        entry.rotate([0, 1, 0], Math.PI * 0.5);
+});
+
+//沙发
+queryObjAsync("/assets/module/sofa.obj", 3.6).then(cube0 => {
+    for (let entry of cube0) {
+       scene.addObject(entry);
+       entry.translate([-4.4, -8.5, 5]);
+       entry.rotate([0, 1, 0], Math.PI * 0.5);
+   }
+});
+
+//电风扇
+queryObjAsync("/assets/module/ceilingFan.obj", 0.06).then(cube0 => {
+    for (let entry of cube0) {
+       scene.addObject(entry);
+       entry.translate([-2, 1.5, 0]);
+    }
+});
 
 addObjSaver();
 
@@ -316,6 +331,7 @@ camera.setEnterListener((c: Collider, info: Vec3) => {
             camera.zNegMovable = false;
         }
     }
+    console.log("collision");
 });
 
 camera.setExitListener(() => {
@@ -323,7 +339,8 @@ camera.setExitListener(() => {
     camera.xNegMovable = true;
     camera.zPosMovable = true;
     camera.zNegMovable = true;
-})
+    console.log("collision end");
+});
 engine.start();
 
 initLightControl(pointLights, directLights);

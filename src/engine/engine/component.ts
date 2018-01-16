@@ -287,8 +287,8 @@ export abstract class Incolliable extends Component {
 
 // invisible but colliable
 export class Barrier extends Colliable {
-    constructor(position: Pos) {
-        super(position);
+    constructor(position: Pos, min: Pos, max: Pos) {
+        super(position, min, max);
     }
 }
 
