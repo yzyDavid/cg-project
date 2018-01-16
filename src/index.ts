@@ -330,6 +330,26 @@ keyController.addListener('r', () => {
     viewY = <Vec3>vec3.cross(viewX, viewZ);
     camera.lookAt(look, up);
 });
+keyController.addUpListener('w', () => {
+    camera.linearVelocity[0] -= 0.1 * viewZ[0];
+    camera.linearVelocity[1] -= 0.1 * viewZ[1];
+    camera.linearVelocity[2] -= 0.1 * viewZ[2];
+});
+keyController.addUpListener('w', () => {
+    camera.linearVelocity[0] -= 0.1 * viewZ[0];
+    camera.linearVelocity[1] -= 0.1 * viewZ[1];
+    camera.linearVelocity[2] -= 0.1 * viewZ[2];
+});
+keyController.addUpListener('w', () => {
+    camera.linearVelocity[0] -= 0.1 * viewZ[0];
+    camera.linearVelocity[1] -= 0.1 * viewZ[1];
+    camera.linearVelocity[2] -= 0.1 * viewZ[2];
+});
+keyController.addUpListener('w', () => {
+    camera.linearVelocity[0] -= 0.1 * viewZ[0];
+    camera.linearVelocity[1] -= 0.1 * viewZ[1];
+    camera.linearVelocity[2] -= 0.1 * viewZ[2];
+});
 keyController.enable();
 
 mouseController.addListener('move', 'mousemove', (e: MouseEvent) => {
