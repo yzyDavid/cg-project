@@ -3,7 +3,7 @@
  */
 
 import {Pos, Vec3} from './public';
-import {mat, default as Matrix} from '../matrix';
+import {mat, default as Matrix, EPSILON} from '../matrix';
 import Shader from './shader';
 import Scene from './scene';
 import Engine from './engine';
@@ -21,7 +21,6 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
     protected position: Pos;
     protected children: Component[];
     protected radius: number;
-    //protected velocity: Vec3;
     protected shaderName: string;
 
     protected _linearVelocity: Vec3;
@@ -29,6 +28,7 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
     protected _axis: Vec3;
     protected _angularVelocity: number;
     protected _angularAcceleration: number;
+    protected _angular: number;
 
     protected modelMatrix: mat;
     public move: mat;
@@ -44,6 +44,7 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
         this.axis = [0.0, 0.0, 0.0];
         this.angularVelocity = 0.0;
         this.angularAcceleration = 0.0;
+        this.angular = 0.0;
         this.move = mat4.identity();
         mat4.translate(this.move, this.move, position);
         this.modelMatrix = this.move;
@@ -102,10 +103,19 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
         this.linearVelocity[0] += this.linearAcceleration[0] * time;
         this.linearVelocity[1] += this.linearAcceleration[1] * time;
         this.linearVelocity[2] += this.linearAcceleration[2] * time;
-        this.angularVelocity += this.angularAcceleration * time;
-        // finished: Add rotation
-        if (this.axis[0] != 0 || this.axis[1] != 0 || this.axis[2] != 0)
-            this.move = mat4.rotate(this.move, this.angularVelocity * time, this.axis);
+        if ((time * this.angularAcceleration + this.angularVelocity) * this.angularVelocity < 0) {
+            this.angularVelocity = 0;
+            this.angularAcceleration = 0;
+            this.move = mat4.rotate(this.move, this.angular, this.axis);
+            this.angular = 0;
+        } else {
+            this.angularVelocity += this.angularAcceleration * time;
+            // finished: Add rotation
+            if (this.axis[0] != 0 || this.axis[1] != 0 || this.axis[2] != 0) {
+                this.move = mat4.rotate(this.move, this.angularVelocity * time, this.axis);
+                this.angular -= this.angularVelocity * time;
+            }
+        }
         mat4.translate(this.move, this.move, [this.linearVelocity[0] * time, this.linearVelocity[1] * time, this.linearVelocity[2] * time]);
         this.lastMove = this.move;
         // finished: Update position, using position * move
@@ -184,6 +194,14 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
 
     set angularAcceleration(val: number) {
         this._angularAcceleration = val;
+    }
+
+    get angular(): number {
+        return this._angular;
+    }
+
+    set angular(val: number) {
+        this._angular = val;
     }
 
     getPosition() {

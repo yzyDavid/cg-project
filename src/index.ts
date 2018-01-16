@@ -5,7 +5,7 @@
 import './index.css';
 import * as config from './config';
 
-import {Engine, Scene, Camera, Vec3} from './engine';
+import {Engine, Scene, Camera, Vec3, Component} from './engine';
 import {Pos} from './engine';
 import {queryObjAsync} from './engine';
 import PointLight from "./engine/engine/pointlight";
@@ -19,6 +19,7 @@ import saveScreenshot from './screenshot';
 import initLightControl from './lightcontrol';
 import {cross} from "./engine/matrix/vec3";
 import {Collider} from "./engine/engine/collider";
+import ColliableObject from "./engine/engine/colliableobject";
 
 const canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById('root');
 canvas.setAttribute('width', String(config.WIDTH));
@@ -39,6 +40,7 @@ const viewZ: Vec3 = <Vec3>vec3.normalize(look);
 const viewY: Vec3 = <Vec3>vec3.cross(viewX, viewZ);
 const camera = new Camera(pos, fov, aspect, near, far);
 camera.lookAt(look, up);
+let door: boolean = false;
 
 // Create scene.
 export const scene = new Scene(camera);
@@ -89,23 +91,38 @@ queryColliableObjAsync("/assets/module/cube.obj", 6).then(entry => {
 //     }
 // });
 //
-// //门
-// queryObjAsync("/assets/module/door.obj", 0.035).then(cube0 => {
-//     for (let entry of cube0) {
-//         scene.addObject(entry);
-//         entry.translate([1, -8.47, 12]);
-//     }
-// });
-//
-// //门框
-// queryObjAsync("/assets/module/doorframe.obj", 0.035).then(cube0 => {
-//     for (let entry of cube0) {
-//         scene.addObject(entry);
-//         entry.translate([1, -8.47, 12]);
-//     }
-// });
-//
-//
+//门
+queryColliableObjAsync("/assets/module/door.obj", 0.035).then(entry => {
+    scene.addObject(entry);
+    entry.translate([1, -8.47, 12]);
+    keyController.addListener('o', () => {
+        console.log(entry.angular);
+        if (Math.abs(entry.angular) > EPSILON) return;
+        if (!door) {
+            entry.angular = Math.PI / 2;
+            entry.axis = [0, 1, 0];
+            entry.angularVelocity = Math.PI;
+            entry.angularAcceleration = -Math.PI;
+            door = true;
+        } else {
+            entry.angular = -Math.PI / 2;
+            entry.axis = [0, 1, 0];
+            entry.angularVelocity = -Math.PI;
+            entry.angularAcceleration = Math.PI;
+            door = false;
+        }
+    })
+});
+
+//门框
+queryObjAsync("/assets/module/doorframe.obj", 0.035).then(cube0 => {
+    for (let entry of cube0) {
+        scene.addObject(entry);
+        entry.translate([1, -8.47, 12]);
+    }
+});
+
+
 // //垃圾桶
 // queryObjAsync("/assets/module/poubelleInox.obj", 0.024).then(cube0 => {
 //     for (let entry of cube0) {
