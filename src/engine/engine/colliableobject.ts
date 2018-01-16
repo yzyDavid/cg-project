@@ -1,10 +1,11 @@
 import {Drawable, Colliable} from './component';
 import {Pos, Vec3} from './public';
 import {Collider} from "./collider";
+import {AABBCollider} from "./AABBCollider";
 
 export default class ColliableObject extends Colliable {
-    private enterCallback: () => void;
-    private exitCallback: () => void;
+    protected enterCallback: (c: Collider, info: Vec3) => void;
+    protected exitCallback: (c: Collider) => void;
 
     constructor(pos: Pos, min: Pos, max: Pos) {
         super(pos, min, max);
@@ -16,15 +17,15 @@ export default class ColliableObject extends Colliable {
         };
     }
 
-    onCollisionEnter(collider: Collider, info: Vec3) {
-        this.enterCallback();
+    onCollisionEnter(collider: AABBCollider, info: Vec3) {
+        this.enterCallback(collider, info);
     }
 
-    onCollisionExit(collider: Collider) {
-        this.exitCallback();
+    onCollisionExit(collider: AABBCollider) {
+        this.exitCallback(collider);
     }
 
-    setEnterListener(action: () => void) {
+    setEnterListener(action: (c: Collider, info: Vec3) => void) {
         this.enterCallback = action;
     }
 

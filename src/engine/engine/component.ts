@@ -31,8 +31,8 @@ export class Component implements EnumerableChildren<Component>, ChildrenDrawabl
     protected _angularAcceleration: number;
 
     protected modelMatrix: mat;
-    protected move: mat;
-    protected lastMove: mat;
+    public move: mat;
+    public lastMove: mat;
 
     constructor(position: Pos) {
         this.position = position;
@@ -221,7 +221,7 @@ export class Model {
 }
 
 export abstract class Colliable extends Component {
-    protected aabb: AABBCollider;
+    public aabb: AABBCollider;
 
     constructor(position: Pos, min?: Pos, max?: Pos) {
         super(position);

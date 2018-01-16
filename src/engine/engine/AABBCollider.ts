@@ -50,7 +50,7 @@ export class AABBCollider extends Collider {
                     let info = this.getCollisionInfo(x);
                     this.object.onCollisionEnter(x, info);
                     x.onCollision.push(this);
-                    x.object.onCollisionEnter(this, info);
+                    x.object.onCollisionEnter(this, [-info[0], -info[1], -info[2]]);
                 }
                 if (!isCollision && isOnCollision) {
                     this.onCollision.splice(index, 1);
@@ -78,7 +78,13 @@ export class AABBCollider extends Collider {
     checkCollision(dst: AABBCollider) {
         return AABBCollider.checkAxis(this.min[0], this.max[0], dst.min[0], dst.max[0])
             && AABBCollider.checkAxis(this.min[1], this.max[1], dst.min[1], dst.max[1])
-            && AABBCollider.checkAxis(this.min[2], this.max[2], dst.min[2], dst.max[2]);
+            && AABBCollider.checkAxis(this.min[2], this.max[2], dst.min[2], dst.max[2])
+            && !(this.min[0] > dst.min[0] && this.max[0] < dst.max[0]
+                && this.min[1] > dst.min[1] && this.max[1] < dst.max[1]
+                && this.min[2] > dst.min[2] && this.max[2] < dst.max[2])
+            && !(this.min[0] < dst.min[0] && this.max[0] > dst.max[0]
+                && this.min[1] < dst.min[1] && this.max[1] > dst.max[1]
+                && this.min[2] < dst.min[2] && this.max[2] > dst.max[2]);
     }
 
     private static checkAxis(minA: number, maxA: number, minB: number, maxB: number) {

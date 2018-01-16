@@ -11,11 +11,15 @@ import {queryObjAsync} from './engine';
 import PointLight from "./engine/engine/pointlight";
 import DirectLight from "./engine/engine/directlight";
 import {addObjSaver} from "./engine";
+import {EPSILON, vec3} from "./engine/matrix"
 
 import initButtons from './button';
 import {queryColliableObjAsync} from "./engine/engine/objloader";
 import saveScreenshot from './screenshot';
 import initLightControl from './lightcontrol';
+import {cross} from "./engine/matrix/vec3";
+import {Collider} from "./engine/engine/collider";
+import {AABBCollider} from "./engine/engine/AABBCollider";
 
 const canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById('root');
 canvas.setAttribute('width', String(config.WIDTH));
@@ -29,8 +33,13 @@ const aspect = config.WIDTH / config.HEIGHT;
 const near = 0.1;
 const far = 100.0;
 const pos: Pos = [0, 0, 0];
+const look: Vec3 = [0, -6, 15];
+const up: Vec3 = [0.0, 1.0, 0.0];
+const viewX: Vec3 = <Vec3>vec3.normalize(vec3.cross(look, up));
+const viewZ: Vec3 = <Vec3>vec3.normalize(look);
+const viewY: Vec3 = <Vec3>vec3.cross(viewX, viewZ);
 const camera = new Camera(pos, fov, aspect, near, far);
-camera.lookAt([0, -6, 15], [0.0, 1.0, 0.0]);
+camera.lookAt(look, up);
 
 // Create scene.
 export const scene = new Scene(camera);
@@ -60,11 +69,9 @@ queryObjAsync("assets/module/skybox.obj", 50).then(objects => {
     }
 });
 
-queryObjAsync("/assets/module/cube.obj", 6).then(cube0 => {
-    for (let entry of cube0) {
-        scene.addObject(entry);
-        entry.translate([0, -2.5, 0]);
-    }
+queryColliableObjAsync("/assets/module/cube.obj", 6).then(entry => {
+    scene.addObject(entry);
+    entry.translate([0, -2.5, 0]);
 });
 
 // //桌子
@@ -203,15 +210,93 @@ const keyController = engine.getKeyEventController();
 const timeController = engine.getTimeEventController();
 
 keyController.addListener('q', () => engine.stop());
-keyController.addListener('w', () => engine.start());
+keyController.addListener('r', () => engine.start());
+keyController.addListener('w', () => {
+    if (!camera.zPosMovable) return;
+    pos[0] += 0.1 * viewZ[0];
+    pos[1] += 0.1 * viewZ[1];
+    pos[2] += 0.1 * viewZ[2];
+    look[0] += 0.1 * viewZ[0];
+    look[1] += 0.1 * viewZ[1];
+    look[2] += 0.1 * viewZ[2];
+    camera.translate([0.1 * viewZ[0], 0.1 * viewZ[1], 0.1 * viewZ[2]]);
+    camera.update(0);
+    //console.log("min", camera.aabb.min);
+    //console.log("max", camera.aabb.max);
+    console.log("camera", camera.getPosition());
+    camera.lookAt(look, up);
+});
+keyController.addListener('s', () => {
+    if (!camera.zNegMovable) return;
+    pos[0] -= 0.1 * viewZ[0];
+    pos[1] -= 0.1 * viewZ[1];
+    pos[2] -= 0.1 * viewZ[2];
+    look[0] -= 0.1 * viewZ[0];
+    look[1] -= 0.1 * viewZ[1];
+    look[2] -= 0.1 * viewZ[2];
+    camera.translate([-0.1 * viewZ[0], -0.1 * viewZ[1], -0.1 * viewZ[2]]);
+    camera.update(0);
+    console.log("camera", camera.getPosition());
+    camera.lookAt(look, up);
+});
+keyController.addListener('a', () => {
+    if (!camera.xNegMovable) return;
+    pos[0] -= 0.1 * viewX[0];
+    pos[1] -= 0.1 * viewX[1];
+    pos[2] -= 0.1 * viewX[2];
+    look[0] -= 0.1 * viewX[0];
+    look[1] -= 0.1 * viewX[1];
+    look[2] -= 0.1 * viewX[2];
+    camera.translate([-0.1 * viewX[0], -0.1 * viewX[1], -0.1 * viewX[2]]);
+    camera.update(0);
+    console.log("camera", camera.getPosition());
+    camera.lookAt(look, up);
+});
+keyController.addListener('d', () => {
+    if (!camera.xPosMovable) return;
+    pos[0] += 0.1 * viewX[0];
+    pos[1] += 0.1 * viewX[1];
+    pos[2] += 0.1 * viewX[2];
+    look[0] += 0.1 * viewX[0];
+    look[1] += 0.1 * viewX[1];
+    look[2] += 0.1 * viewX[2];
+    camera.translate([0.1 * viewX[0], 0.1 * viewX[1], 0.1 * viewX[2]]);
+    camera.update(0);
+    console.log("camera", camera.getPosition());
+    camera.lookAt(look, up);
+});
 keyController.enable();
 timeController.addListener('cameraMove', () => {
     //pos[0] += 0.002;
-    pos[1] -= 0.01;
+    //pos[1] -= 0.01;
     //pos[2] +=0.01;
     camera.setPosition(pos);
 });
 
+camera.setEnterListener((c: Collider, info: Vec3) => {
+    let x = camera.lastMove[12], y = camera.lastMove[13], z = camera.lastMove[14];
+    let zDir = vec3.cross(viewZ, [x, y, z]);
+    if (Math.abs(zDir[0]) > EPSILON || Math.abs(zDir[1]) > EPSILON || Math.abs(zDir[2]) > EPSILON) {
+        if (x * viewX[0] > EPSILON || y * viewX[1] > EPSILON || z * viewX[2] > EPSILON) {
+            camera.xPosMovable = false;
+        } else {
+            camera.xNegMovable = false;
+        }
+    } else {
+        if (x * viewZ[0] > EPSILON || y * viewZ[1] > EPSILON || z * viewZ[2] > EPSILON) {
+            camera.zPosMovable = false;
+        } else {
+            camera.zNegMovable = false;
+        }
+    }
+});
+
+camera.setExitListener(() => {
+    camera.xPosMovable = true;
+    camera.xNegMovable = true;
+    camera.zPosMovable = true;
+    camera.zNegMovable = true;
+})
 engine.start();
 
 initLightControl(pointLights, directLights);
