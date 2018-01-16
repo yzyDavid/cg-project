@@ -25,7 +25,7 @@ export default class MouseEventController {
         this.enabled = false;
         this.callbacks = {};
         this.listeners = {};
-        for (let e in mouseEventTypes) {
+        for (let e of mouseEventTypes) {
             this.listeners[e] = (event: MouseEvent) => {
                 for (let c in this.callbacks) {
                     if (this.callbacks[c].type === e) {
@@ -48,8 +48,11 @@ export default class MouseEventController {
         if (this.enabled) {
             return;
         }
+        console.log("listener", this.listeners);
         for (let e in this.listeners) {
             document.addEventListener(e, this.listeners[e]);
+            console.log("e", e);
+            console.log("listeners[e]", this.listeners[e]);
         }
         this.enabled = true;
     }

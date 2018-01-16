@@ -11,7 +11,7 @@ import {queryObjAsync} from './engine';
 import PointLight from "./engine/engine/pointlight";
 import DirectLight from "./engine/engine/directlight";
 import {addObjSaver} from "./engine";
-import {EPSILON, vec3} from "./engine/matrix"
+import {EPSILON, vec3, mat4} from "./engine/matrix"
 
 import initButtons from './button';
 import {queryColliableObjAsync} from "./engine/engine/objloader";
@@ -35,10 +35,10 @@ const near = 0.1;
 const far = 100.0;
 const pos: Pos = [0, 0, 0];
 const look: Vec3 = [0, -6, 15];
-const up: Vec3 = [0.0, 1.0, 0.0];
-const viewX: Vec3 = <Vec3>vec3.normalize(vec3.cross(look, up));
-const viewZ: Vec3 = <Vec3>vec3.normalize(look);
-const viewY: Vec3 = <Vec3>vec3.cross(viewX, viewZ);
+let up: Vec3 = [0.0, 1.0, 0.0];
+let viewX: Vec3 = <Vec3>vec3.normalize(vec3.cross(look, up));
+let viewZ: Vec3 = <Vec3>vec3.normalize(look);
+let viewY: Vec3 = <Vec3>vec3.cross(viewX, viewZ);
 const camera = new Camera(pos, fov, aspect, near, far);
 camera.lookAt(look, up);
 let door: boolean = false;
@@ -191,9 +191,9 @@ queryObjAsync("/assets/module/deskLamp.obj", 0.028).then(cube0 => {
 //时钟
 queryObjAsync("/assets/module/clock.obj", 0.045).then(cube0 => {
     for (let entry of cube0) {
-       scene.addObject(entry);
+        scene.addObject(entry);
 
-         entry.translate([2, -1, -12]);
+        entry.translate([2, -1, -12]);
         entry.rotate([1, 0, 0], Math.PI * 0.5);
     }
 });
@@ -208,32 +208,32 @@ queryObjAsync("/assets/module/lamp.obj", 3).then(cube0 => {
 
 //茶几
 queryColliableObjAsync("/assets/module/smalltable.obj", 3).then(entry => {
-        scene.addObject(entry);
-        entry.translate([-1.2, -8.5, 5]);
-        entry.rotate([0, 1, 0], Math.PI * 0.5);
+    scene.addObject(entry);
+    entry.translate([-1.2, -8.5, 5]);
+    entry.rotate([0, 1, 0], Math.PI * 0.5);
 });
 
 //茶壶
 queryColliableObjAsync("/assets/module/teapot.obj", 0.01).then(entry => {
-       scene.addObject(entry);
-        entry.translate([-1.2, -6.74, 6]);
-        entry.rotate([0, 1, 0], Math.PI * 0.5);
+    scene.addObject(entry);
+    entry.translate([-1.2, -6.74, 6]);
+    entry.rotate([0, 1, 0], Math.PI * 0.5);
 });
 
 //沙发
 queryObjAsync("/assets/module/sofa.obj", 3.6).then(cube0 => {
     for (let entry of cube0) {
-       scene.addObject(entry);
-       entry.translate([-4.4, -8.5, 5]);
-       entry.rotate([0, 1, 0], Math.PI * 0.5);
-   }
+        scene.addObject(entry);
+        entry.translate([-4.4, -8.5, 5]);
+        entry.rotate([0, 1, 0], Math.PI * 0.5);
+    }
 });
 
 //电风扇
 queryObjAsync("/assets/module/ceilingFan.obj", 0.06).then(cube0 => {
     for (let entry of cube0) {
-       scene.addObject(entry);
-       entry.translate([-2, 1.5, 0]);
+        scene.addObject(entry);
+        entry.translate([-2, 1.5, 0]);
     }
 });
 
@@ -251,7 +251,7 @@ const timeController = engine.getTimeEventController();
 const mouseController = engine.getMouseEventController();
 
 keyController.addListener('q', () => engine.stop());
-keyController.addListener('r', () => engine.start());
+keyController.addListener('e', () => engine.start());
 keyController.addListener('w', () => {
     if (!camera.zPosMovable) return;
     pos[0] += 0.1 * viewZ[0];
@@ -302,6 +302,20 @@ keyController.addListener('d', () => {
     camera.update(0);
     camera.lookAt(look, up);
 });
+keyController.addListener('r', () => {
+    viewZ[0] = 0;
+    viewZ[1] = 0;
+    viewZ[2] = 1;
+    up[0] = 0;
+    up[1] = 1;
+    up[2] = 0;
+    look[0] = pos[0];
+    look[1] = pos[1];
+    look[2] = pos[2] + 1;
+    viewX = <Vec3>vec3.cross(viewZ, up);
+    viewY = <Vec3>vec3.cross(viewX, viewZ);
+    camera.lookAt(look, up);
+});
 keyController.enable();
 // timeController.addListener('cameraMove', () => {
 //     //pos[0] += 0.002;
@@ -310,10 +324,26 @@ keyController.enable();
 //     camera.setPosition(pos);
 // });
 
+
 mouseController.addListener('move', 'mousemove', (e: MouseEvent) => {
-    console.log('x', e.clientX);
-    console.log('y', e.clientY);
+    console.log('x', e.movementX);
+    console.log('y', e.movementY);
+    let x = e.movementX, y = e.movementY;
+    let angularX = -x / 1080 * Math.PI;
+    let angularY = -y / 1080 * Math.PI / 2;
+    let move = mat4.identity();
+    move = mat4.rotate(move, angularX, viewY);
+    move = mat4.rotate(move, angularY, viewX);
+    viewZ = <Vec3>vec3.transformMat4(viewZ, move);
+    up = <Vec3>vec3.transformMat4(up, move);
+    viewX = <Vec3>vec3.normalize(vec3.cross(viewZ, up));
+    viewY = <Vec3>vec3.cross(viewX, viewZ);
+    look[0] = pos[0] + viewZ[0];
+    look[1] = pos[1] + viewZ[1];
+    look[2] = pos[2] + viewZ[2];
+    camera.lookAt(look, up);
 });
+mouseController.enable();
 
 camera.setEnterListener((c: Collider, info: Vec3) => {
     let x = camera.lastMove[12], y = camera.lastMove[13], z = camera.lastMove[14];
