@@ -47,7 +47,7 @@ export const scene = new Scene(camera);
 // Add point lights.
 const pointLights: PointLight[] = [
     new PointLight([3.0, 2.0, 5.0], [1, 1, 1], 0.2, true),
-    new PointLight([3.0, 2.0, 5.0], [1, 1, 1], 0, false),
+    new PointLight([3.0, 2.0, 5.0], [0, 0, 0], 0, true),
 ]
 for (let i = 0; i < pointLights.length; i++) {
     scene.addLight(pointLights[i]);
@@ -55,8 +55,8 @@ for (let i = 0; i < pointLights.length; i++) {
 
 // Add direct lights.
 const directLights: DirectLight[] = [
-    new DirectLight([0, -1, 0], [1, 1, 1], 0, true),
-    new DirectLight([0, -1, 0], [1, 1, 1], 0, false),
+    new DirectLight([0, -1, 0], [0, 0, 0], 0, true),
+    new DirectLight([0, -1, 0], [0, 0, 0], 0, true),
 ]
 for (let i = 0; i < directLights.length; i++) {
     scene.addLight(directLights[i]);
